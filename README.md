@@ -86,14 +86,3 @@ Once all services are running, you should be able to access the Mrezhen applicat
 
 ---
 
-## 🧑‍💻 Team
-
-The development of Mrezhen is a collaborative effort by the following dedicated team members:
-
-| Name | Role | GitHub |
-| :--- | :--- | :--- |
-| **Oleksandur Vinichenko** | Front-End and Back-End Developer | @vinipux28 |
-| **Yuan Tomov** | AI/ML Specialist, Back-End Developer | @YVTomov22 |
-| **Tsvetan Zhekov** | AI/ML Specialist, Back-End Developer | @TPZhekov22 |
-| **Kaloyan Petrov** | UX/UI Designer. Frontend Developer | @KSPetrov22 |
-| **Anton Babev** | QA, UX/UI Designer | @AKBabev22 |
