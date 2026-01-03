@@ -1,0 +1,20 @@
+# --- Python Backend Ignores ---
+# Ignore the local TinyDB store and SPSS data files
+aiBackend/quests_db.json
+*.sav
+
+# Bytecode / cache
+__pycache__/
+aiBackend/__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+aiBackend/venv/
+.env
+.env.local
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
