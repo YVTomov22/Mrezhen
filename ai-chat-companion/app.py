@@ -14,6 +14,11 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, field_validator # Changed: Added field_validator
 
 try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+
+try:
     import google.generativeai as genai
 except ImportError:
     genai = None
@@ -22,6 +27,11 @@ except ImportError:
 # --- 1. SERVICE CONFIGURATION ---
 # Trigger reload
 app = FastAPI(title="AI Microservice - Quest & Match Engine")
+
+if load_dotenv:
+    load_dotenv()
+else:
+    print("python-dotenv not installed. .env file will not be loaded.")
 
 
 app.add_middleware(
@@ -249,6 +259,7 @@ async def startup_event():
 
 # --- 3. GOOGLE GEMINI CONFIGURATION ---
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 MODEL = None
 if genai and GEMINI_API_KEY:
     try:
@@ -260,10 +271,10 @@ if genai and GEMINI_API_KEY:
             "response_mime_type": "application/json",
         }
         MODEL = genai.GenerativeModel(
-            model_name="gemini-2.0-flash",
+            model_name=GEMINI_MODEL,
             generation_config=generation_config,
         )
-        print("Gemini model initialized.")
+        print(f"Gemini model initialized: {GEMINI_MODEL}")
     except Exception as e:
         print(f"Gemini init failed: {e}")
 else:
@@ -330,6 +341,31 @@ class MilestoneRequest(BaseModel):
 def format_sse(data: str) -> str:
     return f"data: {data}\n\n"
 
+def build_fallback_response(agent: dict, reason: str) -> dict:
+    user_query = (agent.get("user_input") or "").strip()
+    roadmap = agent.get("current_roadmap") or []
+
+    quick_actions = [
+        "Create one milestone for this week and keep it small.",
+        "Add 2-3 quests under that milestone with clear outcomes.",
+        "Break each quest into tasks that can be done in under 30 minutes.",
+        "Post one progress update in Community today to build momentum.",
+    ]
+
+    message = (
+        "AI quota is currently unavailable, so this is a local fallback response. "
+        f"Reason: {reason}.\n\n"
+        f"Your request: {user_query or 'No specific query provided.'}\n"
+        f"Current roadmap items: {len(roadmap)}\n\n"
+        "Suggested next actions:\n"
+        + "\n".join([f"- {item}" for item in quick_actions])
+    )
+
+    return {
+        "message": message,
+        "milestones": []
+    }
+
 # --- 5. MATCHING LOGIC REMOVED ---
 # User requested removal of candidate matching functionality.
 # Only global dataset stats and insights are used now.
@@ -337,7 +373,8 @@ def format_sse(data: str) -> str:
 # --- 6. AI FEEDBACK GENERATION ---
 async def generate_feedback_stream(agent: dict, relevant_matches: list):
     if not MODEL:
-        yield format_sse(json.dumps({"error": "AI model unavailable"}))
+        fallback = build_fallback_response(agent, "Model not initialized")
+        yield format_sse(json.dumps({"chunk": json.dumps(fallback)}))
         yield format_sse("[DONE]")
         return
 
@@ -438,7 +475,12 @@ async def generate_feedback_stream(agent: dict, relevant_matches: list):
         
     except Exception as e:
         print(f"AI Error: {e}")
-        yield format_sse(json.dumps({"error": str(e)}))
+        error_text = str(e)
+        if "429" in error_text or "quota" in error_text.lower() or "rate" in error_text.lower():
+            fallback = build_fallback_response(agent, "Gemini quota exceeded")
+            yield format_sse(json.dumps({"chunk": json.dumps(fallback)}))
+        else:
+            yield format_sse(json.dumps({"error": error_text}))
         yield format_sse("[DONE]")
 
 

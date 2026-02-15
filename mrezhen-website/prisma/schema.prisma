@@ -62,6 +62,10 @@ model User {
   following     Follows[] @relation("follower")
 
   activityLogs ActivityLog[]
+
+  posts        Post[]
+  postComments PostComment[]
+  postLikes    PostLike[]
 }
 
 model Follows {
@@ -209,4 +213,64 @@ model VerificationToken {
   token      String
   expires    DateTime
   @@id([identifier, token])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String?
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  images    PostImage[]
+  comments  PostComment[]
+  likes     PostLike[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model PostImage {
+  id        String @id @default(cuid())
+  url       String
+
+  postId    String
+  post      Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+}
+
+model PostComment {
+  id        String   @id @default(cuid())
+  content   String
+
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([postId])
+  @@index([authorId])
+}
+
+model PostLike {
+  postId   String
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([postId, userId])
+  @@index([userId])
 }

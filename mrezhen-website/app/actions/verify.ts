@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { completeTaskAndAwardXP } from "./game"
 
+const AI_JUDGE_URL = process.env.AI_JUDGE_URL || "http://127.0.0.1:1234"
+
 export async function verifyTaskWithAI(
   taskId: string, 
   imageUrls: string[], 
@@ -34,7 +36,7 @@ export async function verifyTaskWithAI(
 
   try {
     // 3. Call the Python AI Backend
-    const response = await fetch("http://127.0.0.1:1234/evaluate", {
+    const response = await fetch(`${AI_JUDGE_URL}/evaluate`, {
       method: "POST",
       body: formData,
       cache: "no-store"

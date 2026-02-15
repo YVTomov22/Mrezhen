@@ -1,120 +1,85 @@
-import { auth } from "@/app/auth"
-import { prisma } from "@/lib/prisma"
-import { redirect } from "next/navigation"
-import Link from "next/link" // Added import
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { FollowButton } from "@/components/follow-button"
-import { Map as MapIcon, Swords, Users } from "lucide-react" 
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { auth } from '@/app/auth'
+import { prisma } from '@/lib/prisma'
+import { Button } from '@/components/ui/button'
+import { PostComposer } from '@/components/feed/post-composer'
+import { PostCard } from '@/components/feed/post-card'
 
 export const dynamic = 'force-dynamic'
 
-export default async function CommunityPage() {
+export default async function CommunityFeedPage() {
   const session = await auth()
-  if (!session?.user?.email) redirect("/auth/login")
+  if (!session?.user?.email) redirect('/auth/login')
 
   const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
-    include: { following: true }
+    select: { id: true },
   })
 
-  if (!currentUser) return null
+  if (!currentUser) redirect('/auth/login')
 
-  // Fetch top 50 users by score
-  const users = await prisma.user.findMany({
-    where: {
-      id: { not: currentUser.id }
-    },
+  const posts = await prisma.post.findMany({
+    orderBy: { createdAt: 'desc' },
     take: 50,
-    orderBy: { score: 'desc' },
     include: {
-      _count: {
-        select: {
-          followedBy: true,
-          milestones: true
-        }
+      author: { select: { name: true, username: true, image: true } },
+      images: true,
+      likes: {
+        where: { userId: currentUser.id },
+        select: { userId: true },
       },
-      milestones: {
-        select: {
-          _count: {
-            select: { quests: true }
-          }
-        }
-      }
-    }
+      comments: {
+        take: 3,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          author: { select: { name: true, username: true, image: true } },
+        },
+      },
+      _count: { select: { likes: true, comments: true } },
+    },
   })
 
-  // Create a Set for O(1) lookups
-  const followingIds = new Set(currentUser.following.map(f => f.followingId))
+  const serialized = posts.map((p) => ({
+    id: p.id,
+    content: p.content,
+    createdAt: p.createdAt.toISOString(),
+    author: p.author,
+    images: p.images,
+    likeCount: p._count.likes,
+    commentCount: p._count.comments,
+    likedByMe: p.likes.length > 0,
+    recentComments: p.comments.map((c) => ({
+      id: c.id,
+      content: c.content,
+      createdAt: c.createdAt.toISOString(),
+      author: c.author,
+    })),
+  }))
 
   return (
-    <div className="min-h-screen bg-zinc-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-end mb-6">
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight">Community</h1>
-                <p className="text-zinc-500 text-sm">Find others and grow together.</p>
-            </div>
-            <div className="text-xs font-bold bg-white px-3 py-1.5 rounded-full border shadow-sm text-zinc-600">
-                {users.length} MEMBERS
-            </div>
+    <div className="min-h-screen bg-zinc-50">
+      <div className="max-w-3xl mx-auto p-6 space-y-6">
+        <div className="flex items-end justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Community Feed</h1>
+            <p className="text-zinc-500 text-sm">Share updates, photos, and progress.</p>
+          </div>
+          <Link href="/community/people">
+            <Button variant="outline">Find People</Button>
+          </Link>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {users.map(user => {
-            const totalQuests = user.milestones.reduce((acc, m) => acc + m._count.quests, 0)
-            
-            return (
-              <Card key={user.id} className="flex flex-col h-full overflow-hidden hover:shadow-md transition-shadow border-zinc-200">
-                {/* Header */}
-                <CardHeader className="p-4 pb-3 flex flex-row items-center gap-3 space-y-0">
-                  <Avatar className="h-12 w-12 border border-zinc-100">
-                    <AvatarImage src={user.image || ""} />
-                    <AvatarFallback className="bg-blue-50 text-blue-600 font-bold">
-                        {user.name?.[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 overflow-hidden min-w-0">
-                    <Link href={`/profile/${user.username}`} className="hover:underline decoration-zinc-900 decoration-1 underline-offset-2">
-                        <h3 className="font-bold text-base truncate leading-tight">{user.name}</h3>
-                    </Link>
-                    <p className="text-zinc-500 text-xs font-medium">Lvl {user.level} • {user.score} XP</p>
-                  </div>
-                </CardHeader>
-                
-                {/* Stats */}
-                <CardContent className="px-4 pb-4 flex-1">
-                    <div className="grid grid-cols-3 gap-2 h-full">
-                        <div className="flex flex-col items-center justify-center p-2 bg-zinc-50 rounded-lg border border-zinc-100">
-                            <MapIcon className="h-3.5 w-3.5 text-blue-500 mb-1" />
-                            <span className="font-bold text-sm leading-none">{user._count.milestones}</span>
-                            <span className="text-[9px] uppercase text-zinc-400 font-bold mt-1">Goals</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center p-2 bg-zinc-50 rounded-lg border border-zinc-100">
-                            <Swords className="h-3.5 w-3.5 text-orange-500 mb-1" />
-                            <span className="font-bold text-sm leading-none">{totalQuests}</span>
-                            <span className="text-[9px] uppercase text-zinc-400 font-bold mt-1">Quests</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center p-2 bg-zinc-50 rounded-lg border border-zinc-100">
-                            <Users className="h-3.5 w-3.5 text-green-500 mb-1" />
-                            <span className="font-bold text-sm leading-none">{user._count.followedBy}</span>
-                            <span className="text-[9px] uppercase text-zinc-400 font-bold mt-1">Followers</span>
-                        </div>
-                    </div>
-                </CardContent>
 
-                {/* Footer */}
-                <CardFooter className="p-4 pt-0">
-                  <div className="w-full flex justify-center">
-                    <FollowButton 
-                        targetUserId={user.id} 
-                        initialIsFollowing={followingIds.has(user.id)} 
-                    />
-                  </div>
-                </CardFooter>
-              </Card>
-            )
-          })}
+        <PostComposer />
+
+        <div className="space-y-4">
+          {serialized.length === 0 ? (
+            <div className="bg-white border border-zinc-200 rounded-lg p-6 text-sm text-zinc-600">
+              No posts yet. Be the first to share something.
+            </div>
+          ) : (
+            serialized.map((post) => <PostCard key={post.id} {...post} />)
+          )}
         </div>
       </div>
     </div>
