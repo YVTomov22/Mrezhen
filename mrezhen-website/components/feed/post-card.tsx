@@ -79,9 +79,9 @@ export function PostCard(props: PostCardProps) {
   const when = new Date(props.createdAt).toLocaleString()
 
   return (
-    <Card className="border-zinc-200 overflow-hidden">
+    <Card className="border-border overflow-hidden">
       <CardHeader className="flex flex-row items-center gap-3 p-4">
-        <Avatar className="h-10 w-10 border border-zinc-100">
+        <Avatar className="h-10 w-10 border border-border">
           <AvatarImage src={props.author.image || ''} />
           <AvatarFallback className="bg-blue-50 text-blue-600 font-bold">
             {displayName[0]?.toUpperCase()}
@@ -95,8 +95,8 @@ export function PostCard(props: PostCardProps) {
             >
               {displayName}
             </Link>
-            <span className="text-xs text-zinc-400">•</span>
-            <span className="text-xs text-zinc-500">{when}</span>
+            <span className="text-xs text-muted-foreground">•</span>
+            <span className="text-xs text-muted-foreground">{when}</span>
           </div>
         </div>
       </CardHeader>
@@ -108,7 +108,7 @@ export function PostCard(props: PostCardProps) {
               key={img.id}
               src={img.url}
               alt="Post image"
-              className="w-full object-cover max-h-[520px] bg-zinc-50"
+              className="w-full object-cover max-h-[520px] bg-muted"
             />
           ))}
         </div>
@@ -116,7 +116,7 @@ export function PostCard(props: PostCardProps) {
 
       <CardContent className="p-4 space-y-3">
         {props.content && (
-          <p className="text-sm text-zinc-800 whitespace-pre-wrap">{props.content}</p>
+          <p className="text-sm text-foreground whitespace-pre-wrap">{props.content}</p>
         )}
 
         <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ export function PostCard(props: PostCardProps) {
             <Heart className={props.likedByMe ? 'mr-2 h-4 w-4 fill-white' : 'mr-2 h-4 w-4'} />
             {props.likeCount}
           </Button>
-          <div className="flex items-center text-sm text-zinc-600">
+          <div className="flex items-center text-sm text-muted-foreground">
             <MessageCircle className="mr-2 h-4 w-4" />
             {props.commentCount}
           </div>
@@ -147,7 +147,7 @@ export function PostCard(props: PostCardProps) {
                 return (
                   <div key={c.id} className="text-sm">
                     <span className="font-semibold mr-2">{name}</span>
-                    <span className="text-zinc-700">{c.content}</span>
+                    <span className="text-foreground">{c.content}</span>
                   </div>
                 )
               })}

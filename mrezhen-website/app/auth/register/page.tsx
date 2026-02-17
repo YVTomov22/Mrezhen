@@ -11,64 +11,66 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Mail, Lock, User } from "lucide-react"
 import { FaGithub } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
+import { useTranslations } from "next-intl"
 
 export default function RegisterPage() {
   const [state, action, isPending] = useActionState(register, undefined)
+  const t = useTranslations("auth")
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-4">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"></div>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:6rem_4rem]"></div>
 
-      <Card className="w-full max-w-md shadow-2xl border-zinc-100 bg-white/80 backdrop-blur-xl">
+      <Card className="w-full max-w-md shadow-2xl border-border bg-card/80 backdrop-blur-xl">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-3xl font-extrabold tracking-tight">Create an account</CardTitle>
-          <CardDescription className="text-zinc-500">
-            Enter your email below to create your account
+          <CardTitle className="text-3xl font-extrabold tracking-tight">{t("createAccount")}</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            {t("createAccountDesc")}
           </CardDescription>
         </CardHeader>
         
         <CardContent className="space-y-6">
           <form action={action} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">{t("fullName")}</Label>
               <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-zinc-400" />
+                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input 
                   name="name" 
                   id="name" 
                   placeholder="John Doe" 
                   required 
-                  className="pl-10 bg-zinc-50/50 border-zinc-200 focus:bg-white transition-all"
+                  className="pl-10 bg-muted/50 border-border focus:bg-card transition-all"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-400" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input 
                   name="email" 
                   id="email" 
                   type="email" 
                   placeholder="name@example.com" 
                   required 
-                  className="pl-10 bg-zinc-50/50 border-zinc-200 focus:bg-white transition-all"
+                  className="pl-10 bg-muted/50 border-border focus:bg-card transition-all"
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("password")}</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input 
                   name="password" 
                   id="password" 
                   type="password" 
                   placeholder="••••••••"
                   required 
-                  className="pl-10 bg-zinc-50/50 border-zinc-200 focus:bg-white transition-all"
+                  className="pl-10 bg-muted/50 border-border focus:bg-card transition-all"
                 />
               </div>
             </div>
@@ -86,17 +88,17 @@ export default function RegisterPage() {
             )}
 
             <Button type="submit" className="w-full font-bold shadow-sm" disabled={isPending}>
-              {isPending ? "Creating Account..." : "Create Account"}
+              {isPending ? t("creating") : t("create")}
             </Button>
           </form>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-zinc-200" />
+              <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-zinc-400 font-medium">
-                Or continue with
+              <span className="bg-card px-2 text-muted-foreground font-medium">
+                {t("orContinueWith")}
               </span>
             </div>
           </div>
@@ -104,7 +106,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4">
             <form action={() => doSocialLogin("github")}>
               <Button variant="outline" className="w-full relative" type="submit">
-                <FaGithub className="mr-2 h-4 w-4 text-zinc-900" />
+                <FaGithub className="mr-2 h-4 w-4 text-foreground" />
                 GitHub
               </Button>
             </form>
@@ -119,10 +121,10 @@ export default function RegisterPage() {
         </CardContent>
         
         <CardFooter className="justify-center border-t p-6">
-          <p className="text-sm text-zinc-500">
-            Already have an account?{" "}
-            <Link href="/auth/login" className="font-semibold text-zinc-900 hover:underline">
-              Sign in
+          <p className="text-sm text-muted-foreground">
+            {t("alreadyHaveAccount")}{" "}
+            <Link href="/auth/login" className="font-semibold text-foreground hover:underline">
+              {t("signInLink")}
             </Link>
           </p>
         </CardFooter>

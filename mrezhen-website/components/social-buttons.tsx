@@ -1,7 +1,9 @@
 import { doSocialLogin } from "@/app/actions/social-auth"
 import { Button } from "@/components/ui/button"
+import { getTranslations } from "next-intl/server"
 
-export function SocialButtons() {
+export async function SocialButtons() {
+  const t = await getTranslations("auth")
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="relative">
@@ -10,7 +12,7 @@ export function SocialButtons() {
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
+            {t("orContinueWith")}
           </span>
         </div>
       </div>

@@ -7,9 +7,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { FollowButton } from "@/components/follow-button"
 import { Badge } from "@/components/ui/badge"
 import { Trophy, Calendar, Map, Users, MessageSquare } from "lucide-react" // <--- Import MessageSquare
+import { getTranslations } from "next-intl/server"
 
 // Next.js 15: params is a Promise
 export default async function PublicProfilePage(props: { params: Promise<{ username: string }> }) {
+  const t = await getTranslations("profile")
   const params = await props.params;
   const { username } = params;
   const session = await auth()
@@ -50,17 +52,17 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
         
         {/* Header Card */}
-        <Card className="overflow-hidden border-zinc-200 shadow-md">
+        <Card className="overflow-hidden border-border shadow-md">
           <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
           <div className="px-8 pb-8">
             <div className="relative flex justify-between items-end -mt-12 mb-6">
-              <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+              <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
                 <AvatarImage src={user.image || ""} />
-                <AvatarFallback className="text-2xl font-bold bg-zinc-100">{user.name?.[0]}</AvatarFallback>
+                <AvatarFallback className="text-2xl font-bold bg-muted">{user.name?.[0]}</AvatarFallback>
               </Avatar>
               
               {/* Actions Area: Message & Follow */}
@@ -69,10 +71,10 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
                     {/* Message Button */}
                     <Link 
                         href={`/messages?username=${user.username}`}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 transition-colors shadow-sm"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-accent transition-colors shadow-sm"
                     >
                         <MessageSquare className="w-4 h-4" />
-                        Message
+                        {t("message")}
                     </Link>
 
                     {/* Follow Button */}
@@ -82,15 +84,15 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
             </div>
 
             <div>
-                <h1 className="text-3xl font-bold text-zinc-900">{user.name}</h1>
-                <p className="text-zinc-500 font-medium">Level {user.level} Explorer</p>
+                <h1 className="text-3xl font-bold text-foreground">{user.name}</h1>
+                <p className="text-muted-foreground font-medium">{t("levelExplorer", { level: user.level })}</p>
                 
-                <div className="flex gap-4 mt-4 text-sm text-zinc-600">
+                <div className="flex gap-4 mt-4 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" /> Joined {new Date(user.createdAt).getFullYear()}
+                        <Calendar className="w-4 h-4" /> {t("joined", { year: new Date(user.createdAt).getFullYear() })}
                     </span>
                     <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4" /> {user._count.followedBy} Followers
+                        <Users className="w-4 h-4" /> {user._count.followedBy} {t("followers")}
                     </span>
                 </div>
             </div>
@@ -99,28 +101,28 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard label="Total XP" value={user.score} icon={<Trophy className="text-yellow-500" />} />
-            <StatCard label="Quests Done" value={user.quests.length} icon={<Trophy className="text-green-500" />} />
-            <StatCard label="Active Goals" value={user._count.milestones} icon={<Map className="text-blue-500" />} />
-            <StatCard label="Following" value={user._count.following} icon={<Users className="text-purple-500" />} />
+            <StatCard label={t("totalXp")} value={user.score} icon={<Trophy className="text-yellow-500" />} />
+            <StatCard label={t("questsDone")} value={user.quests.length} icon={<Trophy className="text-green-500" />} />
+            <StatCard label={t("activeGoals")} value={user._count.milestones} icon={<Map className="text-blue-500" />} />
+            <StatCard label={t("following")} value={user._count.following} icon={<Users className="text-purple-500" />} />
         </div>
 
         {/* Recent Achievements (Trophy Case) */}
-        <Card className="border-zinc-200 shadow-sm">
+        <Card className="border-border shadow-sm">
             <CardHeader>
                 <h3 className="text-lg font-bold flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-yellow-500" />
-                    Recent Achievements
+                    {t("recentAchievements")}
                 </h3>
             </CardHeader>
             <CardContent>
                 {user.quests.length === 0 ? (
-                    <p className="text-zinc-400 text-sm italic">No completed quests yet.</p>
+                    <p className="text-muted-foreground text-sm italic">{t("noCompletedQuests")}</p>
                 ) : (
                     <div className="space-y-3">
                         {user.quests.map(quest => (
-                            <div key={quest.id} className="flex items-center justify-between p-3 bg-zinc-50 rounded-lg border border-zinc-100">
-                                <span className="font-medium text-zinc-700">{quest.title}</span>
+                            <div key={quest.id} className="flex items-center justify-between p-3 bg-accent rounded-lg border border-border">
+                                <span className="font-medium text-foreground">{quest.title}</span>
                                 <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">
                                     +{quest.completionPoints} XP
                                 </Badge>
@@ -138,10 +140,10 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
 
 function StatCard({ label, value, icon }: any) {
     return (
-        <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-zinc-200">
-            <div className="mb-2 p-2 bg-zinc-50 rounded-full">{icon}</div>
-            <span className="text-2xl font-bold text-zinc-900">{value}</span>
-            <span className="text-xs font-bold uppercase tracking-wide text-zinc-400">{label}</span>
+        <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-border">
+            <div className="mb-2 p-2 bg-accent rounded-full">{icon}</div>
+            <span className="text-2xl font-bold text-foreground">{value}</span>
+            <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
         </Card>
     )
 }

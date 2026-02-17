@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Trophy, Zap } from "lucide-react"
 import { animate, motion, useMotionValue, useTransform } from "motion/react"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 interface UserStatsProps {
   level: number
@@ -11,6 +12,7 @@ interface UserStatsProps {
 }
 
 export function UserStats({ level, score }: UserStatsProps) {
+  const t = useTranslations("common")
   // Initialize with the LAST known score if it exists, otherwise start at current
   const startScore = score
   
@@ -41,7 +43,7 @@ export function UserStats({ level, score }: UserStatsProps) {
   }, [score, count])
 
   return (
-    <div className="hidden md:flex items-center gap-1 bg-zinc-50 border border-zinc-200 rounded-full px-3 py-1.5 shadow-sm overflow-hidden relative group">
+    <div className="hidden md:flex items-center gap-1 bg-muted border border-border rounded-full px-3 py-1.5 shadow-sm overflow-hidden relative group">
       
       {/* Visual Flash Background */}
       <div 
@@ -52,9 +54,9 @@ export function UserStats({ level, score }: UserStatsProps) {
       />
 
       {/* Level Section */}
-      <div className="flex items-center gap-1.5 border-r border-zinc-200 pr-3 mr-3 relative z-10">
+      <div className="flex items-center gap-1.5 border-r border-border pr-3 mr-3 relative z-10">
         <Trophy className="w-3.5 h-3.5 text-yellow-600" />
-        <span className="text-xs font-bold text-zinc-700">Lvl {level}</span>
+        <span className="text-xs font-bold text-foreground">{t("level")} {level}</span>
       </div>
 
       {/* XP Section with Animation */}
@@ -72,12 +74,12 @@ export function UserStats({ level, score }: UserStatsProps) {
         <motion.span 
             className={cn(
                 "text-xs font-medium min-w-[3ch] tabular-nums", // tabular-nums prevents jitter
-                isPopping ? "text-green-700 font-bold" : "text-zinc-600"
+                isPopping ? "text-green-700 font-bold" : "text-muted-foreground"
             )}
         >
             {rounded}
         </motion.span> 
-        <span className="text-xs font-medium text-zinc-600">XP</span>
+        <span className="text-xs font-medium text-muted-foreground">{t("xp")}</span>
       </div>
     </div>
   )

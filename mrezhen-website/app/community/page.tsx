@@ -5,12 +5,15 @@ import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/button'
 import { PostComposer } from '@/components/feed/post-composer'
 import { PostCard } from '@/components/feed/post-card'
+import { Sparkles } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
 export const dynamic = 'force-dynamic'
 
 export default async function CommunityFeedPage() {
   const session = await auth()
   if (!session?.user?.email) redirect('/auth/login')
+  const t = await getTranslations('community')
 
   const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
@@ -58,24 +61,31 @@ export default async function CommunityFeedPage() {
   }))
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto p-6 space-y-6">
         <div className="flex items-end justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Community Feed</h1>
-            <p className="text-zinc-500 text-sm">Share updates, photos, and progress.</p>
+            <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('description')}</p>
           </div>
-          <Link href="/community/people">
-            <Button variant="outline">Find People</Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link href="/community/suggested">
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90">
+                <Sparkles className="mr-2 h-4 w-4" /> {t('suggested')}
+              </Button>
+            </Link>
+            <Link href="/community/people">
+              <Button variant="outline">{t('findPeople')}</Button>
+            </Link>
+          </div>
         </div>
 
         <PostComposer />
 
         <div className="space-y-4">
           {serialized.length === 0 ? (
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 text-sm text-zinc-600">
-              No posts yet. Be the first to share something.
+            <div className="bg-card border border-border rounded-lg p-6 text-sm text-muted-foreground">
+              {t('noPosts')}
             </div>
           ) : (
             serialized.map((post) => <PostCard key={post.id} {...post} />)

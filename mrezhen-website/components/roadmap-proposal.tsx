@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { 
   createMilestone, updateMilestone, deleteMilestone,
   createQuest, updateQuest, deleteQuest,
@@ -46,6 +47,8 @@ interface RoadmapProposalProps {
 }
 
 export function RoadmapProposal({ data }: RoadmapProposalProps) {
+  const t = useTranslations("aiChat")
+  const tCommon = useTranslations("common")
   // Local state to manage edits/acceptances before they hit the DB
   const [milestones, setMilestones] = useState<ProposalMilestone[]>(data.milestones || []);
 
@@ -60,8 +63,8 @@ export function RoadmapProposal({ data }: RoadmapProposalProps) {
   return (
     <div className="mt-6 space-y-4 animate-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-2 mb-2">
-        <Target className="w-4 h-4 text-zinc-500" />
-        <h3 className="font-semibold text-zinc-800 text-sm uppercase tracking-wider">Suggested Roadmap Changes</h3>
+        <Target className="w-4 h-4 text-muted-foreground" />
+        <h3 className="font-semibold text-foreground text-sm uppercase tracking-wider">{t("suggestedChanges")}</h3>
       </div>
       
       <div className="space-y-4">
@@ -79,6 +82,8 @@ export function RoadmapProposal({ data }: RoadmapProposalProps) {
 
 // --- MILESTONE CARD ---
 function MilestoneCard({ milestone, onChange }: { milestone: ProposalMilestone, onChange: (m: ProposalMilestone) => void }) {
+  const t = useTranslations("aiChat")
+  const tCommon = useTranslations("common")
   const [isEditing, setIsEditing] = useState(false);
   const [status, setStatus] = useState<'IDLE' | 'LOADING' | 'ACCEPTED' | 'REJECTED'>('IDLE');
   const [realId, setRealId] = useState<string | null>(milestone.operation === 'create' ? null : milestone.milestoneId);
@@ -123,21 +128,21 @@ function MilestoneCard({ milestone, onChange }: { milestone: ProposalMilestone, 
   const isChildrenBlocked = milestone.operation === 'create' && !realId;
 
   return (
-    <div className={cn("border rounded-xl bg-white overflow-hidden shadow-sm transition-all", 
-        status === 'ACCEPTED' ? "border-green-200 bg-green-50/30" : "border-zinc-200"
+    <div className={cn("border rounded-xl bg-card overflow-hidden shadow-sm transition-all", 
+        status === 'ACCEPTED' ? "border-green-200 bg-green-50/30" : "border-border"
     )}>
       {/* Header */}
       <div className="p-4 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-             {isExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
+             {isExpanded ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
              <Badge variant={milestone.operation === 'create' ? 'default' : 'secondary'} className="uppercase text-[10px]">
                 {milestone.operation}
              </Badge>
              {isEditing ? (
                <Input value={milestone.title} onChange={e => onChange({...milestone, title: e.target.value})} className="h-7 text-sm" />
              ) : (
-               <h4 className="font-semibold text-zinc-900">{milestone.title}</h4>
+               <h4 className="font-semibold text-foreground">{milestone.title}</h4>
              )}
           </div>
           
@@ -145,12 +150,12 @@ function MilestoneCard({ milestone, onChange }: { milestone: ProposalMilestone, 
           <div className="flex items-center gap-1">
             {status === 'ACCEPTED' ? (
                 <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200 gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> Synced
+                    <CheckCircle2 className="w-3 h-3" /> {t("synced")}
                 </Badge>
             ) : (
                 <>
                     <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setIsEditing(!isEditing)}>
-                        <Edit2 className="w-3 h-3 text-zinc-500" />
+                        <Edit2 className="w-3 h-3 text-muted-foreground" />
                     </Button>
                     <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-red-100 hover:text-red-600" onClick={() => setStatus('REJECTED')}>
                         <X className="w-3 h-3" />
@@ -167,20 +172,20 @@ function MilestoneCard({ milestone, onChange }: { milestone: ProposalMilestone, 
              <Textarea 
                 value={milestone.desc || ""} 
                 onChange={e => onChange({...milestone, desc: e.target.value})} 
-                className="text-xs bg-zinc-50 mb-2" 
-                placeholder="Description..."
+                className="text-xs bg-muted mb-2" 
+                placeholder={tCommon("descriptionPlaceholder")}
              />
         )}
-        {!isEditing && milestone.desc && <p className="text-xs text-zinc-500 ml-6 line-clamp-2">{milestone.desc}</p>}
+        {!isEditing && milestone.desc && <p className="text-xs text-muted-foreground ml-6 line-clamp-2">{milestone.desc}</p>}
       </div>
 
       {/* Children Quests */}
       {isExpanded && milestone.quests && milestone.quests.length > 0 && (
-        <div className="bg-zinc-50/50 p-3 pl-8 border-t border-zinc-100 space-y-3">
+        <div className="bg-muted/50 p-3 pl-8 border-t border-border space-y-3">
           {isChildrenBlocked && (
              <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-200 mb-2">
                 <AlertCircle className="w-3 h-3" />
-                <span>Accept parent milestone first to enable quests.</span>
+                <span>{t("acceptParentFirst")}</span>
              </div>
           )}
           
@@ -248,7 +253,7 @@ function QuestCard({ quest, parentRealId, isDisabled, onChange }: {
   const isTasksBlocked = quest.operation === 'create' && !realId;
 
   return (
-    <div className={cn("border rounded-lg bg-white shadow-sm p-3 relative", isDisabled && "opacity-60 grayscale pointer-events-none")}>
+    <div className={cn("border rounded-lg bg-card shadow-sm p-3 relative", isDisabled && "opacity-60 grayscale pointer-events-none")}>
        {/* Quest Header */}
        <div className="flex items-center justify-between gap-3 mb-2">
           <div className="flex items-center gap-2 flex-1">
@@ -256,7 +261,7 @@ function QuestCard({ quest, parentRealId, isDisabled, onChange }: {
              {isEditing ? (
                <Input value={quest.title} onChange={e => onChange({...quest, title: e.target.value})} className="h-6 text-xs" />
              ) : (
-               <span className="text-sm font-medium text-zinc-800">{quest.title}</span>
+               <span className="text-sm font-medium text-foreground">{quest.title}</span>
              )}
           </div>
           
@@ -266,7 +271,7 @@ function QuestCard({ quest, parentRealId, isDisabled, onChange }: {
              ) : (
                 <>
                     <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setIsEditing(!isEditing)}>
-                        <Edit2 className="w-3 h-3 text-zinc-400" />
+                        <Edit2 className="w-3 h-3 text-muted-foreground" />
                     </Button>
                     <Button size="icon" variant="default" className="h-6 w-6 bg-purple-600 hover:bg-purple-700" onClick={handleAccept} disabled={status === 'LOADING' || isDisabled}>
                         {status === 'LOADING' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
@@ -278,7 +283,7 @@ function QuestCard({ quest, parentRealId, isDisabled, onChange }: {
 
        {/* Children Tasks */}
        {quest.tasks && quest.tasks.length > 0 && (
-         <div className="pl-6 space-y-2 mt-2 border-l-2 border-zinc-100 ml-1.5">
+         <div className="pl-6 space-y-2 mt-2 border-l-2 border-border ml-1.5">
             {quest.tasks.map((t, idx) => (
                <TaskCard 
                   key={t.taskId} 
@@ -326,14 +331,14 @@ function TaskCard({ task, parentRealId, isDisabled, onChange }: {
     if (status === 'REJECTED') return null;
 
     return (
-        <div className={cn("flex items-center justify-between text-xs bg-zinc-50 p-2 rounded border border-zinc-100", (isDisabled || status === 'ACCEPTED') && "opacity-75")}>
+        <div className={cn("flex items-center justify-between text-xs bg-accent p-2 rounded border border-border", (isDisabled || status === 'ACCEPTED') && "opacity-75")}>
             <span className="truncate flex-1">{task.title}</span>
             <div className="flex gap-1 ml-2">
                 {status === 'ACCEPTED' ? (
                      <CheckCircle2 className="w-3 h-3 text-green-500" />
                 ) : (
                     <>
-                        <button className="text-zinc-400 hover:text-red-500" onClick={() => setStatus('REJECTED')} disabled={isDisabled}>
+                        <button className="text-muted-foreground hover:text-red-500" onClick={() => setStatus('REJECTED')} disabled={isDisabled}>
                             <X className="w-3 h-3" />
                         </button>
                         <button className="text-blue-500 hover:text-blue-700" onClick={handleAccept} disabled={status === 'LOADING' || isDisabled}>

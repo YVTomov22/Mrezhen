@@ -7,6 +7,7 @@ import { Send, User, Bot, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from "@/lib/utils"; 
 import { analyzeAgentAction } from '@/app/actions/ai-chat'; 
 import { RoadmapProposal } from '@/components/roadmap-proposal';
+import { useTranslations } from "next-intl";
 
 type ChatMessage = {
     sender: 'user' | 'ai' | 'system';
@@ -16,6 +17,8 @@ type ChatMessage = {
 };
 
 export default function ChatUI({ userId }: { userId: string }) {
+    const t = useTranslations("aiChat")
+    const tCommon = useTranslations("common")
     const [message, setMessage] = useState<string>('');
     const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -100,29 +103,29 @@ export default function ChatUI({ userId }: { userId: string }) {
                 if (newLog[newLog.length - 1]?.sender === 'ai') {
                     newLog[newLog.length - 1].isStreaming = false;
                 }
-                return [...newLog, { sender: 'system', text: 'Connection failed.' }];
+                return [...newLog, { sender: 'system', text: t('connectionFailed') }];
             });
             setIsLoading(false);
         }
     }, [message, isLoading, userId]);
 
     return (
-        <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto border border-zinc-200 rounded-xl bg-white shadow-sm overflow-hidden">
-            <div className="bg-zinc-50 border-b border-zinc-200 p-4 flex items-center gap-2">
+        <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+            <div className="bg-muted border-b border-border p-4 flex items-center gap-2">
                 <div className="bg-purple-100 p-2 rounded-lg">
                     <Bot className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                    <h3 className="font-semibold text-zinc-900">Mrezhen Analyst</h3>
-                    <p className="text-xs text-zinc-500">Live Context from DB</p>
+                    <h3 className="font-semibold text-foreground">{t("analystTitle")}</h3>
+                    <p className="text-xs text-muted-foreground">{t("liveContext")}</p>
                 </div>
             </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 bg-zinc-50/50">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 bg-muted/50">
                 {chatLog.length === 0 && (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-8 text-zinc-400">
+                    <div className="h-full flex flex-col items-center justify-center text-center p-8 text-muted-foreground">
                         <Bot className="w-12 h-12 mb-4 opacity-20" />
-                        <p>I have access to your milestones and profile. How can I help?</p>
+                        <p>{t("emptyState")}</p>
                     </div>
                 )}
                 
@@ -142,7 +145,7 @@ export default function ChatUI({ userId }: { userId: string }) {
                                 "rounded-2xl px-4 py-3 text-sm shadow-sm",
                                 msg.sender === 'user' ? "bg-blue-600 text-white rounded-tr-none" : 
                                 msg.sender === 'system' ? "bg-red-50 text-red-800 border border-red-100" :
-                                "bg-white border border-zinc-200 text-zinc-800 rounded-tl-none"
+                                "bg-card border border-border text-foreground rounded-tl-none"
                             )}>
                                 {/* --- CHANGED SECTION START --- */}
                                 <div className="leading-relaxed">
@@ -162,10 +165,10 @@ export default function ChatUI({ userId }: { userId: string }) {
                                 {/* --- CHANGED SECTION END --- */}
 
                                 {msg.isStreaming && (
-                                    <div className="mt-2 flex items-center gap-1 text-zinc-400">
-                                        <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                                        <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                                        <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce"></span>
+                                    <div className="mt-2 flex items-center gap-1 text-muted-foreground">
+                                        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce"></span>
                                     </div>
                                 )}
                             </div>
@@ -180,23 +183,23 @@ export default function ChatUI({ userId }: { userId: string }) {
                 ))}
             </div>
             
-            <div className="p-4 bg-white border-t border-zinc-200">
+            <div className="p-4 bg-card border-t border-border">
                 <form onSubmit={handleSubmit} className="flex gap-2">
                     <input 
-                        className="flex-1 px-4 py-2 bg-zinc-50 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm"
+                        className="flex-1 px-4 py-2 bg-muted border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm"
                         type="text" 
                         value={message} 
                         onChange={(e) => setMessage(e.target.value)} 
-                        placeholder="Type your message..."
+                        placeholder={t("typePlaceholder")}
                         disabled={isLoading}
                     />
                     <button 
                         type="submit" 
-                        className="px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-foreground text-background rounded-lg hover:bg-foreground/90 disabled:opacity-50 transition-colors flex items-center gap-2"
                         disabled={isLoading || !message.trim()}
                     >
                         {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                        <span className="hidden sm:inline">Send</span>
+                        <span className="hidden sm:inline">{tCommon("send")}</span>
                     </button>
                 </form>
             </div>

@@ -69,7 +69,7 @@ export function PostComposer() {
   }
 
   return (
-    <Card className="border-zinc-200">
+    <Card className="border-border">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Create a post</CardTitle>
       </CardHeader>

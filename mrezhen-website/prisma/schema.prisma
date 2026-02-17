@@ -19,6 +19,40 @@ model User {
   sessions      Session[]
 
   bio           String?
+  phone         String?
+  accountType   String?   @default("personal")  // personal | creator | business
+  isDeactivated Boolean   @default(false)
+
+  // ── Privacy: Profile ──
+  isPrivate              Boolean @default(false)
+  whoCanSeePosts         String  @default("everyone")   // everyone | followers | nobody
+  whoCanSeeFollowers     String  @default("everyone")   // everyone | followers | nobody
+
+  // ── Privacy: Interactions ──
+  whoCanComment          String  @default("everyone")   // everyone | followers | nobody
+  whoCanRemix            String  @default("everyone")   // everyone | followers | nobody
+  whoCanTagMe            String  @default("everyone")   // everyone | followers | nobody
+  whoCanMessage          String  @default("everyone")   // everyone | followers | nobody
+
+  // ── Privacy: Story / Content ──
+  hiddenFromStory        String[] // user IDs hidden from stories
+  closeFriends           String[] // user IDs on close-friends list
+  allowResharing         Boolean @default(true)
+
+  // ── Privacy: Discovery ──
+  findableByEmail        Boolean @default(true)
+  findableByPhone        Boolean @default(true)
+  searchEngineIndexing   Boolean @default(true)
+
+  // ── Appearance / Preferences ──
+  theme                  String  @default("system")   // light | dark | system
+  language               String  @default("en")       // ISO 639-1
+  dataSaver              Boolean @default(false)
+  autoplayVideos         Boolean @default(true)
+  reduceMotion           Boolean @default(false)
+  highContrast           Boolean @default(false)
+  fontSize               String  @default("medium")   // small | medium | large | xlarge
+  screenReader           Boolean @default(false)
   
   // Demographics
   dateOfBirth        DateTime?

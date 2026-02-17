@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Trophy, CheckCircle2, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { TaskVerifier } from "@/components/game/task-verifier"
+import { useTranslations } from "next-intl"
 
 type Task = { id: string; content: string; isCompleted: boolean; points: number }
 type Quest = { 
@@ -20,6 +21,7 @@ type Quest = {
 }
 
 export function QuestCard({ quest }: { quest: Quest }) {
+  const t = useTranslations("goals")
   const [isPending, startTransition] = useTransition()
   // Default to closed if completed, open if active
   const [isOpen, setIsOpen] = useState(quest.status !== 'COMPLETED')
@@ -35,11 +37,11 @@ export function QuestCard({ quest }: { quest: Quest }) {
   }
 
   return (
-    <Card className={cn("border-l-4 transition-all bg-white shadow-sm overflow-hidden", 
+    <Card className={cn("border-l-4 transition-all bg-card shadow-sm overflow-hidden", 
       isQuestCompleted ? "border-l-green-500 opacity-75" : "border-l-blue-500"
     )}>
       <CardHeader 
-        className="pb-2 cursor-pointer hover:bg-zinc-50/50 transition-colors select-none"
+        className="pb-2 cursor-pointer hover:bg-accent/50 transition-colors select-none"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex justify-between items-start">
@@ -50,7 +52,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
                2. w-6 h-6: reserves strict space so text doesn't jump
             */}
             <div className="shrink-0 w-6 h-6 flex items-center justify-center mt-0.5">
-                <div className={cn("text-zinc-400 transition-transform duration-200", isOpen && "rotate-180")}>
+                <div className={cn("text-muted-foreground transition-transform duration-200", isOpen && "rotate-180")}>
                     <ChevronDown className="w-5 h-5" />
                 </div>
             </div>
@@ -76,11 +78,11 @@ export function QuestCard({ quest }: { quest: Quest }) {
               disabled={!allTasksCompleted || isPending}
               className={cn(
                   "transition-all ml-2 shrink-0", 
-                  allTasksCompleted ? "bg-green-600 hover:bg-green-700 text-white" : "bg-zinc-100 text-zinc-400 hover:bg-zinc-200"
+                  allTasksCompleted ? "bg-green-600 hover:bg-green-700 text-white" : "bg-muted text-muted-foreground hover:bg-accent"
               )}
             >
               <Trophy className="w-4 h-4 mr-1" />
-              Claim
+              {t("claim")}
             </Button>
           )}
         </div>
@@ -90,17 +92,17 @@ export function QuestCard({ quest }: { quest: Quest }) {
         <CardContent className="animate-in slide-in-from-top-2 duration-200">
           <div className="space-y-1 pt-2">
             {quest.tasks.map(task => (
-              <div key={task.id} className="group/task flex items-center justify-between p-2 rounded hover:bg-zinc-50 transition-colors">
+              <div key={task.id} className="group/task flex items-center justify-between p-2 rounded hover:bg-accent transition-colors">
                 <div className="flex items-center space-x-3 overflow-hidden">
                   <span 
                     className={cn(
                       "text-sm font-medium leading-none truncate max-w-[200px] sm:max-w-xs",
-                      task.isCompleted && "line-through text-zinc-400"
+                      task.isCompleted && "line-through text-muted-foreground"
                     )}
                   >
                     {task.content} 
                   </span>
-                  <span className="text-xs text-zinc-400 ml-1 shrink-0">(+{task.points}xp)</span>
+                  <span className="text-xs text-muted-foreground ml-1 shrink-0">(+{task.points}xp)</span>
                 </div>
 
                 <TaskVerifier 

@@ -1,0 +1,17 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "accountType" TEXT DEFAULT 'personal',
+ADD COLUMN     "allowResharing" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "closeFriends" TEXT[],
+ADD COLUMN     "findableByEmail" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "findableByPhone" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "hiddenFromStory" TEXT[],
+ADD COLUMN     "isDeactivated" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "isPrivate" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "phone" TEXT,
+ADD COLUMN     "searchEngineIndexing" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "whoCanComment" TEXT NOT NULL DEFAULT 'everyone',
+ADD COLUMN     "whoCanMessage" TEXT NOT NULL DEFAULT 'everyone',
+ADD COLUMN     "whoCanRemix" TEXT NOT NULL DEFAULT 'everyone',
+ADD COLUMN     "whoCanSeeFollowers" TEXT NOT NULL DEFAULT 'everyone',
+ADD COLUMN     "whoCanSeePosts" TEXT NOT NULL DEFAULT 'everyone',
+ADD COLUMN     "whoCanTagMe" TEXT NOT NULL DEFAULT 'everyone';

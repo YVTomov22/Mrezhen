@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Sparkles, Upload, Loader2, CheckCircle2, XCircle, Image as ImageIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
+import { useTranslations } from "next-intl"
 
 interface TaskVerifierProps {
   taskId: string
@@ -19,6 +20,8 @@ interface TaskVerifierProps {
 }
 
 export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierProps) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [open, setOpen] = useState(false)
   const [comment, setComment] = useState("")
   const [files, setFiles] = useState<File[]>([])
@@ -30,7 +33,7 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
   if (isCompleted) {
     return (
       <div className="text-green-600 flex items-center text-xs font-medium animate-in fade-in">
-        <Sparkles className="w-3 h-3 mr-1" /> Verified
+        <Sparkles className="w-3 h-3 mr-1" /> {t("verified")}
       </div>
     )
   }
@@ -44,7 +47,7 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
   const handleSubmit = async () => {
     if (files.length === 0) {
       setStatus('REJECTED')
-      setFeedback("Please upload visual proof.")
+      setFeedback(t("uploadProofRequired"))
       return
     }
 
@@ -71,12 +74,12 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
         setTimeout(() => setOpen(false), 2000) // Close automatically
       } else {
         setStatus('REJECTED')
-        setFeedback(aiRes.reason || aiRes.error || "Verification failed")
+        setFeedback(aiRes.reason || aiRes.error || tCommon("somethingWentWrong"))
       }
 
     } catch (error) {
       setStatus('REJECTED')
-      setFeedback("Something went wrong. Try again.")
+      setFeedback(tCommon("somethingWentWrong"))
     }
   }
 
@@ -88,14 +91,14 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
           size="sm" 
           className="h-6 px-2 text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 opacity-0 group-hover/task:opacity-100 transition-all duration-300"
         >
-          <Sparkles className="w-3 h-3 mr-1" /> Verify with AI
+          <Sparkles className="w-3 h-3 mr-1" /> {t("verifyWithAi")}
         </Button>
       </PopoverTrigger>
       
       <PopoverContent className="w-80 p-0 overflow-hidden shadow-xl border-purple-100" align="start" side="right">
         <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-3 text-white">
           <h4 className="font-bold text-sm flex items-center gap-2">
-            <Bot className="w-4 h-4" /> AI Judge
+            <Bot className="w-4 h-4" /> {t("aiJudge")}
           </h4>
           <p className="text-[10px] opacity-90 line-clamp-1">{taskContent}</p>
         </div>
@@ -106,14 +109,14 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
               <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <p className="font-bold text-green-700">Approved!</p>
-              <p className="text-xs text-zinc-500">{feedback}</p>
+              <p className="font-bold text-green-700">{t("approved")}</p>
+              <p className="text-xs text-muted-foreground">{feedback}</p>
             </div>
           ) : (
             <>
               {/* File Input */}
               <div 
-                className="border-2 border-dashed border-zinc-200 rounded-lg p-4 text-center cursor-pointer hover:bg-zinc-50 transition-colors"
+                className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:bg-accent transition-colors"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <input 
@@ -127,20 +130,20 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
                 {files.length > 0 ? (
                   <div className="flex items-center justify-center gap-2 text-purple-600">
                     <ImageIcon className="w-4 h-4" />
-                    <span className="text-xs font-medium">{files.length} file(s) selected</span>
+                    <span className="text-xs font-medium">{files.length} {t("filesSelected")}</span>
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    <Upload className="w-6 h-6 mx-auto text-zinc-300" />
-                    <p className="text-xs text-zinc-500">Click to upload proof</p>
+                    <Upload className="w-6 h-6 mx-auto text-muted-foreground/50" />
+                    <p className="text-xs text-muted-foreground">{t("uploadProof")}</p>
                   </div>
                 )}
               </div>
 
               {/* Comment Input */}
               <Textarea 
-                placeholder="Tell the AI what you did..." 
-                className="text-xs resize-none bg-zinc-50 border-zinc-200 focus-visible:ring-purple-500"
+                placeholder={t("tellAiPlaceholder")} 
+                className="text-xs resize-none bg-muted border-border focus-visible:ring-purple-500"
                 rows={3}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -155,16 +158,16 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
               )}
 
               <Button 
-                className="w-full bg-zinc-900 hover:bg-zinc-800 text-white h-8 text-xs" 
+                className="w-full bg-foreground hover:bg-foreground/90 text-background h-8 text-xs" 
                 onClick={handleSubmit}
                 disabled={status === 'UPLOADING' || status === 'VERIFYING'}
               >
                 {status === 'UPLOADING' ? (
-                  <><Loader2 className="w-3 h-3 mr-2 animate-spin" /> Uploading...</>
+                  <><Loader2 className="w-3 h-3 mr-2 animate-spin" /> {tCommon("uploading")}</>
                 ) : status === 'VERIFYING' ? (
-                  <><Loader2 className="w-3 h-3 mr-2 animate-spin" /> Judging...</>
+                  <><Loader2 className="w-3 h-3 mr-2 animate-spin" /> {t("judging")}</>
                 ) : (
-                  "Submit for Verification"
+                  t("submitVerification")
                 )}
               </Button>
             </>

@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
+import { useTranslations } from "next-intl"
 
 // Types
 type ChatUser = {
@@ -40,6 +41,8 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({ users }: ChatInterfaceProps) {
+  const t = useTranslations("messages")
+  const tCommon = useTranslations("common")
   const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [currentUserId, setCurrentUserId] = useState<string>("")
@@ -177,7 +180,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
         attachments: uploadedUrls.map(url => ({ url })),
         createdAt: new Date(),
         senderId: currentUserId,
-        sender: { name: "Me", image: null } 
+        sender: { name: tCommon("me"), image: null } 
       }
       
       setMessages(prev => [...prev, optimisicMsg])
@@ -238,26 +241,26 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
         )}
       </AnimatePresence>
 
-      <div className="flex h-[calc(100vh-100px)] w-full gap-0 border border-zinc-200 rounded-xl overflow-hidden bg-white shadow-sm">
+      <div className="flex h-[calc(100vh-100px)] w-full gap-0 border border-border rounded-xl overflow-hidden bg-card shadow-sm">
         
         {/* Sidebar */}
-        <div className="w-80 flex flex-col border-r border-zinc-200 bg-zinc-50/50">
-          <div className="p-4 border-b border-zinc-200 font-semibold text-sm text-zinc-500 uppercase tracking-wider bg-white">Messages</div>
+        <div className="w-80 flex flex-col border-r border-border bg-muted/50">
+          <div className="p-4 border-b border-border font-semibold text-sm text-muted-foreground uppercase tracking-wider bg-card">{t("sidebarTitle")}</div>
           <div className="flex-1 overflow-y-auto p-2 space-y-1"> 
               {users.map(user => (
                 <button
                   key={user.id}
                   onClick={() => handleUserSelect(user)}
-                  className={cn("flex items-center gap-3 p-3 w-full rounded-lg text-left transition-all", selectedUser?.id === user.id ? "bg-white shadow-sm ring-1 ring-zinc-200" : "hover:bg-zinc-200/50")}
+                  className={cn("flex items-center gap-3 p-3 w-full rounded-lg text-left transition-all", selectedUser?.id === user.id ? "bg-card shadow-sm ring-1 ring-border" : "hover:bg-accent")}
                 >
-                  <Avatar className="h-10 w-10 border border-zinc-200">
+                  <Avatar className="h-10 w-10 border border-border">
                     {/* FIX: Use undefined instead of "" to prevent browser network error */}
                     <AvatarImage src={user.image || undefined} />
                     <AvatarFallback>{user.name?.[0]}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 overflow-hidden">
                     <p className="font-semibold text-sm truncate">{user.name}</p>
-                    <p className="text-xs text-zinc-500 truncate">{user.email}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                 </button>
               ))}
@@ -265,21 +268,21 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col bg-white relative">
+        <div className="flex-1 flex flex-col bg-card relative">
           {selectedUser ? (
             <>
               {/* Header */}
-              <div className="h-16 px-6 border-b border-zinc-200 flex items-center gap-3 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-                  <Avatar className="h-9 w-9 border border-zinc-200">
+              <div className="h-16 px-6 border-b border-border flex items-center gap-3 bg-card/80 backdrop-blur-md sticky top-0 z-10">
+                  <Avatar className="h-9 w-9 border border-border">
                       {/* FIX: Use undefined instead of "" */}
                       <AvatarImage src={selectedUser.image || undefined} />
                       <AvatarFallback>{selectedUser.name?.[0]}</AvatarFallback>
                   </Avatar>
-                  <span className="font-bold text-zinc-900">{selectedUser.name}</span>
+                  <span className="font-bold text-foreground">{selectedUser.name}</span>
               </div>
 
               {/* Messages */}
-              <div ref={scrollViewportRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-6 bg-zinc-50/30 scroll-smooth">
+              <div ref={scrollViewportRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-6 bg-muted/30 scroll-smooth">
                 <div className="flex flex-col gap-4">
                   {messages.map((msg) => {
                     const isMe = msg.senderId === currentUserId
@@ -291,7 +294,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
                           
                           {/* Attachments */}
                           {msg.attachments?.length > 0 && (
-                            <div className={cn("grid gap-2 mb-2 p-1 bg-white rounded-xl border", msg.attachments.length > 1 ? 'grid-cols-2' : 'grid-cols-1')}>
+                            <div className={cn("grid gap-2 mb-2 p-1 bg-card rounded-xl border", msg.attachments.length > 1 ? 'grid-cols-2' : 'grid-cols-1')}>
                               {msg.attachments.map((att, i) => (
                                   <img key={i} src={att.url} onClick={() => setZoomImage(att.url)} className="rounded-lg object-cover h-40 w-full cursor-zoom-in" />
                               ))}
@@ -305,12 +308,12 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <MoreVertical className="h-3 w-3 text-zinc-400" />
+                                            <MoreVertical className="h-3 w-3 text-muted-foreground" />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => startEditing(msg)}><Pencil className="w-3 h-3 mr-2"/> Edit</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleDelete(msg.id)} className="text-red-600"><Trash2 className="w-3 h-3 mr-2"/> Delete</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => startEditing(msg)}><Pencil className="w-3 h-3 mr-2"/> {tCommon("edit")}</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleDelete(msg.id)} className="text-red-600"><Trash2 className="w-3 h-3 mr-2"/> {tCommon("delete")}</DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             )}
@@ -332,10 +335,10 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
                                 msg.content && (
                                     <div className={cn(
                                         "px-4 py-2 text-sm shadow-sm relative",
-                                        isMe ? "bg-blue-600 text-white rounded-2xl rounded-tr-sm" : "bg-white border text-zinc-800 rounded-2xl rounded-tl-sm"
+                                        isMe ? "bg-blue-600 text-white rounded-2xl rounded-tr-sm" : "bg-card border text-foreground rounded-2xl rounded-tl-sm"
                                     )}>
                                             {msg.content}
-                                            <div className={cn("text-[9px] mt-1 text-right opacity-70", isMe ? "text-blue-100" : "text-zinc-400")}>
+                                            <div className={cn("text-[9px] mt-1 text-right opacity-70", isMe ? "text-blue-100" : "text-muted-foreground")}>
                                                 {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                             </div>
                                     </div>
@@ -352,7 +355,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
               </div>
 
               {/* Input */}
-              <div className="p-4 bg-white border-t border-zinc-100">
+              <div className="p-4 bg-card border-t border-border">
                 {previewUrls.length > 0 && (
                   <div className="flex gap-3 pb-3 px-1">
                       {previewUrls.map((url, i) => (
@@ -360,10 +363,10 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
                       ))}
                   </div>
                 )}
-                <div className="flex items-end gap-2 bg-zinc-50 p-2 rounded-xl border focus-within:ring-1 focus-within:ring-blue-500">
+                <div className="flex items-end gap-2 bg-muted p-2 rounded-xl border focus-within:ring-1 focus-within:ring-blue-500">
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" multiple onChange={handleFileSelect} />
-                  <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()}><Paperclip className="h-5 w-5 text-zinc-400" /></Button>
-                  <Input value={inputText} onChange={(e) => setInputText(e.target.value)} placeholder="Type a message..." onKeyDown={(e) => e.key === "Enter" && !isSending && handleSend()} className="flex-1 border-0 bg-transparent focus-visible:ring-0" disabled={isSending} />
+                  <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()}><Paperclip className="h-5 w-5 text-muted-foreground" /></Button>
+                  <Input value={inputText} onChange={(e) => setInputText(e.target.value)} placeholder={t("typePlaceholder")} onKeyDown={(e) => e.key === "Enter" && !isSending && handleSend()} className="flex-1 border-0 bg-transparent focus-visible:ring-0" disabled={isSending} />
                   <Button onClick={handleSend} size="icon" className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg" disabled={isSending || (!inputText.trim() && selectedFiles.length === 0)}>
                     {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                   </Button>
@@ -371,9 +374,9 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-zinc-300">
+            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground/50">
               <User className="h-16 w-16 mb-4 opacity-20" />
-              <p>Select a user to start chatting</p>
+              <p>{t("selectUser")}</p>
             </div>
           )}
         </div>

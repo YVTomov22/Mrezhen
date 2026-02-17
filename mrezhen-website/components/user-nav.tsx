@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { signOut } from "next-auth/react"
 import { LogOut, Settings, User } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface UserNavProps {
   user: {
@@ -25,6 +26,7 @@ interface UserNavProps {
 }
 
 export function UserNav({ user }: UserNavProps) {
+  const t = useTranslations("common")
   const [localImage, setLocalImage] = useState<string | null>(user.image ?? null)
   const [localName, setLocalName] = useState<string | null>(user.name ?? null)
   const [localEmail, setLocalEmail] = useState<string | null>(user.email ?? null)
@@ -61,9 +63,9 @@ export function UserNav({ user }: UserNavProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10 border border-zinc-200">
+          <Avatar className="h-10 w-10 border border-border">
             <AvatarImage src={localImage || ""} alt={user.name || ""} />
-            <AvatarFallback className="font-bold bg-zinc-100">
+            <AvatarFallback className="font-bold bg-muted">
               {user.name?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
@@ -83,13 +85,13 @@ export function UserNav({ user }: UserNavProps) {
           <DropdownMenuItem asChild>
             <Link href="/profile" className="flex items-center">
               <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
+              <span>{t("profile")}</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/settings" className="flex items-center">
               <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+              <span>{t("settings")}</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -99,7 +101,7 @@ export function UserNav({ user }: UserNavProps) {
           onClick={() => signOut({ callbackUrl: "/auth/login" })}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>{t("logOut")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

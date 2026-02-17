@@ -4,6 +4,79 @@ import { prisma } from "@/lib/prisma"
 import { auth, signOut } from "@/app/auth"
 import bcrypt from "bcryptjs"
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
+
+/* ── Update Phone ──────────────────────────────────────────── */
+export async function updatePhone(prevState: any, formData: FormData) {
+  const phone = (formData.get('phone') as string)?.trim() || null
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Not authenticated" }
+
+  try {
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: { phone },
+    })
+    revalidatePath('/settings')
+    return { success: "Phone number updated" }
+  } catch {
+    return { error: "Could not update phone number" }
+  }
+}
+
+/* ── Switch Account Type ───────────────────────────────────── */
+export async function updateAccountType(prevState: any, formData: FormData) {
+  const accountType = (formData.get('accountType') as string)?.trim()
+  if (!accountType || !["personal", "creator", "business"].includes(accountType)) {
+    return { error: "Invalid account type" }
+  }
+
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Not authenticated" }
+
+  try {
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: { accountType },
+    })
+    revalidatePath('/settings')
+    return { success: `Switched to ${accountType} account` }
+  } catch {
+    return { error: "Could not update account type" }
+  }
+}
+
+/* ── Deactivate Account ────────────────────────────────────── */
+export async function deactivateAccount() {
+  const session = await auth()
+  if (!session?.user?.email) return
+
+  try {
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: { isDeactivated: true },
+    })
+    await signOut({ redirectTo: "/auth/login" })
+  } catch {
+    // silently fail — user stays logged in
+  }
+}
+
+/* ── Delete Account ────────────────────────────────────────── */
+export async function deleteAccount(prevState: any, formData: FormData) {
+  const confirmation = (formData.get('confirmation') as string)?.trim()
+  if (confirmation !== "DELETE") return { error: 'Type DELETE to confirm' }
+
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Not authenticated" }
+
+  try {
+    await prisma.user.delete({ where: { email: session.user.email } })
+    await signOut({ redirectTo: "/auth/login" })
+  } catch {
+    return { error: "Could not delete account" }
+  }
+}
 
 export async function updateEmail(prevState: any, formData: FormData) {
   const newEmail = formData.get('email') as string

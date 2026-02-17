@@ -17,7 +17,7 @@ export default async function MessagesPage({ searchParams }: PageProps) {
   const users = await getUsersToChatWith(targetUsername)
 
   return (
-    <div className="min-h-screen bg-zinc-100 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <div className="container mx-auto py-4">
         <ChatInterface users={users} />
       </div>

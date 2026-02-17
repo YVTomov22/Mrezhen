@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 
 import { TaskVerifier } from "@/components/game/task-verifier"
+import { useTranslations } from "next-intl"
 
 // --- TYPES ---
 type Task = { id: string; content: string; isCompleted: boolean } 
@@ -40,6 +41,8 @@ type ViewState =
   | { type: 'FORM_TASK', milestoneId: string, questId: string, editData?: Task }
 
 export function GoalManager({ milestones, children }: { milestones: Milestone[], children?: React.ReactNode }) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<ViewState>({ type: 'CHOICE' })
   const router = useRouter()
@@ -103,7 +106,7 @@ export function GoalManager({ milestones, children }: { milestones: Milestone[],
       <DialogTrigger asChild>
         {children || (
             <Button variant="outline" className="gap-2">
-                <Target className="w-4 h-4" /> Manage Goals
+                <Target className="w-4 h-4" /> {t("manageGoals")}
             </Button>
         )}
       </DialogTrigger>
@@ -118,22 +121,23 @@ export function GoalManager({ milestones, children }: { milestones: Milestone[],
 // ================= SUB-COMPONENTS =================
 
 function ChoiceView({ onSelectManual }: { onSelectManual: () => void }) {
+  const t = useTranslations("goals")
   const router = useRouter()
   return (
     <div className="space-y-6 py-4">
       <DialogHeader>
-        <DialogTitle className="text-center text-xl">Goal Management</DialogTitle>
+        <DialogTitle className="text-center text-xl">{t("goalManagement")}</DialogTitle>
       </DialogHeader>
       <div className="grid grid-cols-2 gap-4">
-        <button onClick={onSelectManual} className="flex flex-col items-center justify-center p-6 border-2 border-zinc-100 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group">
-          <div className="p-3 bg-zinc-100 rounded-full mb-3 group-hover:bg-blue-200 transition-colors"><PenTool className="w-6 h-6 text-zinc-600 group-hover:text-blue-700" /></div>
-          <span className="font-bold text-zinc-900">Manual</span>
-          <span className="text-xs text-zinc-500 text-center mt-1">Full control</span>
+        <button onClick={onSelectManual} className="flex flex-col items-center justify-center p-6 border-2 border-border rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group">
+          <div className="p-3 bg-muted rounded-full mb-3 group-hover:bg-blue-200 transition-colors"><PenTool className="w-6 h-6 text-muted-foreground group-hover:text-blue-700" /></div>
+          <span className="font-bold text-foreground">{t("manual")}</span>
+          <span className="text-xs text-muted-foreground text-center mt-1">{t("fullControl")}</span>
         </button>
-        <button onClick={() => router.push('/ai-chat')} className="flex flex-col items-center justify-center p-6 border-2 border-zinc-100 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all group">
-          <div className="p-3 bg-zinc-100 rounded-full mb-3 group-hover:bg-purple-200 transition-colors"><Sparkles className="w-6 h-6 text-zinc-600 group-hover:text-purple-700" /></div>
-          <span className="font-bold text-zinc-900">AI Assistant</span>
-          <span className="text-xs text-zinc-500 text-center mt-1">Auto-generate</span>
+        <button onClick={() => router.push('/ai-chat')} className="flex flex-col items-center justify-center p-6 border-2 border-border rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all group">
+          <div className="p-3 bg-muted rounded-full mb-3 group-hover:bg-purple-200 transition-colors"><Sparkles className="w-6 h-6 text-muted-foreground group-hover:text-purple-700" /></div>
+          <span className="font-bold text-foreground">{t("aiAssistant")}</span>
+          <span className="text-xs text-muted-foreground text-center mt-1">{t("autoGenerate")}</span>
         </button>
       </div>
     </div>
@@ -151,19 +155,21 @@ interface MilestoneListProps {
 }
 
 function MilestoneListView({ milestones, onEdit, onSelect, onCreate, onBack }: MilestoneListProps) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
   return (
     <div className="space-y-4">
       <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b pr-10">
-        <DialogTitle>Milestones</DialogTitle>
+        <DialogTitle>{t("milestones")}</DialogTitle>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-6 w-6 text-zinc-400 hover:text-zinc-700" 
+          className="h-6 w-6 text-muted-foreground hover:text-foreground" 
           onClick={() => router.push('/goals')}
-          title="Maximize to full page"
+          title={t("manageGoals")}
         >
           <ExternalLink className="w-4 h-4" />
         </Button>
@@ -171,31 +177,31 @@ function MilestoneListView({ milestones, onEdit, onSelect, onCreate, onBack }: M
 
       <ScrollArea className="h-[300px] pr-4">
         {milestones.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-zinc-400 text-sm py-10 border border-dashed rounded-lg">
-                No milestones yet.
+            <div className="h-full flex flex-col items-center justify-center text-muted-foreground text-sm py-10 border border-dashed rounded-lg">
+                {t("noMilestonesYet")}
             </div>
         ) : (
             <div className="space-y-2">
             {milestones.map((m) => (
-                <div key={m.id} className="flex items-center gap-2 p-2 bg-zinc-50 rounded-lg group hover:bg-zinc-100">
+                <div key={m.id} className="flex items-center gap-2 p-2 bg-accent rounded-lg group hover:bg-accent/80">
                 <div className="flex-1 cursor-pointer min-w-0" onClick={() => onSelect(m.id)}>
                     <p className="font-medium truncate">{m.title}</p>
-                    <p className="text-xs text-zinc-500 truncate">{m.quests.length} Quests</p>
+                    <p className="text-xs text-muted-foreground truncate">{m.quests.length} {t("quests")}</p>
                 </div>
                 <Button size="icon" variant="ghost" className="h-8 w-8 shrink-0" onClick={() => onEdit(m)}>
-                    <Pencil className="w-3 h-3 text-zinc-500" />
+                    <Pencil className="w-3 h-3 text-muted-foreground" />
                 </Button>
                 <Button 
                     size="icon" 
                     variant="ghost" 
                     className="h-8 w-8 shrink-0 hover:text-red-600 hover:bg-red-50" 
                     disabled={isPending} 
-                    onClick={() => { if(confirm('Delete?')) startTransition(() => deleteMilestone(m.id)) }}
+                    onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => deleteMilestone(m.id)) }}
                 >
                     <Trash2 className="w-3 h-3" />
                 </Button>
                 <Button size="icon" variant="ghost" className="h-8 w-8 shrink-0" onClick={() => onSelect(m.id)}>
-                    <ChevronRight className="w-4 h-4 text-zinc-400" />
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </Button>
                 </div>
             ))}
@@ -204,10 +210,10 @@ function MilestoneListView({ milestones, onEdit, onSelect, onCreate, onBack }: M
       </ScrollArea>
       <div className="flex justify-between pt-2 border-t">
         <Button variant="ghost" onClick={onBack} size="sm">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            <ArrowLeft className="w-4 h-4 mr-2" /> {tCommon("back")}
         </Button>
         <Button onClick={onCreate} size="sm">
-            <Plus className="w-4 h-4 mr-2" /> New Milestone
+            <Plus className="w-4 h-4 mr-2" /> {t("newMilestone")}
         </Button>
       </div>
     </div>
@@ -215,6 +221,8 @@ function MilestoneListView({ milestones, onEdit, onSelect, onCreate, onBack }: M
 }
 
 function MilestoneForm({ editData, onCancel }: { editData?: Milestone, onCancel: () => void }) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [isPending, startTransition] = useTransition()
    
   const action = (formData: FormData) => {
@@ -227,12 +235,12 @@ function MilestoneForm({ editData, onCancel }: { editData?: Milestone, onCancel:
 
   return (
     <form action={action} className="space-y-4">
-      <DialogHeader><DialogTitle>{editData ? 'Edit' : 'Create'} Milestone</DialogTitle></DialogHeader>
-      <div className="space-y-2"><Label>Title</Label><Input name="title" defaultValue={editData?.title} required /></div>
-      <div className="space-y-2"><Label>Description</Label><Textarea name="description" defaultValue={editData?.description || ""} /></div>
+      <DialogHeader><DialogTitle>{editData ? t('editMilestone') : t('createMilestone')}</DialogTitle></DialogHeader>
+      <div className="space-y-2"><Label>{tCommon("title")}</Label><Input name="title" defaultValue={editData?.title} required /></div>
+      <div className="space-y-2"><Label>{tCommon("description")}</Label><Textarea name="description" defaultValue={editData?.description || ""} /></div>
       <div className="flex justify-between pt-2">
-        <Button variant="ghost" type="button" onClick={onCancel}>Cancel</Button>
-        <Button type="submit" disabled={isPending}>{isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Save'}</Button>
+        <Button variant="ghost" type="button" onClick={onCancel}>{tCommon("cancel")}</Button>
+        <Button type="submit" disabled={isPending}>{isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : tCommon('save')}</Button>
       </div>
     </form>
   )
@@ -250,38 +258,42 @@ interface QuestListProps {
 }
 
 function QuestListView({ quests, milestoneTitle, onEdit, onSelect, onCreate, onBack }: QuestListProps) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [isPending, startTransition] = useTransition()
 
   return (
     <div className="space-y-4">
       <DialogHeader className="pb-2 border-b">
-        <DialogTitle className="text-sm text-zinc-500 font-normal">Quests for</DialogTitle>
+        <DialogTitle className="text-sm text-muted-foreground font-normal">{t("questsFor")}</DialogTitle>
         <div className="font-bold text-lg truncate">{milestoneTitle}</div>
       </DialogHeader>
       <ScrollArea className="h-[300px] pr-4">
         <div className="space-y-2">
           {quests.map((q) => (
-            <div key={q.id} className="flex items-center gap-2 p-2 bg-zinc-50 rounded-lg group hover:bg-zinc-100">
+            <div key={q.id} className="flex items-center gap-2 p-2 bg-accent rounded-lg group hover:bg-accent/80">
               <div className="flex-1 cursor-pointer" onClick={() => onSelect(q.id)}>
                 <p className="font-medium truncate">{q.title}</p>
-                <p className="text-xs text-zinc-500">{q.tasks.length} Tasks • {q.difficulty}</p>
+                <p className="text-xs text-muted-foreground">{q.tasks.length} {t("tasks")} • {q.difficulty}</p>
               </div>
-              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onEdit(q)}><Pencil className="w-3 h-3 text-zinc-500" /></Button>
-              <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-600" disabled={isPending} onClick={() => { if(confirm('Delete?')) startTransition(() => deleteQuest(q.id)) }}><Trash2 className="w-3 h-3" /></Button>
-              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onSelect(q.id)}><ChevronRight className="w-4 h-4 text-zinc-400" /></Button>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onEdit(q)}><Pencil className="w-3 h-3 text-muted-foreground" /></Button>
+              <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-600" disabled={isPending} onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => deleteQuest(q.id)) }}><Trash2 className="w-3 h-3" /></Button>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onSelect(q.id)}><ChevronRight className="w-4 h-4 text-muted-foreground" /></Button>
             </div>
           ))}
         </div>
       </ScrollArea>
       <div className="flex justify-between">
-        <Button variant="ghost" onClick={onBack}><ArrowLeft className="w-4 h-4 mr-2" /> Back</Button>
-        <Button onClick={onCreate}><Plus className="w-4 h-4 mr-2" /> New Quest</Button>
+        <Button variant="ghost" onClick={onBack}><ArrowLeft className="w-4 h-4 mr-2" /> {tCommon("back")}</Button>
+        <Button onClick={onCreate}><Plus className="w-4 h-4 mr-2" /> {t("newQuest")}</Button>
       </div>
     </div>
   )
 }
 
 function QuestForm({ milestoneId, editData, onCancel }: { milestoneId: string, editData?: Quest, onCancel: () => void }) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [isPending, startTransition] = useTransition()
    
   const action = (formData: FormData) => {
@@ -301,39 +313,39 @@ function QuestForm({ milestoneId, editData, onCancel }: { milestoneId: string, e
 
   return (
     <form action={action} className="space-y-4">
-      <DialogHeader><DialogTitle>{editData ? 'Edit' : 'Create'} Quest</DialogTitle></DialogHeader>
+      <DialogHeader><DialogTitle>{editData ? t('editQuest') : t('createQuest')}</DialogTitle></DialogHeader>
        
       <div className="space-y-2">
-        <Label>Title</Label>
+        <Label>{tCommon("title")}</Label>
         <Input name="title" defaultValue={editData?.title} required />
       </div>
 
       <div className="space-y-2">
-        <Label>Description</Label>
+        <Label>{tCommon("description")}</Label>
         <Textarea 
             name="description" 
             defaultValue={editData?.description || ""} 
-            placeholder="Describe the mission details..." 
+            placeholder={t("missionPlaceholder")} 
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Difficulty</Label>
+        <Label>{t("difficulty")}</Label>
         <Select name="difficulty" defaultValue={editData?.difficulty || "MEDIUM"}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="EASY">Easy</SelectItem>
-            <SelectItem value="MEDIUM">Medium</SelectItem>
-            <SelectItem value="HARD">Hard</SelectItem>
-            <SelectItem value="EPIC">Epic</SelectItem>
+            <SelectItem value="EASY">{t("easy")}</SelectItem>
+            <SelectItem value="MEDIUM">{t("medium")}</SelectItem>
+            <SelectItem value="HARD">{t("hard")}</SelectItem>
+            <SelectItem value="EPIC">{t("epic")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
        
       <div className="flex justify-between pt-2">
-        <Button variant="ghost" type="button" onClick={onCancel}>Cancel</Button>
+        <Button variant="ghost" type="button" onClick={onCancel}>{tCommon("cancel")}</Button>
         <Button type="submit" disabled={isPending}>
-            {isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Save'}
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : tCommon('save')}
         </Button>
       </div>
     </form>
@@ -351,45 +363,47 @@ interface TaskListProps {
 }
 
 function TaskListView({ tasks, questTitle, onEdit, onCreate, onBack }: TaskListProps) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [isPending, startTransition] = useTransition()
 
   return (
     <div className="space-y-4">
       <DialogHeader className="pb-2 border-b">
-        <DialogTitle className="text-sm text-zinc-500 font-normal">Tasks for</DialogTitle>
+        <DialogTitle className="text-sm text-muted-foreground font-normal">{t("tasksFor")}</DialogTitle>
         <div className="font-bold text-lg truncate">{questTitle}</div>
       </DialogHeader>
       <ScrollArea className="h-[300px] pr-4">
         <div className="space-y-2">
-          {tasks.map((t) => (
+          {tasks.map((task) => (
             // Changed: items-center -> items-start to allow text wrapping
-            <div key={t.id} className="flex items-start gap-2 p-3 bg-zinc-50 rounded-lg group hover:bg-zinc-100 group/task">
+            <div key={task.id} className="flex items-start gap-2 p-3 bg-accent rounded-lg group hover:bg-accent/80 group/task">
               
               {/* Text Container - Allowed to wrap */}
               <div className="flex-1 min-w-0 mr-2 mt-1">
                 {/* Removed 'truncate', added 'break-words' and 'whitespace-normal' */}
-                <p className="font-medium text-sm text-zinc-700 leading-snug break-words whitespace-normal">
-                  {t.content}
+                <p className="font-medium text-sm text-foreground leading-snug break-words whitespace-normal">
+                  {task.content}
                 </p>
               </div>
 
               {/* Actions Container - Fixed Width */}
               <div className="flex items-center gap-1 shrink-0">
                 <TaskVerifier 
-                    taskId={t.id} 
-                    taskContent={t.content} 
-                    isCompleted={t.isCompleted} 
+                    taskId={task.id} 
+                    taskContent={task.content} 
+                    isCompleted={task.isCompleted} 
                 />
 
-                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onEdit(t)}>
-                    <Pencil className="w-3 h-3 text-zinc-500" />
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onEdit(task)}>
+                    <Pencil className="w-3 h-3 text-muted-foreground" />
                 </Button>
                 <Button 
                     size="icon" 
                     variant="ghost" 
                     className="h-8 w-8 hover:text-red-600" 
                     disabled={isPending} 
-                    onClick={() => { if(confirm('Delete?')) startTransition(() => deleteTask(t.id)) }}
+                    onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => deleteTask(task.id)) }}
                 >
                     <Trash2 className="w-3 h-3" />
                 </Button>
@@ -399,14 +413,16 @@ function TaskListView({ tasks, questTitle, onEdit, onCreate, onBack }: TaskListP
         </div>
       </ScrollArea>
       <div className="flex justify-between">
-        <Button variant="ghost" onClick={onBack}><ArrowLeft className="w-4 h-4 mr-2" /> Back</Button>
-        <Button onClick={onCreate}><Plus className="w-4 h-4 mr-2" /> New Task</Button>
+        <Button variant="ghost" onClick={onBack}><ArrowLeft className="w-4 h-4 mr-2" /> {tCommon("back")}</Button>
+        <Button onClick={onCreate}><Plus className="w-4 h-4 mr-2" /> {t("newTask")}</Button>
       </div>
     </div>
   )
 }
 
 function TaskForm({ questId, editData, onCancel }: { questId: string, editData?: Task, onCancel: () => void }) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [isPending, startTransition] = useTransition()
    
   const action = (formData: FormData) => {
@@ -420,11 +436,11 @@ function TaskForm({ questId, editData, onCancel }: { questId: string, editData?:
 
   return (
     <form action={action} className="space-y-4">
-      <DialogHeader><DialogTitle>{editData ? 'Edit' : 'Create'} Task</DialogTitle></DialogHeader>
-      <div className="space-y-2"><Label>Content</Label><Input name="content" defaultValue={editData?.content} required /></div>
+      <DialogHeader><DialogTitle>{editData ? t('editTask') : t('createTask')}</DialogTitle></DialogHeader>
+      <div className="space-y-2"><Label>{t("content")}</Label><Input name="content" defaultValue={editData?.content} required /></div>
       <div className="flex justify-between pt-2">
-        <Button variant="ghost" type="button" onClick={onCancel}>Cancel</Button>
-        <Button type="submit" disabled={isPending}>{isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Save'}</Button>
+        <Button variant="ghost" type="button" onClick={onCancel}>{tCommon("cancel")}</Button>
+        <Button type="submit" disabled={isPending}>{isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : tCommon('save')}</Button>
       </div>
     </form>
   )

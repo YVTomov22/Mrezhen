@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { toggleFollow } from "@/app/actions/social"
 import { Button } from "@/components/ui/button"
 import { UserPlus, UserCheck, Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface FollowButtonProps {
   targetUserId: string
@@ -11,6 +12,7 @@ interface FollowButtonProps {
 }
 
 export function FollowButton({ targetUserId, initialIsFollowing }: FollowButtonProps) {
+  const t = useTranslations("common")
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [isPending, startTransition] = useTransition()
 
@@ -41,12 +43,12 @@ export function FollowButton({ targetUserId, initialIsFollowing }: FollowButtonP
       ) : isFollowing ? (
         <>
           <UserCheck className="mr-2 h-4 w-4" />
-          Following
+          {t("following")}
         </>
       ) : (
         <>
           <UserPlus className="mr-2 h-4 w-4" />
-          Follow
+          {t("follow")}
         </>
       )}
     </Button>

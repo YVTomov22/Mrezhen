@@ -7,11 +7,12 @@ import { ArrowRight, Bot, CheckCircle2, Sparkles, Target, Trophy, Users, Zap } f
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 
 
 // --- COMPONENTS ---
 
-function Hero() {
+function Hero({ t }: { t: any }) {
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -35,29 +36,29 @@ function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <span className="px-3 py-1 text-xs font-medium bg-zinc-100 border border-zinc-200 rounded-full text-zinc-600 mb-6 inline-block">
-            🚀 The Future of Personal Growth
+          <span className="px-3 py-1 text-xs font-medium bg-muted border border-border rounded-full text-muted-foreground mb-6 inline-block">
+            {t("badge")}
           </span>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-zinc-900 mb-6">
-            Turn your life into <br />
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground mb-6">
+            {t("heroTitle1")} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-              your greatest quest.
+              {t("heroTitle2")}
             </span>
           </h1>
-          <p className="text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto mb-8">
-            Mrezhen combines AI coaching, gamified milestones, and a supportive community to help you achieve your goals faster than ever before.
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            {t("heroDescription")}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/auth/register">
-              <Button size="lg" className="rounded-full h-12 px-8 text-base bg-zinc-900 hover:bg-zinc-800 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105">
-                Start Your Journey
+              <Button size="lg" className="rounded-full h-12 px-8 text-base bg-foreground hover:bg-foreground/90 text-background shadow-lg shadow-blue-500/20 transition-all hover:scale-105">
+                {t("startJourney")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <Link href="/auth/login">
-              <Button size="lg" variant="outline" className="rounded-full h-12 px-8 text-base border-zinc-200 hover:bg-zinc-50">
-                Log In
+              <Button size="lg" variant="outline" className="rounded-full h-12 px-8 text-base border-border hover:bg-accent">
+                {t("logIn")}
               </Button>
             </Link>
           </div>
@@ -69,25 +70,25 @@ function Hero() {
         style={{ y, opacity, scale, rotateX, perspective: 1000 }}
         className="container mt-16 relative z-10 max-w-5xl"
       >
-        <div className="relative rounded-xl border border-zinc-200 bg-white/50 backdrop-blur-sm shadow-2xl overflow-hidden p-2">
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/80 via-transparent to-transparent z-10 pointer-events-none" />
+        <div className="relative rounded-xl border border-border bg-card/50 backdrop-blur-sm shadow-2xl overflow-hidden p-2">
+          <div className="absolute inset-0 bg-gradient-to-tr from-background/80 via-transparent to-transparent z-10 pointer-events-none" />
           <img
             src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
             alt="Dashboard Preview"
-            className="rounded-lg shadow-inner w-full object-cover opacity-90 border border-zinc-100"
+            className="rounded-lg shadow-inner w-full object-cover opacity-90 border border-border"
           />
 
           {/* Floating UI Elements (Decoration) */}
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -right-6 top-10 bg-white p-4 rounded-xl shadow-xl border border-zinc-100 hidden md:block"
+            className="absolute -right-6 top-10 bg-card p-4 rounded-xl shadow-xl border border-border hidden md:block"
           >
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 rounded-full"><Trophy className="w-5 h-5 text-green-600" /></div>
               <div>
-                <p className="text-xs text-zinc-500">Quest Completed</p>
-                <p className="text-sm font-bold">+500 XP</p>
+                <p className="text-xs text-muted-foreground">{t("questCompleted")}</p>
+                <p className="text-sm font-bold">{t("xpGained")}</p>
               </div>
             </div>
           </motion.div>
@@ -95,13 +96,13 @@ function Hero() {
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute -left-6 bottom-20 bg-white p-4 rounded-xl shadow-xl border border-zinc-100 hidden md:block"
+            className="absolute -left-6 bottom-20 bg-card p-4 rounded-xl shadow-xl border border-border hidden md:block"
           >
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-full"><Bot className="w-5 h-5 text-blue-600" /></div>
               <div>
-                <p className="text-xs text-zinc-500">AI Assistant</p>
-                <p className="text-sm font-bold">"You're on fire today!"</p>
+                <p className="text-xs text-muted-foreground">{t("aiAssistant")}</p>
+                <p className="text-sm font-bold">{t("aiQuote")}</p>
               </div>
             </div>
           </motion.div>
@@ -111,13 +112,13 @@ function Hero() {
   )
 }
 
-function Features() {
+function Features({ t }: { t: any }) {
   return (
-    <section className="py-24 bg-zinc-50">
+    <section className="py-24 bg-muted">
       <div className="container px-4 mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Everything you need to level up</h2>
-          <p className="text-zinc-500 text-lg">Mrezhen isn't just a todo list. It's a complete operating system for your personal development.</p>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">{t("featuresTitle")}</h2>
+          <p className="text-muted-foreground text-lg">{t("featuresDescription")}</p>
         </div>
 
         {/* Bento Grid */}
@@ -129,14 +130,14 @@ function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="md:col-span-2 bg-white rounded-3xl p-8 border border-zinc-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all"
+            className="md:col-span-2 bg-card rounded-3xl p-8 border border-border shadow-sm relative overflow-hidden group hover:shadow-md transition-all"
           >
             <div className="relative z-10">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6 text-blue-600">
                 <Target className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">Milestones & Quests</h3>
-              <p className="text-zinc-500 max-w-md">Break down impossible goals into manageable quests. Track your progress visually and earn XP for every step you take.</p>
+              <h3 className="text-2xl font-bold mb-2">{t("featureMilestones")}</h3>
+              <p className="text-muted-foreground max-w-md">{t("featureMilestonesDesc")}</p>
             </div>
             <div className="absolute right-0 bottom-0 w-1/2 h-full bg-gradient-to-l from-blue-50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
           </motion.div>
@@ -153,8 +154,8 @@ function Features() {
               <div className="w-12 h-12 bg-zinc-800 rounded-xl flex items-center justify-center mb-6">
                 <Sparkles className="w-6 h-6 text-yellow-400" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">AI Coach</h3>
-              <p className="text-zinc-400">Stuck? Our AI analyzes your goals and generates custom quests for you.</p>
+              <h3 className="text-2xl font-bold mb-2">{t("featureAiCoach")}</h3>
+              <p className="text-zinc-400">{t("featureAiCoachDesc")}</p>
             </div>
             <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           </motion.div>
@@ -165,14 +166,14 @@ function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white rounded-3xl p-8 border border-zinc-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all"
+            className="bg-card rounded-3xl p-8 border border-border shadow-sm relative overflow-hidden group hover:shadow-md transition-all"
           >
             <div className="relative z-10">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6 text-green-600">
                 <Users className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">Community</h3>
-              <p className="text-zinc-500">Follow friends, share achievements, and climb the leaderboard.</p>
+              <h3 className="text-2xl font-bold mb-2">{t("featureCommunity")}</h3>
+              <p className="text-muted-foreground">{t("featureCommunityDesc")}</p>
             </div>
           </motion.div>
 
@@ -182,14 +183,14 @@ function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="md:col-span-2 bg-gradient-to-br from-indigo-50 to-white rounded-3xl p-8 border border-zinc-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all"
+            className="md:col-span-2 bg-gradient-to-br from-indigo-50 to-card rounded-3xl p-8 border border-border shadow-sm relative overflow-hidden group hover:shadow-md transition-all"
           >
             <div className="relative z-10">
               <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 text-indigo-600">
                 <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">Real-time Analytics</h3>
-              <p className="text-zinc-500 max-w-md">Visualize your productivity with beautiful charts. See your XP growth, completed tasks, and streak history.</p>
+              <h3 className="text-2xl font-bold mb-2">{t("featureAnalytics")}</h3>
+              <p className="text-muted-foreground max-w-md">{t("featureAnalyticsDesc")}</p>
             </div>
           </motion.div>
 
@@ -199,16 +200,16 @@ function Features() {
   )
 }
 
-function Stats() {
+function Stats({ t }: { t: any }) {
   return (
-    <section className="py-20 border-y border-zinc-100 bg-white">
+    <section className="py-20 border-y border-border bg-card">
       <div className="container px-4 mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { label: "Active Users", value: "10k+" },
-            { label: "Quests Completed", value: "1.2M" },
-            { label: "Goals Smashed", value: "50k+" },
-            { label: "AI Interactions", value: "500k+" },
+            { label: t("activeUsers"), value: "10k+" },
+            { label: t("questsCompleted"), value: "1.2M" },
+            { label: t("goalsSmashed"), value: "50k+" },
+            { label: t("aiInteractions"), value: "500k+" },
           ].map((stat, i) => (
             <motion.div
               key={i}
@@ -217,10 +218,10 @@ function Stats() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <div className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 to-zinc-600 mb-2">
+              <div className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground mb-2">
                 {stat.value}
               </div>
-              <div className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
+              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 {stat.label}
               </div>
             </motion.div>
@@ -231,7 +232,7 @@ function Stats() {
   )
 }
 
-function CTA() {
+function CTA({ t }: { t: any }) {
   return (
     <section className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 bg-zinc-900 z-0" />
@@ -245,26 +246,26 @@ function CTA() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to change your life?
+            {t("ctaTitle")}
           </h2>
           <p className="text-zinc-400 text-lg max-w-xl mx-auto mb-10">
-            Join thousands of others who are turning their dreams into actionable quests today.
+            {t("ctaDescription")}
           </p>
           <Link href="/auth/register">
             <Button size="lg" className="h-14 px-8 text-lg rounded-full bg-white text-black hover:bg-zinc-200">
-              Get Started for Free
+              {t("getStarted")}
             </Button>
           </Link>
-          <p className="mt-6 text-xs text-zinc-500">No credit card required • Cancel anytime</p>
+          <p className="mt-6 text-xs text-zinc-500">{t("disclaimer")}</p>
         </motion.div>
       </div>
     </section>
   )
 }
 
-function Footer() {
+function Footer({ t }: { t: any }) {
   return (
-    <footer className="py-12 bg-white border-t border-zinc-100">
+    <footer className="py-12 bg-card border-t border-border">
       <div className="container px-4 mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex items-center gap-2">
           <div className="bg-gray-600 text-white p-1.5 rounded-lg">
@@ -274,13 +275,13 @@ function Footer() {
             Mrezhen
           </Link>
         </div>
-        <p className="text-sm text-zinc-500">
-          © {new Date().getFullYear()} Mrezhen. All rights reserved.
+        <p className="text-sm text-muted-foreground">
+          {t("allRights", { year: new Date().getFullYear() })}
         </p>
-        <div className="flex gap-6 text-sm font-medium text-zinc-500">
-          <Link href="#" className="hover:text-black">Privacy</Link>
-          <Link href="#" className="hover:text-black">Terms</Link>
-          <Link href="#" className="hover:text-black">Twitter</Link>
+        <div className="flex gap-6 text-sm font-medium text-muted-foreground">
+          <Link href="#" className="hover:text-foreground">{t("privacy")}</Link>
+          <Link href="#" className="hover:text-foreground">{t("terms")}</Link>
+          <Link href="#" className="hover:text-foreground">Twitter</Link>
         </div>
       </div>
     </footer>
@@ -288,13 +289,15 @@ function Footer() {
 }
 
 export default function LandingPage() {
+  const t = useTranslations("home")
+
   return (
-    <main className="min-h-screen bg-white">
-      <Hero />
-      <Stats />
-      <Features />
-      <CTA />
-      <Footer />
+    <main className="min-h-screen bg-background">
+      <Hero t={t} />
+      <Stats t={t} />
+      <Features t={t} />
+      <CTA t={t} />
+      <Footer t={t} />
     </main>
   )
 }

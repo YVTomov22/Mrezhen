@@ -9,8 +9,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 export function CreateMilestoneBtn() {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [open, setOpen] = useState(false)
 
   async function onSubmit(formData: FormData) {
@@ -23,13 +26,13 @@ export function CreateMilestoneBtn() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button><Plus className="mr-2 h-4 w-4"/> New Milestone</Button></DialogTrigger>
+      <DialogTrigger asChild><Button><Plus className="mr-2 h-4 w-4"/> {t("newMilestone")}</Button></DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>Create New Milestone</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t("createNewMilestone")}</DialogTitle></DialogHeader>
         <form action={onSubmit} className="space-y-4">
-          <div><Label>Title</Label><Input name="title" required /></div>
-          <div><Label>Description</Label><Textarea name="description" /></div>
-          <Button type="submit" className="w-full">Create</Button>
+          <div><Label>{tCommon("title")}</Label><Input name="title" required /></div>
+          <div><Label>{tCommon("description")}</Label><Textarea name="description" /></div>
+          <Button type="submit" className="w-full">{tCommon("create")}</Button>
         </form>
       </DialogContent>
     </Dialog>
@@ -37,6 +40,8 @@ export function CreateMilestoneBtn() {
 }
 
 export function CreateQuestBtn({ milestoneId }: { milestoneId: string }) {
+  const t = useTranslations("goals")
+  const tCommon = useTranslations("common")
   const [open, setOpen] = useState(false)
 
   async function onSubmit(formData: FormData) {
@@ -55,40 +60,40 @@ export function CreateQuestBtn({ milestoneId }: { milestoneId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button variant="outline" size="sm"><Plus className="h-3 w-3 mr-1"/> Add Quest</Button></DialogTrigger>
+      <DialogTrigger asChild><Button variant="outline" size="sm"><Plus className="h-3 w-3 mr-1"/> {t("addQuest")}</Button></DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>Add Quest to Milestone</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t("addQuestToMilestone")}</DialogTitle></DialogHeader>
         <form action={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Title</Label>
+            <Label>{tCommon("title")}</Label>
             <Input name="title" required />
           </div>
           
           {/* ADDED DESCRIPTION FIELD */}
           <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea name="description" placeholder="Describe the mission..." />
+            <Label>{tCommon("description")}</Label>
+            <Textarea name="description" placeholder={t("missionPlaceholder")} />
           </div>
 
           <div className="space-y-2">
-            <Label>Difficulty</Label>
+            <Label>{t("difficulty")}</Label>
             <Select name="difficulty" defaultValue="MEDIUM">
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="EASY">Easy</SelectItem>
-                <SelectItem value="MEDIUM">Medium</SelectItem>
-                <SelectItem value="HARD">Hard</SelectItem>
-                <SelectItem value="EPIC">Epic</SelectItem>
+                <SelectItem value="EASY">{t("easy")}</SelectItem>
+                <SelectItem value="MEDIUM">{t("medium")}</SelectItem>
+                <SelectItem value="HARD">{t("hard")}</SelectItem>
+                <SelectItem value="EPIC">{t("epic")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
           <div className="space-y-2">
-            <Label>Tasks (Comma separated)</Label>
-            <Textarea name="tasks" placeholder="Buy domain, Install Next.js, Setup DB" required />
+            <Label>{t("tasksCommaSeparated")}</Label>
+            <Textarea name="tasks" placeholder={t("tasksPlaceholder")} required />
           </div>
           
-          <Button type="submit" className="w-full">Create Quest</Button>
+          <Button type="submit" className="w-full">{t("createQuest")}</Button>
         </form>
       </DialogContent>
     </Dialog>

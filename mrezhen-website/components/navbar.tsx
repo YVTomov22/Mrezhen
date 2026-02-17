@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Bot, Menu, Sparkles, MessageSquareText } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Image from "next/image"
+import { getTranslations } from "next-intl/server"
 
 export async function Navbar() {
   const session = await auth()
   const user = session?.user
+  const t = await getTranslations("nav")
 
   let userStats = null
   if (user?.email) {
@@ -21,7 +23,7 @@ export async function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-100 bg-white/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl">
       {/* 1. Added 'relative' to the container so we can absolute center the nav */}
       <div className="container mx-auto flex h-16 items-center justify-between px-4 relative">
         
@@ -36,13 +38,10 @@ export async function Navbar() {
         </div>
 
         {/* MIDDLE: Desktop Navigation (Fixed Centering) */}
-        {/* - Removed from normal flex flow using 'absolute' 
-            - Centered using 'left-1/2' and '-translate-x-1/2'
-        */}
-        <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-6 text-sm font-medium text-zinc-600">
-          <Link href="/dashboard" className="hover:text-black transition-colors">Dashboard</Link>
-          <Link href="/goals" className="hover:text-black transition-colors">Goals</Link>
-          <Link href="/community" className="hover:text-black transition-colors">Community</Link>
+        <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-6 text-sm font-medium text-muted-foreground">
+          <Link href="/dashboard" className="hover:text-foreground transition-colors">{t("dashboard")}</Link>
+          <Link href="/goals" className="hover:text-foreground transition-colors">{t("goals")}</Link>
+          <Link href="/community" className="hover:text-foreground transition-colors">{t("community")}</Link>
         </nav>
 
         {/* RIGHT: Actions */}
@@ -55,7 +54,7 @@ export async function Navbar() {
 
           {/* DM Button */}
           <Link href="/messages">
-            <Button variant="ghost" size="icon" className="hidden md:flex text-zinc-500 hover:text-black">
+            <Button variant="ghost" size="icon" className="hidden md:flex text-muted-foreground hover:text-foreground">
                 <MessageSquareText className="h-5 w-5" />
             </Button>
           </Link>
@@ -66,7 +65,7 @@ export async function Navbar() {
                 className="hidden md:flex bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0 hover:opacity-90 shadow-md"
             >
                 <Sparkles className="mr-2 h-4 w-4 fill-white" />
-                Ask AI
+                {t("askAi")}
             </Button>
           </Link>
 
@@ -75,8 +74,8 @@ export async function Navbar() {
             <UserNav user={user} />
           ) : (
             <div className="flex gap-2">
-                <Link href="/auth/login"><Button variant="ghost">Log in</Button></Link>
-                <Link href="/auth/register"><Button>Sign up</Button></Link>
+                <Link href="/auth/login"><Button variant="ghost">{t("logIn")}</Button></Link>
+                <Link href="/auth/register"><Button>{t("signUp")}</Button></Link>
             </div>
           )}
 
@@ -93,19 +92,19 @@ export async function Navbar() {
                                 <UserStats level={userStats.level} score={userStats.score} />
                             </div>
                         )}
-                        <Link href="/dashboard" className="text-lg font-medium">Dashboard</Link>
-                        <Link href="/goals" className="text-lg font-medium">Goals</Link>
-                        <Link href="/community" className="text-lg font-medium">Community</Link>
+                        <Link href="/dashboard" className="text-lg font-medium">{t("dashboard")}</Link>
+                        <Link href="/goals" className="text-lg font-medium">{t("goals")}</Link>
+                        <Link href="/community" className="text-lg font-medium">{t("community")}</Link>
                         
-                        <div className="h-px bg-zinc-100 my-2" />
+                        <div className="h-px bg-border my-2" />
                         
                         <Link href="/messages" className="flex items-center gap-2 text-lg font-medium">
-                            <MessageSquareText className="h-5 w-5" /> Messages
+                            <MessageSquareText className="h-5 w-5" /> {t("messages")}
                         </Link>
                         
                         <Link href="/messages">
                             <Button className="w-full bg-gradient-to-r from-indigo-500 to-pink-500 border-0 mt-2">
-                                <Sparkles className="mr-2 h-4 w-4" /> Ask AI
+                                <Sparkles className="mr-2 h-4 w-4" /> {t("askAi")}
                             </Button>
                         </Link>
                     </div>

@@ -5,7 +5,8 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { FollowButton } from "@/components/follow-button"
-import { Map as MapIcon, Swords, Users } from "lucide-react" 
+import { Map as MapIcon, Sparkles, Swords, Users } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export const dynamic = 'force-dynamic'
 
@@ -46,15 +47,22 @@ export default async function CommunityPeoplePage() {
   const followingIds = new Set(currentUser.following.map(f => f.followingId))
 
   return (
-    <div className="min-h-screen bg-zinc-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-end mb-6">
             <div>
                 <h1 className="text-2xl font-bold tracking-tight">Community</h1>
-                <p className="text-zinc-500 text-sm">Find others and grow together.</p>
+                <p className="text-muted-foreground text-sm">Find others and grow together.</p>
             </div>
-            <div className="text-xs font-bold bg-white px-3 py-1.5 rounded-full border shadow-sm text-zinc-600">
-                {users.length} MEMBERS
+            <div className="flex items-center gap-2">
+                <Link href="/community/suggested">
+                    <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90">
+                        <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Suggested For You
+                    </Button>
+                </Link>
+                <div className="text-xs font-bold bg-card px-3 py-1.5 rounded-full border shadow-sm text-muted-foreground">
+                    {users.length} MEMBERS
+                </div>
             </div>
         </div>
         
@@ -63,9 +71,9 @@ export default async function CommunityPeoplePage() {
             const totalQuests = user.milestones.reduce((acc, m) => acc + m._count.quests, 0)
             
             return (
-              <Card key={user.id} className="flex flex-col h-full overflow-hidden hover:shadow-md transition-shadow border-zinc-200">
+              <Card key={user.id} className="flex flex-col h-full overflow-hidden hover:shadow-md transition-shadow border-border">
                 <CardHeader className="p-4 pb-3 flex flex-row items-center gap-3 space-y-0">
-                  <Avatar className="h-12 w-12 border border-zinc-100">
+                  <Avatar className="h-12 w-12 border border-border">
                     <AvatarImage src={user.image || ""} />
                     <AvatarFallback className="bg-blue-50 text-blue-600 font-bold">
                         {user.name?.[0]?.toUpperCase()}
@@ -75,26 +83,26 @@ export default async function CommunityPeoplePage() {
                     <Link href={`/profile/${user.username}`} className="hover:underline decoration-zinc-900 decoration-1 underline-offset-2">
                         <h3 className="font-bold text-base truncate leading-tight">{user.name}</h3>
                     </Link>
-                    <p className="text-zinc-500 text-xs font-medium">Lvl {user.level} • {user.score} XP</p>
+                    <p className="text-muted-foreground text-xs font-medium">Lvl {user.level} • {user.score} XP</p>
                   </div>
                 </CardHeader>
                 
                 <CardContent className="px-4 pb-4 flex-1">
                     <div className="grid grid-cols-3 gap-2 h-full">
-                        <div className="flex flex-col items-center justify-center p-2 bg-zinc-50 rounded-lg border border-zinc-100">
+                        <div className="flex flex-col items-center justify-center p-2 bg-accent rounded-lg border border-border">
                             <MapIcon className="h-3.5 w-3.5 text-blue-500 mb-1" />
                             <span className="font-bold text-sm leading-none">{user._count.milestones}</span>
-                            <span className="text-[9px] uppercase text-zinc-400 font-bold mt-1">Goals</span>
+                            <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">Goals</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center p-2 bg-zinc-50 rounded-lg border border-zinc-100">
+                        <div className="flex flex-col items-center justify-center p-2 bg-accent rounded-lg border border-border">
                             <Swords className="h-3.5 w-3.5 text-orange-500 mb-1" />
                             <span className="font-bold text-sm leading-none">{totalQuests}</span>
-                            <span className="text-[9px] uppercase text-zinc-400 font-bold mt-1">Quests</span>
+                            <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">Quests</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center p-2 bg-zinc-50 rounded-lg border border-zinc-100">
+                        <div className="flex flex-col items-center justify-center p-2 bg-accent rounded-lg border border-border">
                             <Users className="h-3.5 w-3.5 text-green-500 mb-1" />
                             <span className="font-bold text-sm leading-none">{user._count.followedBy}</span>
-                            <span className="text-[9px] uppercase text-zinc-400 font-bold mt-1">Followers</span>
+                            <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">Followers</span>
                         </div>
                     </div>
                 </CardContent>

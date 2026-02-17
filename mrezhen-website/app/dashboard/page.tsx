@@ -9,12 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Sparkles, ArrowRight, Zap, Target } from "lucide-react"
 import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user?.email) redirect("/auth/login")
+  const t = await getTranslations("dashboard")
 
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
@@ -53,14 +55,14 @@ export default async function DashboardPage() {
   const activeMilestones = user.milestones.filter(m => m.status === 'IN_PROGRESS').slice(0, 3)
 
   return (
-    <div className="min-h-screen bg-zinc-50/50 p-6 md:p-8">
+    <div className="min-h-screen bg-background p-6 md:p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Dashboard</h1>
-                <p className="text-zinc-500">Welcome back, {user.name}. Ready to level up?</p>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("title")}</h1>
+                <p className="text-muted-foreground">{t("welcome", { name: user.name ?? "User" })}</p>
             </div>
             <div className="flex gap-2">
                 
@@ -69,7 +71,7 @@ export default async function DashboardPage() {
 
                 <Link href="/messages">
                     <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0">
-                        <Sparkles className="w-4 h-4" /> Assistant
+                        <Sparkles className="w-4 h-4" /> {t("assistant")}
                     </Button>
                 </Link>
             </div>
@@ -77,17 +79,17 @@ export default async function DashboardPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-6">
-                <Card className="border-zinc-200 shadow-sm">
+                <Card className="border-border shadow-sm">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                             <Zap className="w-4 h-4 text-yellow-500" />
-                            Activity (Last 7 Days)
+                            {t("activity")}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-baseline gap-2 mb-1">
-                            <span className="text-4xl font-bold text-zinc-900">{user.score}</span>
-                            <span className="text-sm font-medium text-zinc-500">Total XP</span>
+                            <span className="text-4xl font-bold text-foreground">{user.score}</span>
+                            <span className="text-sm font-medium text-muted-foreground">{t("totalXp")}</span>
                         </div>
                         <XpChart logs={user.activityLogs} />
                     </CardContent>
@@ -95,13 +97,13 @@ export default async function DashboardPage() {
 
                 <div>
                     <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                        Next Up
-                        <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full uppercase">Priority</span>
+                        {t("nextUp")}
+                        <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full uppercase">{t("priority")}</span>
                     </h3>
                     {user.quests.length === 0 ? (
-                        <div className="p-8 text-center bg-white rounded-xl border border-dashed text-zinc-400">
-                            No active quests. <GoalManager milestones={user.milestones}>
-                                <span className="underline cursor-pointer ml-1 hover:text-zinc-600">Create one?</span>
+                        <div className="p-8 text-center bg-card rounded-xl border border-dashed text-muted-foreground">
+                            {t("noQuests")} <GoalManager milestones={user.milestones}>
+                                <span className="underline cursor-pointer ml-1 hover:text-foreground">{t("createOne")}</span>
                             </GoalManager>
                         </div>
                     ) : (
@@ -119,29 +121,29 @@ export default async function DashboardPage() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10"></div>
                     <CardContent className="p-6">
                         <div className="flex justify-between items-center mb-4">
-                            <span className="text-sm font-medium text-zinc-400">Current Level</span>
+                            <span className="text-sm font-medium text-zinc-400">{t("currentLevel")}</span>
                             <span className="text-2xl font-bold">{user.level}</span>
                         </div>
                         <div className="w-full bg-zinc-800 rounded-full h-2 mb-2">
                             <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${xpProgress}%` }}></div>
                         </div>
                         <p className="text-xs text-zinc-400 text-right">
-                            {user.score % xpForNextLevel} / {xpForNextLevel} XP to Lvl {user.level + 1}
+                            {t("xpToLevel", { xp: user.score % xpForNextLevel, needed: xpForNextLevel, level: user.level + 1 })}
                         </p>
                     </CardContent>
                 </Card>
 
                 <div>
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-zinc-900">Active Goals</h3>
+                        <h3 className="font-bold text-foreground">{t("activeGoals")}</h3>
                         <Link href="/goals">
-                            <Button variant="ghost" size="sm" className="h-6 text-xs text-zinc-500">View All <ArrowRight className="w-3 h-3 ml-1" /></Button>
+                            <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground">{t("viewAll")} <ArrowRight className="w-3 h-3 ml-1" /></Button>
                         </Link>
                     </div>
                     
                     <div className="space-y-3">
                         {activeMilestones.length === 0 ? (
-                            <p className="text-xs text-zinc-400">No active milestones.</p>
+                            <p className="text-xs text-muted-foreground">{t("noMilestones")}</p>
                         ) : (
                             activeMilestones.map(m => (
                                 <MilestoneWidget key={m.id} milestone={m} />

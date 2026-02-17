@@ -1,4 +1,9 @@
+"use client"
+
+import { useTranslations } from "next-intl"
+
 export function XpChart({ logs }: { logs: any[] }) {
+  const tCommon = useTranslations("common")
   // Group XP by day (Last 7 days)
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date()
@@ -7,7 +12,7 @@ export function XpChart({ logs }: { logs: any[] }) {
   })
 
   const data = days.map(date => {
-    const dayLogs = logs.filter(l => l.createdAt.toISOString().startsWith(date))
+    const dayLogs = logs.filter(l => new Date(l.createdAt).toISOString().startsWith(date))
     const totalXp = dayLogs.reduce((acc, l) => acc + l.xpGained, 0)
     return { date, xp: totalXp }
   })
@@ -24,11 +29,11 @@ export function XpChart({ logs }: { logs: any[] }) {
             >
                 {/* Tooltip */}
                 <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {item.xp} XP
+                    {item.xp} {tCommon("xp")}
                 </span>
             </div>
-            <span className="text-[10px] text-zinc-400 mt-2">
-                {new Date(item.date).toLocaleDateString('en-US', { weekday: 'narrow' })}
+            <span className="text-[10px] text-muted-foreground mt-2">
+                {new Date(item.date).toLocaleDateString(undefined, { weekday: 'narrow' })}
             </span>
         </div>
       ))}
