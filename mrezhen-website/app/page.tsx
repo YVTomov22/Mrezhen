@@ -12,7 +12,7 @@ import { useTranslations } from "next-intl"
 
 function Hero({ t }: { t: any }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 dark:from-teal-800 dark:via-teal-900 dark:to-emerald-950">
+    <section className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-teal-600 dark:from-slate-950 dark:via-slate-900 dark:to-teal-800">
       {/* Subtle pattern overlay */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-10 right-10 w-20 h-20 border-2 border-white/30 rounded-lg rotate-12" />
