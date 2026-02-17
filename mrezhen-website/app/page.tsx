@@ -12,7 +12,7 @@ import { useTranslations } from "next-intl"
 
 function Hero({ t }: { t: any }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800">
+    <section className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 dark:from-teal-800 dark:via-teal-900 dark:to-emerald-950">
       {/* Subtle pattern overlay */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-10 right-10 w-20 h-20 border-2 border-white/30 rounded-lg rotate-12" />
@@ -222,7 +222,7 @@ function Stats({ t }: { t: any }) {
 
 function CTA({ t }: { t: any }) {
   return (
-    <section className="py-20 relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-800 to-emerald-900">
+    <section className="py-20 relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-800 to-emerald-900 dark:from-teal-900 dark:via-teal-950 dark:to-emerald-950">
       <div className="container px-4 mx-auto relative text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -251,7 +251,7 @@ function CTA({ t }: { t: any }) {
 
 function Footer({ t }: { t: any }) {
   return (
-    <footer className="py-10 bg-slate-900 text-white">
+    <footer className="py-10 bg-slate-900 dark:bg-slate-950 text-white">
       <div className="container px-4 mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           {/* Logo */}

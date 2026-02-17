@@ -8,6 +8,7 @@ import { Bot, Menu, Sparkles, MessageSquareText } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export async function Navbar() {
   const session = await auth()
@@ -76,6 +77,9 @@ export async function Navbar() {
             </Button>
           </Link>
 
+          {/* Theme Toggle */}
+          <ThemeToggle className={`hidden md:flex ${!isLoggedIn ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`} />
+
           {/* AI Chat Button */}
           <Link href="/ai-chat">
             <Button 
@@ -121,6 +125,10 @@ export async function Navbar() {
                         <Link href="/messages" className="flex items-center gap-2 text-lg font-medium">
                             <MessageSquareText className="h-5 w-5" /> {t("messages")}
                         </Link>
+
+                        <div className="flex items-center gap-2 text-lg font-medium">
+                            <ThemeToggle /> Toggle Theme
+                        </div>
                         
                         <Link href="/messages">
                             <Button className="w-full bg-gradient-to-r from-indigo-500 to-pink-500 border-0 mt-2">
