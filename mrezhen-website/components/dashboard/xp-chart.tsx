@@ -20,19 +20,19 @@ export function XpChart({ logs }: { logs: any[] }) {
   const maxVal = Math.max(...data.map(d => d.xp), 100) // Default scale 100
 
   return (
-    <div className="flex items-end justify-between h-32 gap-2 mt-4">
+    <div className="flex items-end justify-between h-36 gap-2 mt-4">
       {data.map((item, i) => (
         <div key={item.date} className="flex flex-col items-center flex-1 h-full justify-end group">
             <div 
-                className="w-full bg-blue-500 rounded-t-sm opacity-80 hover:opacity-100 transition-all relative"
+                className="w-full bg-gradient-to-t from-teal-600 to-teal-400 dark:from-teal-500 dark:to-teal-300 rounded-t-md hover:from-teal-500 hover:to-teal-300 transition-all relative shadow-sm"
                 style={{ height: `${(item.xp / maxVal) * 100}%`, minHeight: '4px' }}
             >
                 {/* Tooltip */}
-                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-medium shadow-lg">
                     {item.xp} {tCommon("xp")}
                 </span>
             </div>
-            <span className="text-[10px] text-muted-foreground mt-2">
+            <span className="text-[10px] text-muted-foreground mt-2 font-medium">
                 {new Date(item.date).toLocaleDateString(undefined, { weekday: 'narrow' })}
             </span>
         </div>

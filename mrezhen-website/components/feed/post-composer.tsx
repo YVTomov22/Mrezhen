@@ -69,16 +69,16 @@ export function PostComposer() {
   }
 
   return (
-    <Card className="border-border">
-      <CardHeader className="pb-3">
+    <Card className="border-border shadow-sm overflow-hidden">
+      <CardHeader className="pb-3 bg-muted/30">
         <CardTitle className="text-base">Create a post</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 pt-4">
         <Textarea
           value={content}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
           placeholder="What's on your mind?"
-          className="min-h-[90px]"
+          className="min-h-[90px] resize-none"
           disabled={isPending}
         />
 
@@ -90,7 +90,7 @@ export function PostComposer() {
             onChange={onFileChange}
             disabled={isPending}
           />
-          <Button onClick={onSubmit} disabled={isPending}>
+          <Button onClick={onSubmit} disabled={isPending} className="bg-teal-600 hover:bg-teal-700 text-white">
             {isPending ? 'Posting...' : 'Post'}
           </Button>
         </div>

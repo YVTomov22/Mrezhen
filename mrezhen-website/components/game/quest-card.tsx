@@ -37,8 +37,8 @@ export function QuestCard({ quest }: { quest: Quest }) {
   }
 
   return (
-    <Card className={cn("border-l-4 transition-all bg-card shadow-sm overflow-hidden", 
-      isQuestCompleted ? "border-l-green-500 opacity-75" : "border-l-blue-500"
+    <Card className={cn("border-l-4 transition-all bg-card shadow-sm hover:shadow-md overflow-hidden", 
+      isQuestCompleted ? "border-l-emerald-500 opacity-75" : "border-l-teal-500"
     )}>
       <CardHeader 
         className="pb-2 cursor-pointer hover:bg-accent/50 transition-colors select-none"
@@ -64,7 +64,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
               </CardTitle>
               <div className="flex gap-2 mt-2">
                 <Badge variant="secondary" className="text-xs font-medium">{quest.difficulty}</Badge>
-                <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50">
+                <Badge variant="outline" className="text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-900/30">
                   +{quest.completionPoints} XP
                 </Badge>
               </div>

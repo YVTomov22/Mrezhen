@@ -79,7 +79,7 @@ export function PostCard(props: PostCardProps) {
   const when = new Date(props.createdAt).toLocaleString()
 
   return (
-    <Card className="border-border overflow-hidden">
+    <Card className="border-border overflow-hidden shadow-sm hover:shadow-md transition-all">
       <CardHeader className="flex flex-row items-center gap-3 p-4">
         <Avatar className="h-10 w-10 border border-border">
           <AvatarImage src={props.author.image || ''} />

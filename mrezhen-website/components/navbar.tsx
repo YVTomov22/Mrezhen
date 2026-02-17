@@ -29,10 +29,10 @@ export async function Navbar() {
         
         {/* LEFT: Logo */}
         <div className="flex items-center gap-2">
-            <div className="bg-gray-600 text-white p-1.5 rounded-lg">
+            <div className="bg-teal-600 text-white p-1.5 rounded-lg">
                 <Image src="/favicon.ico" alt="Mrezhen Logo" height={20} width={20} />
             </div>
-            <Link href="/dashboard" className="text-xl font-bold tracking-tight">
+            <Link href={user ? "/dashboard" : "/"} className="text-xl font-bold tracking-tight">
                 Mrezhen
             </Link>
         </div>
@@ -74,8 +74,11 @@ export async function Navbar() {
             <UserNav user={user} />
           ) : (
             <div className="flex gap-2">
-                <Link href="/auth/login"><Button variant="ghost">{t("logIn")}</Button></Link>
-                <Link href="/auth/register"><Button>{t("signUp")}</Button></Link>
+                <Link href="/auth/login">
+                  <Button className="bg-teal-600 hover:bg-teal-700 text-white border-0 rounded-lg">
+                    {t("logIn")} / {t("signUp")}
+                  </Button>
+                </Link>
             </div>
           )}
 

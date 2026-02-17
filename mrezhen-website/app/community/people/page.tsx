@@ -5,14 +5,16 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { FollowButton } from "@/components/follow-button"
-import { Map as MapIcon, Sparkles, Swords, Users } from "lucide-react"
+import { Map as MapIcon, Sparkles, Swords, Users, ArrowLeft, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { getTranslations } from "next-intl/server"
 
 export const dynamic = 'force-dynamic'
 
 export default async function CommunityPeoplePage() {
   const session = await auth()
   if (!session?.user?.email) redirect("/auth/login")
+  const t = await getTranslations("community")
 
   const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
@@ -47,71 +49,90 @@ export default async function CommunityPeoplePage() {
   const followingIds = new Set(currentUser.following.map(f => f.followingId))
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-end mb-6">
+    <div className="min-h-screen bg-background">
+      {/* ── Header Banner ───────────────────────────── */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 text-white">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-1/3 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2" />
+        </div>
+        <div className="relative max-w-6xl mx-auto px-6 py-8">
+          <Link href="/community" className="inline-flex items-center gap-1.5 text-teal-200 hover:text-white text-sm mb-2 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> {t("backToFeed")}
+          </Link>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight">Community</h1>
-                <p className="text-muted-foreground text-sm">Find others and grow together.</p>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3">
+                <Users className="w-8 h-8" /> {t("findPeopleTitle")}
+              </h1>
+              <p className="text-teal-200 mt-1">{t("findPeopleDesc")}</p>
             </div>
             <div className="flex items-center gap-2">
-                <Link href="/community/suggested">
-                    <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:opacity-90">
-                        <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Suggested For You
-                    </Button>
-                </Link>
-                <div className="text-xs font-bold bg-card px-3 py-1.5 rounded-full border shadow-sm text-muted-foreground">
-                    {users.length} MEMBERS
-                </div>
+              <Link href="/community/suggested">
+                <Button className="bg-white/15 hover:bg-white/25 text-white border border-white/20 backdrop-blur-sm gap-2">
+                  <Sparkles className="h-4 w-4" /> {t("suggested")}
+                </Button>
+              </Link>
+              <div className="text-xs font-bold bg-white/15 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10 text-teal-100">
+                {users.length} {t("membersLabel")}
+              </div>
             </div>
+          </div>
         </div>
-        
+      </div>
+
+      {/* ── User Grid ───────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {users.map(user => {
             const totalQuests = user.milestones.reduce((acc, m) => acc + m._count.quests, 0)
             
             return (
-              <Card key={user.id} className="flex flex-col h-full overflow-hidden hover:shadow-md transition-shadow border-border">
+              <Card key={user.id} className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-all border-border group">
                 <CardHeader className="p-4 pb-3 flex flex-row items-center gap-3 space-y-0">
-                  <Avatar className="h-12 w-12 border border-border">
-                    <AvatarImage src={user.image || ""} />
-                    <AvatarFallback className="bg-blue-50 text-blue-600 font-bold">
+                  <div className="relative">
+                    <Avatar className="h-12 w-12 border-2 border-teal-100 dark:border-teal-900 ring-2 ring-teal-500/20">
+                      <AvatarImage src={user.image || ""} />
+                      <AvatarFallback className="bg-teal-50 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400 font-bold">
                         {user.name?.[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-teal-500 rounded-full border-2 border-card flex items-center justify-center">
+                      <span className="text-[8px] font-bold text-white">{user.level}</span>
+                    </div>
+                  </div>
                   <div className="flex-1 overflow-hidden min-w-0">
-                    <Link href={`/profile/${user.username}`} className="hover:underline decoration-zinc-900 decoration-1 underline-offset-2">
-                        <h3 className="font-bold text-base truncate leading-tight">{user.name}</h3>
+                    <Link href={`/profile/${user.username}`} className="hover:underline decoration-foreground/50 underline-offset-2">
+                      <h3 className="font-bold text-base truncate leading-tight">{user.name}</h3>
                     </Link>
-                    <p className="text-muted-foreground text-xs font-medium">Lvl {user.level} • {user.score} XP</p>
+                    <p className="text-muted-foreground text-xs font-medium">{t("levelLabel")} {user.level} • {user.score} XP</p>
                   </div>
                 </CardHeader>
                 
                 <CardContent className="px-4 pb-4 flex-1">
-                    <div className="grid grid-cols-3 gap-2 h-full">
-                        <div className="flex flex-col items-center justify-center p-2 bg-accent rounded-lg border border-border">
-                            <MapIcon className="h-3.5 w-3.5 text-blue-500 mb-1" />
-                            <span className="font-bold text-sm leading-none">{user._count.milestones}</span>
-                            <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">Goals</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center p-2 bg-accent rounded-lg border border-border">
-                            <Swords className="h-3.5 w-3.5 text-orange-500 mb-1" />
-                            <span className="font-bold text-sm leading-none">{totalQuests}</span>
-                            <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">Quests</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center p-2 bg-accent rounded-lg border border-border">
-                            <Users className="h-3.5 w-3.5 text-green-500 mb-1" />
-                            <span className="font-bold text-sm leading-none">{user._count.followedBy}</span>
-                            <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">Followers</span>
-                        </div>
+                  <div className="grid grid-cols-3 gap-2 h-full">
+                    <div className="flex flex-col items-center justify-center p-2.5 bg-teal-50/50 dark:bg-teal-900/20 rounded-xl border border-teal-100 dark:border-teal-800/30 transition-colors">
+                      <MapIcon className="h-4 w-4 text-teal-500 mb-1" />
+                      <span className="font-bold text-sm leading-none">{user._count.milestones}</span>
+                      <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">{t("goalsLabel")}</span>
                     </div>
+                    <div className="flex flex-col items-center justify-center p-2.5 bg-orange-50/50 dark:bg-orange-900/20 rounded-xl border border-orange-100 dark:border-orange-800/30 transition-colors">
+                      <Swords className="h-4 w-4 text-orange-500 mb-1" />
+                      <span className="font-bold text-sm leading-none">{totalQuests}</span>
+                      <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">{t("questsLabel")}</span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center p-2.5 bg-purple-50/50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30 transition-colors">
+                      <Users className="h-4 w-4 text-purple-500 mb-1" />
+                      <span className="font-bold text-sm leading-none">{user._count.followedBy}</span>
+                      <span className="text-[9px] uppercase text-muted-foreground font-bold mt-1">{t("followersLabel")}</span>
+                    </div>
+                  </div>
                 </CardContent>
 
                 <CardFooter className="p-4 pt-0">
                   <div className="w-full flex justify-center">
                     <FollowButton 
-                        targetUserId={user.id} 
-                        initialIsFollowing={followingIds.has(user.id)} 
+                      targetUserId={user.id} 
+                      initialIsFollowing={followingIds.has(user.id)} 
                     />
                   </div>
                 </CardFooter>
