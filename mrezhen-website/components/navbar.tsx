@@ -22,8 +22,14 @@ export async function Navbar() {
     })
   }
 
+  const isLoggedIn = !!user
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl">
+    <header className={`sticky top-0 z-50 w-full border-b ${
+      isLoggedIn
+        ? 'border-border bg-background/80 backdrop-blur-xl'
+        : 'border-slate-800 bg-slate-900'
+    }`}>
       {/* 1. Added 'relative' to the container so we can absolute center the nav */}
       <div className="container mx-auto flex h-16 items-center justify-between px-4 relative">
         
@@ -32,16 +38,27 @@ export async function Navbar() {
             <div className="bg-teal-600 text-white p-1.5 rounded-lg">
                 <Image src="/favicon.ico" alt="Mrezhen Logo" height={20} width={20} />
             </div>
-            <Link href={user ? "/dashboard" : "/"} className="text-xl font-bold tracking-tight">
+            <Link href={user ? "/dashboard" : "/"} className={`text-xl font-bold tracking-tight ${!isLoggedIn ? 'text-white' : ''}`}>
                 Mrezhen
             </Link>
         </div>
 
         {/* MIDDLE: Desktop Navigation (Fixed Centering) */}
-        <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-6 text-sm font-medium text-muted-foreground">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors">{t("dashboard")}</Link>
-          <Link href="/goals" className="hover:text-foreground transition-colors">{t("goals")}</Link>
-          <Link href="/community" className="hover:text-foreground transition-colors">{t("community")}</Link>
+        <nav className={`hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-6 text-sm font-medium ${
+          isLoggedIn ? 'text-muted-foreground' : 'text-gray-300'
+        }`}>
+          {isLoggedIn ? (
+            <>
+              <Link href="/dashboard" className="hover:text-foreground transition-colors">{t("dashboard")}</Link>
+              <Link href="/goals" className="hover:text-foreground transition-colors">{t("goals")}</Link>
+              <Link href="/community" className="hover:text-foreground transition-colors">{t("community")}</Link>
+            </>
+          ) : (
+            <>
+              <Link href="/#features" className="hover:text-white transition-colors">{t("features")}</Link>
+              <Link href="/community" className="hover:text-white transition-colors">{t("community")}</Link>
+            </>
+          )}
         </nav>
 
         {/* RIGHT: Actions */}
