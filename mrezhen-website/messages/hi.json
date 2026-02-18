@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "होम",
     "dashboard": "डैशबोर्ड",
     "goals": "लक्ष्य",
     "community": "समुदाय",
     "messages": "संदेश",
+    "notifications": "सूचनाएं",
+    "settings": "सेटिंग्स",
     "askAi": "AI से पूछें",
     "logIn": "लॉग इन",
     "signUp": "साइन अप"

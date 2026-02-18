@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "Hjem",
     "dashboard": "Oversikt",
     "goals": "Mål",
     "community": "Fellesskap",
     "messages": "Meldinger",
+    "notifications": "Varsler",
+    "settings": "Innstillinger",
     "askAi": "Spør AI",
     "logIn": "Logg inn",
     "signUp": "Registrer deg"

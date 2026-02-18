@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "ホーム",
     "dashboard": "ダッシュボード",
     "goals": "目標",
     "community": "コミュニティ",
     "messages": "メッセージ",
+    "notifications": "通知",
+    "settings": "設定",
     "askAi": "AIに聞く",
     "logIn": "ログイン",
     "signUp": "サインアップ"

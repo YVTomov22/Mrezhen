@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "Koti",
     "dashboard": "Hallintapaneeli",
     "goals": "Tavoitteet",
     "community": "Yhteisö",
     "messages": "Viestit",
+    "notifications": "Ilmoitukset",
+    "settings": "Asetukset",
     "askAi": "Kysy tekoälyltä",
     "logIn": "Kirjaudu sisään",
     "signUp": "Rekisteröidy"

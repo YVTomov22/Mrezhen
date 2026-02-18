@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "الرئيسية",
     "dashboard": "لوحة القيادة",
     "goals": "الأهداف",
     "community": "مجتمع",
     "messages": "رسائل",
+    "notifications": "الإشعارات",
+    "settings": "الإعدادات",
     "askAi": "اسأل الذكاء الاصطناعي",
     "logIn": "تسجيل الدخول",
     "signUp": "اشتراك"

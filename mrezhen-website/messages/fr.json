@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "Accueil",
     "dashboard": "Tableau de bord",
     "goals": "Objectifs",
     "community": "Communauté",
     "messages": "Messages",
+    "notifications": "Notifications",
+    "settings": "Paramètres",
     "askAi": "Demandez à l'IA",
     "logIn": "Se connecter",
     "signUp": "S'inscrire"

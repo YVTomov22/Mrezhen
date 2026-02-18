@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "Strona główna",
     "dashboard": "Panel",
     "goals": "Cele",
     "community": "Społeczność",
     "messages": "Wiadomości",
+    "notifications": "Powiadomienia",
+    "settings": "Ustawienia",
     "askAi": "Zapytaj AI",
     "logIn": "Zaloguj się",
     "signUp": "Zarejestruj się"

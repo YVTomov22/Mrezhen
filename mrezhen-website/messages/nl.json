@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "Home",
     "dashboard": "Dashboard",
     "goals": "Doelen",
     "community": "Gemeenschap",
     "messages": "Berichten",
+    "notifications": "Meldingen",
+    "settings": "Instellingen",
     "askAi": "Vraag het AI",
     "logIn": "Inloggen",
     "signUp": "Aanmelden"

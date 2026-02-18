@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "Hem",
     "dashboard": "Instrumentbräda",
     "goals": "Mål",
     "community": "Gemenskap",
     "messages": "Meddelanden",
+    "notifications": "Aviseringar",
+    "settings": "Inställningar",
     "askAi": "Fråga AI",
     "logIn": "Logga in",
     "signUp": "Registrera dig"

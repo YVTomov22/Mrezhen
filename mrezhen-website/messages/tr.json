@@ -1,9 +1,12 @@
 {
   "nav": {
+    "home": "Ana Sayfa",
     "dashboard": "Pano",
     "goals": "Hedefler",
     "community": "Topluluk",
     "messages": "Mesajlar",
+    "notifications": "Bildirimler",
+    "settings": "Ayarlar",
     "askAi": "Yapay Zekaya Sor",
     "logIn": "Giriş Yap",
     "signUp": "Kayıt Ol"

@@ -1,10 +1,13 @@
 {
   "nav": {
+    "home": "Home",
     "dashboard": "Dashboard",
     "goals": "Goals",
     "community": "Community",
     "features": "Features",
     "messages": "Messages",
+    "notifications": "Notifications",
+    "settings": "Settings",
     "askAi": "Ask AI",
     "logIn": "Log In",
     "signUp": "Sign Up"
