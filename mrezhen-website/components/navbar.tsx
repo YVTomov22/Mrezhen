@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { UserNav } from "@/components/user-nav"
 import { UserStats } from "@/components/user-stats"
 import { Button } from "@/components/ui/button"
-import { Menu, Home, LayoutDashboard, Target, MessageSquareText, Sparkles, Heart, Settings } from "lucide-react"
+import { Menu, Home, LayoutDashboard, Target, MessageSquareText, Sparkles, Heart, Settings, Search, PlusSquare } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
@@ -36,12 +36,14 @@ export async function Navbar() {
   }
 
   // ─── Logged-in: vertical sidebar (Instagram-style) ────────────────────
-  const navItems: { href: string; label: string; icon: "home" | "dashboard" | "target" | "messages" | "heart" | "sparkles" }[] = [
+  const navItems: { href: string; label: string; icon: "home" | "dashboard" | "target" | "messages" | "heart" | "sparkles" | "search" | "plus" }[] = [
     { href: "/community", label: t("home"), icon: "home" },
+    { href: "/community/people", label: t("search"), icon: "search" },
     { href: "/dashboard", label: t("dashboard"), icon: "dashboard" },
     { href: "/goals", label: t("goals"), icon: "target" },
     { href: "/messages", label: t("messages"), icon: "messages" },
     { href: "/notifications", label: t("notifications"), icon: "heart" },
+    { href: "/community?new=1", label: t("newPost"), icon: "plus" },
     { href: "/ai-chat", label: t("askAi"), icon: "sparkles" },
   ]
 
