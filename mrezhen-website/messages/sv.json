@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Meddelanden",
     "typePlaceholder": "Skriv ett meddelande...",
-    "selectUser": "Välj en användare för att börja chatta"
+    "selectUser": "Välj en användare för att börja chatta",
+    "confirmDeletePrompt": "Skriv DELETE för att bekräfta raderingen av meddelandet"
   },
   "profile": {
     "redirecting": "Omdirigerar till din profil...",

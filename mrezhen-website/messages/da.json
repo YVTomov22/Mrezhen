@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Beskeder",
     "typePlaceholder": "Skriv en besked...",
-    "selectUser": "Vælg en bruger for at begynde at chatte"
+    "selectUser": "Vælg en bruger for at begynde at chatte",
+    "confirmDeletePrompt": "Skriv DELETE for at bekræfte sletning af besked"
   },
   "profile": {
     "redirecting": "Omdirigerer til din profil...",

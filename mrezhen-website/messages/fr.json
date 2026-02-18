@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Messages",
     "typePlaceholder": "Tapez un message...",
-    "selectUser": "Sélectionnez un utilisateur pour commencer à discuter"
+    "selectUser": "Sélectionnez un utilisateur pour commencer à discuter",
+    "confirmDeletePrompt": "Tapez DELETE pour confirmer la suppression du message"
   },
   "profile": {
     "redirecting": "Redirection vers votre profil...",

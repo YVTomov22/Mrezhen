@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Messages",
     "typePlaceholder": "Type a message...",
-    "selectUser": "Select a user to start chatting"
+    "selectUser": "Select a user to start chatting",
+    "confirmDeletePrompt": "Type DELETE to confirm message deletion"
   },
   "profile": {
     "redirecting": "Redirecting to your profile...",

@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Wiadomości",
     "typePlaceholder": "Wpisz wiadomość...",
-    "selectUser": "Wybierz użytkownika, aby rozpocząć czat"
+    "selectUser": "Wybierz użytkownika, aby rozpocząć czat",
+    "confirmDeletePrompt": "Wpisz DELETE, aby potwierdzić usunięcie wiadomości"
   },
   "profile": {
     "redirecting": "Przekierowanie do Twojego profilu...",

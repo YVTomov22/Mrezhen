@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Berichten",
     "typePlaceholder": "Typ een bericht...",
-    "selectUser": "Selecteer een gebruiker om te beginnen met chatten"
+    "selectUser": "Selecteer een gebruiker om te beginnen met chatten",
+    "confirmDeletePrompt": "Typ DELETE om het verwijderen van het bericht te bevestigen"
   },
   "profile": {
     "redirecting": "Omleiden naar uw profiel...",

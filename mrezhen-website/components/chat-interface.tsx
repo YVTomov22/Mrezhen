@@ -199,8 +199,17 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
   }
 
   const handleDelete = async (msgId: string) => {
+    const confirmation = window.prompt(t("confirmDeletePrompt"), "")
+    if (!confirmation) return
+
+    const previous = messages
     setMessages(prev => prev.filter(m => m.id !== msgId))
-    await deleteMessage(msgId)
+
+    const result = await deleteMessage(msgId, confirmation)
+    if (result?.error) {
+      setMessages(previous)
+      window.alert(result.error)
+    }
   }
 
   const startEditing = (msg: Message) => {

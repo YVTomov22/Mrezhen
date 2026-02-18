@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Mensagens",
     "typePlaceholder": "Digite uma mensagem...",
-    "selectUser": "Selecione um usuário para começar a conversar"
+    "selectUser": "Selecione um usuário para começar a conversar",
+    "confirmDeletePrompt": "Digite DELETE para confirmar a exclusão da mensagem"
   },
   "profile": {
     "redirecting": "Redirecionando para seu perfil...",

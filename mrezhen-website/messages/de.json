@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Nachrichten",
     "typePlaceholder": "Geben Sie eine Nachricht ein...",
-    "selectUser": "Wählen Sie einen Benutzer aus, um mit dem Chatten zu beginnen"
+    "selectUser": "Wählen Sie einen Benutzer aus, um mit dem Chatten zu beginnen",
+    "confirmDeletePrompt": "Geben Sie DELETE ein, um das Löschen der Nachricht zu bestätigen"
   },
   "profile": {
     "redirecting": "Weiterleitung zu Ihrem Profil...",

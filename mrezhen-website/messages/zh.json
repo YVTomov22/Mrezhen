@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "留言",
     "typePlaceholder": "输入消息...",
-    "selectUser": "选择一个用户开始聊天"
+    "selectUser": "选择一个用户开始聊天",
+    "confirmDeletePrompt": "输入 DELETE 确认消息删除"
   },
   "profile": {
     "redirecting": "正在重定向到您的个人资料...",

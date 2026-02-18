@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Meldinger",
     "typePlaceholder": "Skriv inn en melding...",
-    "selectUser": "Velg en bruker for å begynne å chatte"
+    "selectUser": "Velg en bruker for å begynne å chatte",
+    "confirmDeletePrompt": "Skriv DELETE for å bekrefte sletting av melding"
   },
   "profile": {
     "redirecting": "Omdirigerer til profilen din ...",

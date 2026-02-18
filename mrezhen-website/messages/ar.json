@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "رسائل",
     "typePlaceholder": "اكتب رسالة...",
-    "selectUser": "حدد مستخدمًا لبدء الدردشة"
+    "selectUser": "حدد مستخدمًا لبدء الدردشة",
+    "confirmDeletePrompt": "اكتب DELETE لتأكيد حذف الرسالة"
   },
   "profile": {
     "redirecting": "جارٍ إعادة التوجيه إلى ملفك الشخصي...",

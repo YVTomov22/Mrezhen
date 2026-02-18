@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Mesajlar",
     "typePlaceholder": "Bir mesaj yazın...",
-    "selectUser": "Sohbete başlamak için bir kullanıcı seçin"
+    "selectUser": "Sohbete başlamak için bir kullanıcı seçin",
+    "confirmDeletePrompt": "İletinin silinmesini onaylamak için DELETE yazın"
   },
   "profile": {
     "redirecting": "Profilinize yönlendiriliyorsunuz...",

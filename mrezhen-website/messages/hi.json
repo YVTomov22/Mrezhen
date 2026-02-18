@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "संदेश",
     "typePlaceholder": "संदेश लिखें...",
-    "selectUser": "चैट शुरू करने के लिए एक उपयोगकर्ता चुनें"
+    "selectUser": "चैट शुरू करने के लिए एक उपयोगकर्ता चुनें",
+    "confirmDeletePrompt": "संदेश हटाए जाने की पुष्टि करने के लिए DELETE टाइप करें"
   },
   "profile": {
     "redirecting": "आपकी प्रोफ़ाइल पर रीडायरेक्ट हो रहा है...",

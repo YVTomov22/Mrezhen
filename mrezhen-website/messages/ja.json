@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "メッセージ",
     "typePlaceholder": "メッセージを入力してください...",
-    "selectUser": "チャットを開始するユーザーを選択してください"
+    "selectUser": "チャットを開始するユーザーを選択してください",
+    "confirmDeletePrompt": "「DELETE」と入力してメッセージの削除を確認します。"
   },
   "profile": {
     "redirecting": "プロフィールにリダイレクトしています...",

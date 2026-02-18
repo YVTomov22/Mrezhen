@@ -433,7 +433,8 @@
   "messages": {
     "sidebarTitle": "Viestit",
     "typePlaceholder": "Kirjoita viesti...",
-    "selectUser": "Aloita keskustelu valitsemalla käyttäjä"
+    "selectUser": "Aloita keskustelu valitsemalla käyttäjä",
+    "confirmDeletePrompt": "Vahvista viestin poistaminen kirjoittamalla DELETE"
   },
   "profile": {
     "redirecting": "Uudelleenohjataan profiiliisi...",
