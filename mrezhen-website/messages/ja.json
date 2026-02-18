@@ -118,6 +118,7 @@
   "settings": {
     "title": "設定",
     "description": "プロフィールの詳細とアカウント設定を管理します。",
+    "backToCategories": "カテゴリーに戻る",
     "groupAccount": "アカウント",
     "groupAccountDesc": "コア ID 制御。",
     "menuUsername": "ユーザー名",

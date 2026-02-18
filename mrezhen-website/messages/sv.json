@@ -118,6 +118,7 @@
   "settings": {
     "title": "Inställningar",
     "description": "Hantera dina profildetaljer och kontoinställningar.",
+    "backToCategories": "Tillbaka till kategorier",
     "groupAccount": "Konto",
     "groupAccountDesc": "Kärnidentitetskontroller.",
     "menuUsername": "Användarnamn",

@@ -118,6 +118,7 @@
   "settings": {
     "title": "设置",
     "description": "管理您的个人资料详细信息和帐户首选项。",
+    "backToCategories": "返回分类",
     "groupAccount": "帐户",
     "groupAccountDesc": "核心身份控制。",
     "menuUsername": "用户名",

@@ -118,6 +118,7 @@
   "settings": {
     "title": "설정",
     "description": "프로필 세부정보와 계정 기본 설정을 관리하세요.",
+    "backToCategories": "카테고리로 돌아가기",
     "groupAccount": "계정",
     "groupAccountDesc": "핵심 신원 통제.",
     "menuUsername": "사용자 이름",

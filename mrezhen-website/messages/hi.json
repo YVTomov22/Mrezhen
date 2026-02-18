@@ -118,6 +118,7 @@
   "settings": {
     "title": "सेटिंग्स",
     "description": "अपनी प्रोफ़ाइल जानकारी और खाता प्राथमिकताएं प्रबंधित करें।",
+    "backToCategories": "श्रेणियों पर वापस जाएं",
     "groupAccount": "खाता",
     "groupAccountDesc": "मुख्य पहचान नियंत्रण।",
     "menuUsername": "उपयोगकर्ता नाम",

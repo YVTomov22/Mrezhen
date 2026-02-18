@@ -118,6 +118,7 @@
   "settings": {
     "title": "Asetukset",
     "description": "Hallitse profiilitietojasi ja tiliasetuksiasi.",
+    "backToCategories": "Takaisin kategorioihin",
     "groupAccount": "Tili",
     "groupAccountDesc": "Perusidentiteetin hallinta.",
     "menuUsername": "Käyttäjätunnus",

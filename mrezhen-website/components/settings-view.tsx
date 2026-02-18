@@ -138,61 +138,82 @@ export function SettingsView({ user }: { user: any }) {
     },
   ]
 
+  // Which category is open (null = show the 5 category buttons)
+  const [activeCategory, setActiveCategory] = useState<number | null>(null)
+
+  const categoryIcons = [AtSign, ShieldCheck, Eye, Palette, User]
+
   return (
-    <div className="flex flex-col md:flex-row gap-6">
-      {/* ---- Sidebar ---- */}
-      <aside className="w-full md:w-64 shrink-0 space-y-6">
-        {/* Header card */}
-        <div className="flex items-center gap-4 p-4 bg-card rounded-xl border shadow-sm">
-          <AvatarUpload user={user} size="sm" />
-          <div className="min-w-0">
-            <h2 className="font-bold truncate">{user.name}</h2>
-            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-            <div className="flex gap-1.5 mt-1.5">
-              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full">{tCommon("level")} {user.level}</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded-full">{user.score} {tCommon("xp")}</span>
-            </div>
+    <div className="space-y-6">
+      {activeCategory === null ? (
+        /* ── Category Grid ── */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {sections.map((section, idx) => {
+            const CatIcon = categoryIcons[idx]
+            return (
+              <button
+                key={section.group}
+                onClick={() => { setActiveCategory(idx); setActive(section.items[0].id) }}
+                className="flex flex-col items-center gap-3 p-6 rounded-xl border bg-card hover:bg-accent shadow-sm transition-colors text-center"
+              >
+                <CatIcon className="h-8 w-8 text-foreground" />
+                <span className="text-sm font-semibold">{section.group}</span>
+                <span className="text-xs text-muted-foreground">{section.description}</span>
+              </button>
+            )
+          })}
+        </div>
+      ) : (
+        /* ── Category Detail View ── */
+        <div>
+          <button
+            onClick={() => setActiveCategory(null)}
+            className="mb-4 text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+          >
+            ← {t("backToCategories")}
+          </button>
+
+          <h2 className="text-lg font-bold mb-1">{sections[activeCategory].group}</h2>
+          <p className="text-sm text-muted-foreground mb-4">{sections[activeCategory].description}</p>
+
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Sidebar within category */}
+            <aside className="w-full md:w-56 shrink-0">
+              <nav className="flex flex-col gap-0.5">
+                {sections[activeCategory].items.map((item) => {
+                  const Icon = item.icon
+                  const isActive = active === item.id
+                  const isDanger = item.id === "delete" || item.id === "deactivate"
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActive(item.id)}
+                      className={cn(
+                        "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
+                        isActive
+                          ? isDanger
+                            ? "bg-red-50 text-red-700"
+                            : "bg-foreground text-background"
+                          : isDanger
+                          ? "text-red-500 hover:bg-red-50"
+                          : "text-muted-foreground hover:bg-accent"
+                      )}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {item.label}
+                    </button>
+                  )
+                })}
+              </nav>
+            </aside>
+
+            {/* Content */}
+            <main className="flex-1 min-w-0">
+              <SectionPanel id={active} user={user} />
+            </main>
           </div>
         </div>
-
-        {/* Nav groups */}
-        {sections.map((section) => (
-          <div key={section.group}>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 px-1">{section.group}</p>
-            <nav className="flex flex-col gap-0.5">
-              {section.items.map((item) => {
-                const Icon = item.icon
-                const isActive = active === item.id
-                const isDanger = item.id === "delete" || item.id === "deactivate"
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActive(item.id)}
-                    className={cn(
-                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
-                      isActive
-                        ? isDanger
-                          ? "bg-red-50 text-red-700"
-                          : "bg-foreground text-background"
-                        : isDanger
-                        ? "text-red-500 hover:bg-red-50"
-                        : "text-muted-foreground hover:bg-accent"
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {item.label}
-                  </button>
-                )
-              })}
-            </nav>
-          </div>
-        ))}
-      </aside>
-
-      {/* ---- Content ---- */}
-      <main className="flex-1 min-w-0">
-        <SectionPanel id={active} user={user} />
-      </main>
+      )}
     </div>
   )
 }

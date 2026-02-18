@@ -118,6 +118,7 @@
   "settings": {
     "title": "Indstillinger",
     "description": "Administrer dine profiloplysninger og kontoindstillinger.",
+    "backToCategories": "Tilbage til kategorier",
     "groupAccount": "Konto",
     "groupAccountDesc": "Kerne identitetskontrol.",
     "menuUsername": "Brugernavn",

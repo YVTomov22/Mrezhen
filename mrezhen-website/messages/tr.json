@@ -118,6 +118,7 @@
   "settings": {
     "title": "Ayarlar",
     "description": "Profil bilgilerinizi ve hesap tercihlerinizi yönetin.",
+    "backToCategories": "Kategorilere geri dön",
     "groupAccount": "Hesap",
     "groupAccountDesc": "Temel kimlik kontrolleri.",
     "menuUsername": "Kullanıcı adı",

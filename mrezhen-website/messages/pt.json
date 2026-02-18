@@ -118,6 +118,7 @@
   "settings": {
     "title": "Configurações",
     "description": "Gerencie os detalhes do seu perfil e preferências da conta.",
+    "backToCategories": "Voltar às categorias",
     "groupAccount": "Conta",
     "groupAccountDesc": "Principais controles de identidade.",
     "menuUsername": "Nome de usuário",

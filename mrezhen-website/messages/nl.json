@@ -118,6 +118,7 @@
   "settings": {
     "title": "Instellingen",
     "description": "Beheer uw profielgegevens en accountvoorkeuren.",
+    "backToCategories": "Terug naar categorieën",
     "groupAccount": "Rekening",
     "groupAccountDesc": "Kernidentiteitscontroles.",
     "menuUsername": "Gebruikersnaam",

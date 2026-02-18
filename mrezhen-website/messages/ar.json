@@ -118,6 +118,7 @@
   "settings": {
     "title": "إعدادات",
     "description": "إدارة تفاصيل ملفك الشخصي وتفضيلات الحساب.",
+    "backToCategories": "العودة إلى الفئات",
     "groupAccount": "حساب",
     "groupAccountDesc": "ضوابط الهوية الأساسية.",
     "menuUsername": "اسم المستخدم",

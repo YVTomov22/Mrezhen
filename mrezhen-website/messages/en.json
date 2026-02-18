@@ -119,6 +119,7 @@
   "settings": {
     "title": "Settings",
     "description": "Manage your profile details and account preferences.",
+    "backToCategories": "Back to categories",
     "groupAccount": "Account",
     "groupAccountDesc": "Core identity controls.",
     "menuUsername": "Username",

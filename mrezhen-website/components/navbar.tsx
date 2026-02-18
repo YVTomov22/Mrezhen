@@ -12,6 +12,8 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { SidebarLinks } from "@/components/sidebar-links"
 import { SidebarShell } from "@/components/sidebar-shell"
 import { SidebarBottom } from "@/components/sidebar-bottom"
+import { SidebarLogo } from "@/components/sidebar-logo"
+import { SidebarProfile } from "@/components/sidebar-profile"
 
 export async function Navbar() {
   const session = await auth()
@@ -90,11 +92,7 @@ export async function Navbar() {
       {/* Desktop Sidebar */}
       <SidebarShell>
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 px-3 mb-8">
-          <div className="bg-teal-600 text-white p-1.5 rounded-lg shrink-0">
-            <Image src="/favicon.ico" alt="Mrezhen Logo" height={24} width={24} />
-          </div>
-        </div>
+        <SidebarLogo />
 
         {/* Nav Links */}
         <nav className="flex-1">
@@ -111,16 +109,12 @@ export async function Navbar() {
                 </div>
               )}
               <SidebarLinks items={bottomItems} />
-              <div className="flex justify-start mt-1">
-                <UserNav user={user} />
-              </div>
+              <SidebarProfile user={user} />
             </>
           }
         >
           <SidebarLinks items={bottomItems} />
-          <div className="flex justify-center mt-1">
-            <UserNav user={user} />
-          </div>
+          <SidebarProfile user={user} />
         </SidebarBottom>
       </SidebarShell>
 
