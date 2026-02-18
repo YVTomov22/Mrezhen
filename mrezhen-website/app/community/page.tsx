@@ -33,6 +33,10 @@ export default async function CommunityFeedPage() {
           where: { userId: currentUser.id },
           select: { userId: true },
         },
+        bookmarks: {
+          where: { userId: currentUser.id },
+          select: { userId: true },
+        },
         comments: {
           take: 3,
           orderBy: { createdAt: 'desc' },
@@ -56,6 +60,7 @@ export default async function CommunityFeedPage() {
     likeCount: p._count.likes,
     commentCount: p._count.comments,
     likedByMe: p.likes.length > 0,
+    bookmarkedByMe: p.bookmarks.length > 0,
     recentComments: p.comments.map((c) => ({
       id: c.id,
       content: c.content,

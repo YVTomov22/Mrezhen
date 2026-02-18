@@ -105,3 +105,33 @@ export async function addPostComment(postId: string, content: string) {
   revalidatePath('/community')
   return { success: true }
 }
+
+export async function togglePostBookmark(postId: string) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: 'Unauthorized' }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  })
+  if (!user) return { error: 'User not found' }
+
+  const existing = await prisma.postBookmark.findUnique({
+    where: { postId_userId: { postId, userId: user.id } },
+    select: { postId: true },
+  })
+
+  if (existing) {
+    await prisma.postBookmark.delete({
+      where: { postId_userId: { postId, userId: user.id } },
+    })
+    revalidatePath('/community')
+    return { success: true, bookmarked: false }
+  }
+
+  await prisma.postBookmark.create({
+    data: { postId, userId: user.id },
+  })
+  revalidatePath('/community')
+  return { success: true, bookmarked: true }
+}

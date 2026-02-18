@@ -30,47 +30,9 @@ export async function Navbar() {
 
   const isLoggedIn = !!user
 
-  // ─── Logged-out: horizontal top bar ────────────────────
+  // ─── Logged-out: no navbar ────────────────────
   if (!isLoggedIn) {
-    return (
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <div className="bg-teal-600 text-white p-1.5 rounded-lg">
-              <Image src="/favicon.ico" alt="Mrezhen Logo" height={20} width={20} />
-            </div>
-            <Link href="/" className="text-xl font-bold tracking-tight text-white">
-              Mrezhen
-            </Link>
-          </div>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
-            <Link href="/#features" className="hover:text-white transition-colors">{t("features")}</Link>
-            <Link href="/community" className="hover:text-white transition-colors">{t("community")}</Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <ThemeToggle className="hidden md:flex text-gray-300 hover:text-white hover:bg-white/10" />
-            <Link href="/auth/login">
-              <Button className="bg-teal-600 hover:bg-teal-700 text-white border-0 rounded-lg">
-                {t("logIn")} / {t("signUp")}
-              </Button>
-            </Link>
-            <div className="md:hidden">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-white"><Menu className="h-5 w-5" /></Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                  <div className="flex flex-col gap-4 mt-8">
-                    <Link href="/#features" className="text-lg font-medium">{t("features")}</Link>
-                    <Link href="/community" className="text-lg font-medium">{t("community")}</Link>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-          </div>
-        </div>
-      </header>
-    )
+    return null
   }
 
   // ─── Logged-in: vertical sidebar (Instagram-style) ────────────────────
