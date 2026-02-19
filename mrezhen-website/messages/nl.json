@@ -88,7 +88,26 @@
     "judging": "Oordelen...",
     "submitVerification": "Verzenden ter verificatie",
     "uploadProofRequired": "Upload visueel bewijs.",
-    "content": "Inhoud"
+    "content": "Inhoud",
+    "category": "Categorie",
+    "selectCategory": "Selecteer een categorie",
+    "filterByCategory": "Filter:",
+    "allCategories": "Alle",
+    "clearFilter": "Duidelijk",
+    "noFilteredMilestones": "Er zijn geen doelen die overeenkomen met dit filter",
+    "categories": {
+      "health": "Gezondheid",
+      "career": "Carrière",
+      "education": "Onderwijs",
+      "finance": "Financiën",
+      "fitness": "Geschiktheid",
+      "relationships": "Relaties",
+      "creativity": "Creativiteit",
+      "personal": "Persoonlijk",
+      "travel": "Reis",
+      "technology": "Technologie",
+      "other": "Ander"
+    }
   },
   "community": {
     "title": "Communityfeed",

@@ -88,7 +88,26 @@
     "judging": "Juger...",
     "submitVerification": "Soumettre pour vérification",
     "uploadProofRequired": "Veuillez télécharger une preuve visuelle.",
-    "content": "Contenu"
+    "content": "Contenu",
+    "category": "Catégorie",
+    "selectCategory": "Sélectionnez une catégorie",
+    "filterByCategory": "Filtre:",
+    "allCategories": "Toute",
+    "clearFilter": "Claire",
+    "noFilteredMilestones": "Aucun objectif ne correspond à ce filtre",
+    "categories": {
+      "health": "Santé",
+      "career": "Carrière",
+      "education": "Éducation",
+      "finance": "Finance",
+      "fitness": "Aptitude",
+      "relationships": "Relations",
+      "creativity": "Créativité",
+      "personal": "Personnelle",
+      "travel": "Voyage",
+      "technology": "Technologie",
+      "other": "Autre"
+    }
   },
   "community": {
     "title": "Flux communautaire",

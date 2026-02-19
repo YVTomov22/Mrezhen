@@ -88,7 +88,26 @@
     "judging": "Судя...",
     "submitVerification": "Отправить на проверку",
     "uploadProofRequired": "Пожалуйста, загрузите визуальное доказательство.",
-    "content": "Содержание"
+    "content": "Содержание",
+    "category": "Категория",
+    "selectCategory": "Выберите категорию",
+    "filterByCategory": "Фильтр:",
+    "allCategories": "Все",
+    "clearFilter": "Прозрачный",
+    "noFilteredMilestones": "Нет целей, соответствующих этому фильтру.",
+    "categories": {
+      "health": "Здоровье",
+      "career": "Карьера",
+      "education": "Образование",
+      "finance": "Финансы",
+      "fitness": "Фитнес",
+      "relationships": "Отношения",
+      "creativity": "Креативность",
+      "personal": "Персональный",
+      "travel": "Путешествовать",
+      "technology": "Технология",
+      "other": "Другой"
+    }
   },
   "community": {
     "title": "Лента сообщества",

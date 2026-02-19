@@ -88,7 +88,26 @@
     "judging": "Yargılamak...",
     "submitVerification": "Doğrulamaya Gönder",
     "uploadProofRequired": "Lütfen görsel kanıt yükleyin.",
-    "content": "İçerik"
+    "content": "İçerik",
+    "category": "Kategori",
+    "selectCategory": "Bir kategori seçin",
+    "filterByCategory": "Filtre:",
+    "allCategories": "Tüm",
+    "clearFilter": "Temizlemek",
+    "noFilteredMilestones": "Bu filtreyle eşleşen hedef yok",
+    "categories": {
+      "health": "Sağlık",
+      "career": "Kariyer",
+      "education": "Eğitim",
+      "finance": "Finans",
+      "fitness": "Fitness",
+      "relationships": "İlişkiler",
+      "creativity": "Yaratıcılık",
+      "personal": "Kişisel",
+      "travel": "Seyahat",
+      "technology": "Teknoloji",
+      "other": "Diğer"
+    }
   },
   "community": {
     "title": "Topluluk Akışı",

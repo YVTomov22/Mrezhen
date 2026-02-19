@@ -120,6 +120,7 @@ model Milestone {
   id          String   @id @default(cuid())
   title       String
   description String?
+  category    String?
   status      QuestStatus @default(IN_PROGRESS)
   progress    Float       @default(0)
   
@@ -130,6 +131,9 @@ model Milestone {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([userId, category])
 }
 
 model Quest {

@@ -88,7 +88,26 @@
     "judging": "Å dømme...",
     "submitVerification": "Send inn for bekreftelse",
     "uploadProofRequired": "Last opp visuelt bevis.",
-    "content": "Innhold"
+    "content": "Innhold",
+    "category": "Kategori",
+    "selectCategory": "Velg en kategori",
+    "filterByCategory": "Filter:",
+    "allCategories": "Alle",
+    "clearFilter": "Klar",
+    "noFilteredMilestones": "Ingen mål samsvarer med dette filteret",
+    "categories": {
+      "health": "Helse",
+      "career": "Karriere",
+      "education": "Utdannelse",
+      "finance": "Finansiere",
+      "fitness": "Fitness",
+      "relationships": "Relasjoner",
+      "creativity": "Kreativitet",
+      "personal": "Personlig",
+      "travel": "Reise",
+      "technology": "Teknologi",
+      "other": "Annen"
+    }
   },
   "community": {
     "title": "Fellesskapsfeed",

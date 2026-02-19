@@ -88,7 +88,26 @@
     "judging": "심사 중...",
     "submitVerification": "확인을 위해 제출",
     "uploadProofRequired": "시각적 증거를 업로드해 주세요.",
-    "content": "콘텐츠"
+    "content": "콘텐츠",
+    "category": "범주",
+    "selectCategory": "카테고리를 선택하세요",
+    "filterByCategory": "필터:",
+    "allCategories": "모두",
+    "clearFilter": "분명한",
+    "noFilteredMilestones": "이 필터와 일치하는 목표가 없습니다.",
+    "categories": {
+      "health": "건강",
+      "career": "직업",
+      "education": "교육",
+      "finance": "재원",
+      "fitness": "적합",
+      "relationships": "관계",
+      "creativity": "창의성",
+      "personal": "개인의",
+      "travel": "여행하다",
+      "technology": "기술",
+      "other": "다른"
+    }
   },
   "community": {
     "title": "커뮤니티 피드",

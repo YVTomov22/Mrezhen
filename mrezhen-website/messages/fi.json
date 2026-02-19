@@ -88,7 +88,26 @@
     "judging": "Tuomari...",
     "submitVerification": "Lähetä tarkistettavaksi",
     "uploadProofRequired": "Lataa visuaalinen todiste.",
-    "content": "Sisältö"
+    "content": "Sisältö",
+    "category": "Luokka",
+    "selectCategory": "Valitse luokka",
+    "filterByCategory": "Suodattaa:",
+    "allCategories": "Kaikki",
+    "clearFilter": "Selkeä",
+    "noFilteredMilestones": "Yksikään maali ei vastaa tätä suodatinta",
+    "categories": {
+      "health": "Terveys",
+      "career": "Ura",
+      "education": "koulutus",
+      "finance": "Rahoitus",
+      "fitness": "Fitness",
+      "relationships": "Suhteet",
+      "creativity": "Luovuus",
+      "personal": "Henkilökohtainen",
+      "travel": "Matkustaa",
+      "technology": "Tekniikka",
+      "other": "muu"
+    }
   },
   "community": {
     "title": "Yhteisösyöte",

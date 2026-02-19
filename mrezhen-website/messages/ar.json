@@ -88,7 +88,26 @@
     "judging": "الحكم...",
     "submitVerification": "إرسال للتحقق",
     "uploadProofRequired": "يرجى تحميل دليل مرئي.",
-    "content": "محتوى"
+    "content": "محتوى",
+    "category": "فئة",
+    "selectCategory": "حدد فئة",
+    "filterByCategory": "فلتر:",
+    "allCategories": "الجميع",
+    "clearFilter": "واضح",
+    "noFilteredMilestones": "لا توجد أهداف تتطابق مع هذا الفلتر",
+    "categories": {
+      "health": "صحة",
+      "career": "حياة مهنية",
+      "education": "تعليم",
+      "finance": "تمويل",
+      "fitness": "لياقة بدنية",
+      "relationships": "العلاقات",
+      "creativity": "إِبداع",
+      "personal": "شخصي",
+      "travel": "يسافر",
+      "technology": "تكنولوجيا",
+      "other": "آخر"
+    }
   },
   "community": {
     "title": "تغذية المجتمع",

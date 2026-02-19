@@ -88,7 +88,26 @@
     "judging": "At dømme...",
     "submitVerification": "Send til verifikation",
     "uploadProofRequired": "Upload venligst visuelt bevis.",
-    "content": "Tilfreds"
+    "content": "Tilfreds",
+    "category": "Kategori",
+    "selectCategory": "Vælg en kategori",
+    "filterByCategory": "Filter:",
+    "allCategories": "Alle",
+    "clearFilter": "Klar",
+    "noFilteredMilestones": "Ingen mål matcher dette filter",
+    "categories": {
+      "health": "Sundhed",
+      "career": "Karriere",
+      "education": "Undervisning",
+      "finance": "Finansiere",
+      "fitness": "Fitness",
+      "relationships": "Relationer",
+      "creativity": "Kreativitet",
+      "personal": "Personlig",
+      "travel": "Rejse",
+      "technology": "Teknologi",
+      "other": "Andre"
+    }
   },
   "community": {
     "title": "Fællesskabsfeed",

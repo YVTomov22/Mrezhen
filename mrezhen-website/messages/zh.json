@@ -88,7 +88,26 @@
     "judging": "判断...",
     "submitVerification": "提交验证",
     "uploadProofRequired": "请上传视觉证明。",
-    "content": "内容"
+    "content": "内容",
+    "category": "类别",
+    "selectCategory": "选择一个类别",
+    "filterByCategory": "筛选：",
+    "allCategories": "全部",
+    "clearFilter": "清除",
+    "noFilteredMilestones": "没有符合此过滤条件的目标",
+    "categories": {
+      "health": "健康",
+      "career": "职业",
+      "education": "教育",
+      "finance": "金融",
+      "fitness": "健康",
+      "relationships": "人际关系",
+      "creativity": "创造力",
+      "personal": "个人的",
+      "travel": "旅行",
+      "technology": "技术",
+      "other": "其他"
+    }
   },
   "community": {
     "title": "社区动态",

@@ -88,7 +88,26 @@
     "judging": "मूल्यांकन हो रहा है...",
     "submitVerification": "सत्यापन के लिए जमा करें",
     "uploadProofRequired": "कृपया दृश्य प्रमाण अपलोड करें।",
-    "content": "सामग्री"
+    "content": "सामग्री",
+    "category": "वर्ग",
+    "selectCategory": "एक श्रेणी चुनें",
+    "filterByCategory": "फ़िल्टर:",
+    "allCategories": "सभी",
+    "clearFilter": "स्पष्ट",
+    "noFilteredMilestones": "कोई भी लक्ष्य इस फ़िल्टर से मेल नहीं खाता",
+    "categories": {
+      "health": "स्वास्थ्य",
+      "career": "आजीविका",
+      "education": "शिक्षा",
+      "finance": "वित्त",
+      "fitness": "स्वास्थ्य",
+      "relationships": "रिश्ते",
+      "creativity": "रचनात्मकता",
+      "personal": "निजी",
+      "travel": "यात्रा",
+      "technology": "तकनीकी",
+      "other": "अन्य"
+    }
   },
   "community": {
     "title": "समुदाय फ़ीड",

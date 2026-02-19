@@ -88,7 +88,26 @@
     "judging": "判断中...",
     "submitVerification": "検証のために送信する",
     "uploadProofRequired": "視覚的な証拠をアップロードしてください。",
-    "content": "コンテンツ"
+    "content": "コンテンツ",
+    "category": "カテゴリ",
+    "selectCategory": "カテゴリを選択してください",
+    "filterByCategory": "フィルター：",
+    "allCategories": "全て",
+    "clearFilter": "クリア",
+    "noFilteredMilestones": "このフィルターに一致する目標はありません",
+    "categories": {
+      "health": "健康",
+      "career": "キャリア",
+      "education": "教育",
+      "finance": "ファイナンス",
+      "fitness": "フィットネス",
+      "relationships": "人間関係",
+      "creativity": "創造性",
+      "personal": "個人的",
+      "travel": "旅行",
+      "technology": "テクノロジー",
+      "other": "他の"
+    }
   },
   "community": {
     "title": "コミュニティフィード",

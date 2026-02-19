@@ -88,7 +88,26 @@
     "judging": "Sądząc...",
     "submitVerification": "Prześlij do weryfikacji",
     "uploadProofRequired": "Prześlij dowód wizualny.",
-    "content": "Treść"
+    "content": "Treść",
+    "category": "Kategoria",
+    "selectCategory": "Wybierz kategorię",
+    "filterByCategory": "Filtr:",
+    "allCategories": "Wszystko",
+    "clearFilter": "Jasne",
+    "noFilteredMilestones": "Żadne cele nie pasują do tego filtra",
+    "categories": {
+      "health": "Zdrowie",
+      "career": "Kariera",
+      "education": "Edukacja",
+      "finance": "Finanse",
+      "fitness": "Zdatność",
+      "relationships": "Relacje",
+      "creativity": "Kreatywność",
+      "personal": "Osobisty",
+      "travel": "Podróż",
+      "technology": "Technologia",
+      "other": "Inny"
+    }
   },
   "community": {
     "title": "Aktualności społeczności",

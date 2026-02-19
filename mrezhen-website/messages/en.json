@@ -88,7 +88,26 @@
     "judging": "Judging...",
     "submitVerification": "Submit for Verification",
     "uploadProofRequired": "Please upload visual proof.",
-    "content": "Content"
+    "content": "Content",
+    "category": "Category",
+    "selectCategory": "Select a category",
+    "filterByCategory": "Filter:",
+    "allCategories": "All",
+    "clearFilter": "Clear",
+    "noFilteredMilestones": "No goals match this filter",
+    "categories": {
+      "health": "Health",
+      "career": "Career",
+      "education": "Education",
+      "finance": "Finance",
+      "fitness": "Fitness",
+      "relationships": "Relationships",
+      "creativity": "Creativity",
+      "personal": "Personal",
+      "travel": "Travel",
+      "technology": "Technology",
+      "other": "Other"
+    }
   },
   "community": {
     "title": "Community Feed",

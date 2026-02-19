@@ -88,7 +88,26 @@
     "judging": "Juzgando...",
     "submitVerification": "Enviar para verificación",
     "uploadProofRequired": "Cargue una prueba visual.",
-    "content": "Contenido"
+    "content": "Contenido",
+    "category": "Categoría",
+    "selectCategory": "Selecciona una categoría",
+    "filterByCategory": "Filtrar:",
+    "allCategories": "Toda",
+    "clearFilter": "Clara",
+    "noFilteredMilestones": "Ningún objetivo coincide con este filtro",
+    "categories": {
+      "health": "Salud",
+      "career": "Carrera",
+      "education": "Educación",
+      "finance": "Finanzas",
+      "fitness": "Aptitud física",
+      "relationships": "Relaciones",
+      "creativity": "Creatividad",
+      "personal": "Personal",
+      "travel": "Viajar",
+      "technology": "Tecnología",
+      "other": "Otra"
+    }
   },
   "community": {
     "title": "Feed de la comunidad",

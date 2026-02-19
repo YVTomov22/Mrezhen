@@ -88,7 +88,26 @@
     "judging": "Bedömning...",
     "submitVerification": "Skicka in för verifiering",
     "uploadProofRequired": "Ladda upp visuellt bevis.",
-    "content": "Innehåll"
+    "content": "Innehåll",
+    "category": "Kategori",
+    "selectCategory": "Välj en kategori",
+    "filterByCategory": "Filtrera:",
+    "allCategories": "Alla",
+    "clearFilter": "Rensa",
+    "noFilteredMilestones": "Inga mål matchar detta filter",
+    "categories": {
+      "health": "Hälsa",
+      "career": "Karriär",
+      "education": "Utbildning",
+      "finance": "Finansiera",
+      "fitness": "Kondition",
+      "relationships": "Relationer",
+      "creativity": "Kreativitet",
+      "personal": "Personlig",
+      "travel": "Resa",
+      "technology": "Teknologi",
+      "other": "Andra"
+    }
   },
   "community": {
     "title": "Gemenskapsflöde",

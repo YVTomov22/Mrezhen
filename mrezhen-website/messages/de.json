@@ -88,7 +88,26 @@
     "judging": "Urteilen...",
     "submitVerification": "Zur Überprüfung einreichen",
     "uploadProofRequired": "Bitte laden Sie einen visuellen Beweis hoch.",
-    "content": "Inhalt"
+    "content": "Inhalt",
+    "category": "Kategorie",
+    "selectCategory": "Wählen Sie eine Kategorie aus",
+    "filterByCategory": "Filter:",
+    "allCategories": "Alle",
+    "clearFilter": "Klar",
+    "noFilteredMilestones": "Keine Ziele entsprechen diesem Filter",
+    "categories": {
+      "health": "Gesundheit",
+      "career": "Karriere",
+      "education": "Ausbildung",
+      "finance": "Finanzen",
+      "fitness": "Fitness",
+      "relationships": "Beziehungen",
+      "creativity": "Kreativität",
+      "personal": "Persönlich",
+      "travel": "Reisen",
+      "technology": "Technologie",
+      "other": "Andere"
+    }
   },
   "community": {
     "title": "Community-Feed",
