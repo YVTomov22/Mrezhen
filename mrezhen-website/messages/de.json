@@ -4,6 +4,7 @@
     "dashboard": "Armaturenbrett",
     "goals": "Ziele",
     "community": "Gemeinschaft",
+    "features": "Merkmale",
     "messages": "Nachrichten",
     "notifications": "Benachrichtigungen",
     "settings": "Einstellungen",
@@ -115,7 +116,11 @@
     "suggestedDesc": "Basierend auf Ihren Interessen, Ihrem Erfahrungsniveau und Ihren Wissensbereichen.",
     "noSuggestions": "Noch keine Vorschläge",
     "noSuggestionsDesc": "Vervollständigen Sie Ihr Profil und fügen Sie Interessen hinzu, damit wir Personen finden können, die Ihnen gefallen könnten.",
-    "matchLabel": "übereinstimmen"
+    "matchLabel": "übereinstimmen",
+    "communityStats": "Gemeinschaft",
+    "suggestedPeople": "Vorgeschlagene Personen",
+    "viewAll": "Alle anzeigen",
+    "discoverPeople": "Entdecken Sie Menschen"
   },
   "settings": {
     "title": "Einstellungen",

@@ -4,6 +4,7 @@
     "dashboard": "Hallintapaneeli",
     "goals": "Tavoitteet",
     "community": "Yhteisö",
+    "features": "Ominaisuudet",
     "messages": "Viestit",
     "notifications": "Ilmoitukset",
     "settings": "Asetukset",
@@ -115,7 +116,11 @@
     "suggestedDesc": "Perustuu kiinnostuksesi, kokemustasosi ja osaamisalojesi mukaan.",
     "noSuggestions": "Ei vielä ehdotuksia",
     "noSuggestionsDesc": "Täydennä profiilisi ja lisää kiinnostuksen kohteita, jotta voimme löytää ihmisiä, joista saatat pitää.",
-    "matchLabel": "ottelu"
+    "matchLabel": "ottelu",
+    "communityStats": "yhteisössä",
+    "suggestedPeople": "Ehdotetut ihmiset",
+    "viewAll": "Näytä kaikki",
+    "discoverPeople": "Tutustu ihmisiin"
   },
   "settings": {
     "title": "Asetukset",

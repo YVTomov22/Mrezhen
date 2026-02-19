@@ -4,6 +4,7 @@
     "dashboard": "Painel",
     "goals": "Metas",
     "community": "Comunidade",
+    "features": "Características",
     "messages": "Mensagens",
     "notifications": "Notificações",
     "settings": "Configurações",
@@ -115,7 +116,11 @@
     "suggestedDesc": "Com base em seus interesses, nível de experiência e setores de conhecimento.",
     "noSuggestions": "Ainda não há sugestões",
     "noSuggestionsDesc": "Complete seu perfil e adicione interesses para que possamos encontrar pessoas de quem você possa gostar.",
-    "matchLabel": "corresponder"
+    "matchLabel": "corresponder",
+    "communityStats": "Comunidade",
+    "suggestedPeople": "Pessoas sugeridas",
+    "viewAll": "Ver tudo",
+    "discoverPeople": "Descubra pessoas"
   },
   "settings": {
     "title": "Configurações",

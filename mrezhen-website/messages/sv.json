@@ -4,6 +4,7 @@
     "dashboard": "Instrumentbräda",
     "goals": "Mål",
     "community": "Gemenskap",
+    "features": "Drag",
     "messages": "Meddelanden",
     "notifications": "Aviseringar",
     "settings": "Inställningar",
@@ -115,7 +116,11 @@
     "suggestedDesc": "Baserat på dina intressen, erfarenhetsnivå och kunskapssektorer.",
     "noSuggestions": "Inga förslag ännu",
     "noSuggestionsDesc": "Fyll i din profil och lägg till intressen så att vi kan hitta personer du kanske gillar.",
-    "matchLabel": "match"
+    "matchLabel": "match",
+    "communityStats": "Gemenskap",
+    "suggestedPeople": "Föreslagna personer",
+    "viewAll": "Visa alla",
+    "discoverPeople": "Upptäck människor"
   },
   "settings": {
     "title": "Inställningar",

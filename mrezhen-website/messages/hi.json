@@ -4,6 +4,7 @@
     "dashboard": "डैशबोर्ड",
     "goals": "लक्ष्य",
     "community": "समुदाय",
+    "features": "विशेषताएँ",
     "messages": "संदेश",
     "notifications": "सूचनाएं",
     "settings": "सेटिंग्स",
@@ -115,7 +116,11 @@
     "suggestedDesc": "आपकी रुचियों, अनुभव स्तर और ज्ञान क्षेत्रों के आधार पर।",
     "noSuggestions": "अभी तक कोई सुझाव नहीं",
     "noSuggestionsDesc": "अपनी प्रोफ़ाइल पूरी करें और रुचियां जोड़ें ताकि हम उन लोगों को ढूंढ सकें जिन्हें आप पसंद कर सकते हैं।",
-    "matchLabel": "मिलान"
+    "matchLabel": "मिलान",
+    "communityStats": "समुदाय",
+    "suggestedPeople": "सुझाए गए लोग",
+    "viewAll": "सभी को देखें",
+    "discoverPeople": "लोगों को खोजें"
   },
   "settings": {
     "title": "सेटिंग्स",

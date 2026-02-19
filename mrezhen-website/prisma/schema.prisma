@@ -291,11 +291,16 @@ model PostComment {
   authorId  String
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
+  parentId  String?
+  parent    PostComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   PostComment[] @relation("CommentReplies")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([postId])
   @@index([authorId])
+  @@index([parentId])
 }
 
 model PostLike {

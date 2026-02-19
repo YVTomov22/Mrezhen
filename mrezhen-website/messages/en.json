@@ -116,7 +116,11 @@
     "suggestedDesc": "Based on your interests, experience level, and knowledge sectors.",
     "noSuggestions": "No suggestions yet",
     "noSuggestionsDesc": "Complete your profile and add interests so we can find people you may like.",
-    "matchLabel": "match"
+    "matchLabel": "match",
+    "communityStats": "Community",
+    "suggestedPeople": "Suggested People",
+    "viewAll": "View all",
+    "discoverPeople": "Discover People"
   },
   "settings": {
     "title": "Settings",

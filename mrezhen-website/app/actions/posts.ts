@@ -80,7 +80,7 @@ export async function togglePostLike(postId: string) {
   return { success: true, liked: true }
 }
 
-export async function addPostComment(postId: string, content: string) {
+export async function addPostComment(postId: string, content: string, parentId?: string) {
   const session = await auth()
   if (!session?.user?.email) return { error: 'Unauthorized' }
 
@@ -94,11 +94,23 @@ export async function addPostComment(postId: string, content: string) {
   })
   if (!user) return { error: 'User not found' }
 
+  // If replying to a comment, verify the parent comment exists and belongs to the same post
+  if (parentId) {
+    const parent = await prisma.postComment.findUnique({
+      where: { id: parentId },
+      select: { postId: true },
+    })
+    if (!parent || parent.postId !== postId) {
+      return { error: 'Parent comment not found' }
+    }
+  }
+
   await prisma.postComment.create({
     data: {
       postId,
       authorId: user.id,
       content: trimmed,
+      ...(parentId ? { parentId } : {}),
     },
   })
 

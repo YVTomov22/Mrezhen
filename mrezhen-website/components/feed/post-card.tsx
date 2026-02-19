@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Heart, MessageCircle, Share2, Bookmark } from 'lucide-react'
+import { Heart, MessageCircle, Share2, Bookmark, CornerDownRight } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,11 +22,19 @@ type PostImage = {
   url: string
 }
 
+type CommentReply = {
+  id: string
+  content: string
+  createdAt: string
+  author: Author
+}
+
 type Comment = {
   id: string
   content: string
   createdAt: string
   author: Author
+  replies: CommentReply[]
 }
 
 type PostCardProps = {
@@ -51,16 +59,16 @@ export function PostCard(props: PostCardProps) {
   const [liked, setLiked] = useState(props.likedByMe)
   const [likeCount, setLikeCount] = useState(props.likeCount)
   const [bookmarked, setBookmarked] = useState(props.bookmarkedByMe)
+  const [replyingTo, setReplyingTo] = useState<{ id: string; name: string } | null>(null)
+  const commentInputRef = useRef<HTMLInputElement>(null)
 
   async function onLike() {
     setError(null)
-    // Optimistic update
     setLiked((prev) => !prev)
     setLikeCount((prev) => (liked ? prev - 1 : prev + 1))
     startTransition(async () => {
       const res = await togglePostLike(props.id)
       if ('error' in res && res.error) {
-        // Revert optimistic update
         setLiked((prev) => !prev)
         setLikeCount((prev) => (liked ? prev + 1 : prev - 1))
         setError(res.error)
@@ -89,15 +97,23 @@ export function PostCard(props: PostCardProps) {
     if (!trimmed) return
 
     setError(null)
+    const parentId = replyingTo?.id || undefined
     startTransition(async () => {
-      const res = await addPostComment(props.id, trimmed)
+      const res = await addPostComment(props.id, trimmed, parentId)
       if ('error' in res && res.error) {
         setError(res.error)
         return
       }
       setComment('')
+      setReplyingTo(null)
       router.refresh()
     })
+  }
+
+  function onReply(commentId: string, authorName: string) {
+    setReplyingTo({ id: commentId, name: authorName })
+    setShowComments(true)
+    setTimeout(() => commentInputRef.current?.focus(), 100)
   }
 
   function onShare() {
@@ -206,40 +222,113 @@ export function PostCard(props: PostCardProps) {
 
       {error && <p className="text-sm text-red-600 px-4 pb-2">{error}</p>}
 
-      {/* Comments Section (collapsed by default) */}
-      {showComments && (
-        <div className="border-t border-border px-4 py-3 space-y-3">
-          {props.recentComments.length > 0 && (
-            <div className="space-y-2">
-              {props.recentComments
-                .slice()
-                .reverse()
-                .map((c) => {
-                  const name = c.author.username || c.author.name || 'User'
-                  return (
-                    <div key={c.id} className="text-sm">
-                      <span className="font-semibold mr-2">{name}</span>
-                      <span className="text-foreground">{c.content}</span>
-                    </div>
-                  )
-                })}
-            </div>
-          )}
+      {/* ── Animated Comment Section (slide-down / fade-in) ── */}
+      <div className="comment-collapse" data-open={showComments}>
+        <div>
+          <div className="border-t border-border px-4 py-3 space-y-3">
+            {props.recentComments.length > 0 && (
+              <div className="space-y-3">
+                {props.recentComments
+                  .slice()
+                  .reverse()
+                  .map((c) => {
+                    const name = c.author.username || c.author.name || 'User'
+                    return (
+                      <div key={c.id} className="space-y-2">
+                        {/* ─ Parent comment ─ */}
+                        <div className="flex items-start gap-2.5">
+                          <Avatar className="h-7 w-7 mt-0.5 shrink-0 border border-border">
+                            <AvatarImage src={c.author.image || ''} />
+                            <AvatarFallback className="text-[10px] font-bold">
+                              {name[0]?.toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-sm font-semibold">{name}</span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {new Date(c.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-sm text-foreground mt-0.5">{c.content}</p>
+                            <button
+                              type="button"
+                              onClick={() => onReply(c.id, name)}
+                              className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground mt-1 transition-colors"
+                            >
+                              <CornerDownRight className="h-3 w-3" />
+                              Reply
+                            </button>
+                          </div>
+                        </div>
 
-          <div className="flex gap-2">
-            <Input
-              value={comment}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setComment(e.target.value)}
-              placeholder="Add a comment..."
-              disabled={isPending}
-              onKeyDown={(e) => e.key === 'Enter' && onAddComment()}
-            />
-            <Button onClick={onAddComment} disabled={isPending || !comment.trim()} size="sm">
-              Post
-            </Button>
+                        {/* ─ Nested replies ─ */}
+                        {c.replies && c.replies.length > 0 && (
+                          <div className="ml-9 pl-3 border-l-2 border-border space-y-2">
+                            {c.replies.map((r) => {
+                              const rName = r.author.username || r.author.name || 'User'
+                              return (
+                                <div key={r.id} className="flex items-start gap-2">
+                                  <Avatar className="h-6 w-6 mt-0.5 shrink-0 border border-border">
+                                    <AvatarImage src={r.author.image || ''} />
+                                    <AvatarFallback className="text-[9px] font-bold">
+                                      {rName[0]?.toUpperCase()}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-baseline gap-2">
+                                      <span className="text-xs font-semibold">{rName}</span>
+                                      <span className="text-[10px] text-muted-foreground">
+                                        {new Date(r.createdAt).toLocaleString()}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-foreground mt-0.5">{r.content}</p>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+              </div>
+            )}
+
+            {/* Reply indicator */}
+            {replyingTo && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-1.5">
+                <CornerDownRight className="h-3 w-3 shrink-0" />
+                <span>
+                  Replying to <strong className="text-foreground">{replyingTo.name}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setReplyingTo(null)}
+                  className="ml-auto text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {/* Comment input */}
+            <div className="flex gap-2">
+              <Input
+                ref={commentInputRef}
+                value={comment}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setComment(e.target.value)}
+                placeholder={replyingTo ? `Reply to ${replyingTo.name}...` : 'Add a comment...'}
+                disabled={isPending}
+                onKeyDown={(e) => e.key === 'Enter' && onAddComment()}
+              />
+              <Button onClick={onAddComment} disabled={isPending || !comment.trim()} size="sm">
+                Post
+              </Button>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

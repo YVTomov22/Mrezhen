@@ -3,10 +3,16 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/app/auth'
 import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PostComposer } from '@/components/feed/post-composer'
 import { PostCard } from '@/components/feed/post-card'
-import { Sparkles, Users, MessageSquare, TrendingUp } from 'lucide-react'
+import { FollowButton } from '@/components/follow-button'
+import { StoriesBar } from '@/components/community/stories-bar'
+import { CommunityLeftSidebar } from '@/components/community/left-sidebar'
+import { Sparkles, MessageSquare, Search } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import { getRecommendedUsers } from '@/app/actions/recommend'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,12 +23,12 @@ export default async function CommunityFeedPage() {
 
   const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { id: true },
+    select: { id: true, name: true, username: true, image: true, level: true, score: true },
   })
 
   if (!currentUser) redirect('/auth/login')
 
-  const [posts, userCount, postCount] = await Promise.all([
+  const [posts, recommendedUsers, storyUsers] = await Promise.all([
     prisma.post.findMany({
       orderBy: { createdAt: 'desc' },
       take: 50,
@@ -38,17 +44,30 @@ export default async function CommunityFeedPage() {
           select: { userId: true },
         },
         comments: {
-          take: 3,
+          where: { parentId: null },
+          take: 5,
           orderBy: { createdAt: 'desc' },
           include: {
             author: { select: { name: true, username: true, image: true } },
+            replies: {
+              take: 3,
+              orderBy: { createdAt: 'asc' },
+              include: {
+                author: { select: { name: true, username: true, image: true } },
+              },
+            },
           },
         },
         _count: { select: { likes: true, comments: true } },
       },
     }),
-    prisma.user.count(),
-    prisma.post.count(),
+    getRecommendedUsers(),
+    prisma.user.findMany({
+      where: { id: { not: currentUser.id }, image: { not: null } },
+      select: { id: true, name: true, username: true, image: true },
+      take: 15,
+      orderBy: { updatedAt: 'desc' },
+    }),
   ])
 
   const serialized = posts.map((p) => ({
@@ -66,73 +85,108 @@ export default async function CommunityFeedPage() {
       content: c.content,
       createdAt: c.createdAt.toISOString(),
       author: c.author,
+      replies: c.replies.map((r) => ({
+        id: r.id,
+        content: r.content,
+        createdAt: r.createdAt.toISOString(),
+        author: r.author,
+      })),
     })),
   }))
 
+  const sidebarPeople = recommendedUsers.slice(0, 5)
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* ── Header Banner ───────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/3 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2" />
-        </div>
-        <div className="relative max-w-5xl mx-auto px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{t('title')}</h1>
-              <p className="text-teal-200 mt-1">{t('description')}</p>
-            </div>
-            <div className="flex gap-2">
-              <Link href="/community/suggested">
-                <Button className="bg-white/15 hover:bg-white/25 text-white border border-white/20 backdrop-blur-sm gap-2">
-                  <Sparkles className="h-4 w-4" /> {t('suggested')}
-                </Button>
-              </Link>
-              <Link href="/community/people">
-                <Button className="bg-white/15 hover:bg-white/25 text-white border border-white/20 backdrop-blur-sm gap-2">
-                  <Users className="h-4 w-4" /> {t('findPeople')}
-                </Button>
-              </Link>
-            </div>
-          </div>
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[80px_220px_1fr_320px]">
+      {/* ── STORIES COLUMN ──────────────────────────── */}
+      <aside className="hidden lg:flex flex-col border-r border-border bg-card/40">
+        <StoriesBar
+          currentUser={{
+            id: currentUser.id,
+            name: currentUser.name,
+            username: currentUser.username,
+            image: currentUser.image,
+          }}
+          users={storyUsers}
+        />
+      </aside>
 
-          {/* ── Quick Stats ─────────────────────────── */}
-          <div className="flex gap-4 mt-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/10 flex items-center gap-3">
-              <Users className="w-5 h-5 text-teal-200" />
-              <div>
-                <p className="text-lg font-bold">{userCount}</p>
-                <p className="text-[11px] text-teal-200 uppercase font-medium">{t('membersLabel')}</p>
+      {/* ── LEFT SIDEBAR ────────────────────────────── */}
+      <aside className="hidden lg:block border-r border-border p-4 overflow-y-auto no-scrollbar">
+        <CommunityLeftSidebar user={currentUser} />
+      </aside>
+
+      {/* ── FEED (center, scrollable) ─────────────── */}
+      <section className="overflow-y-auto no-scrollbar p-6">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <PostComposer />
+
+          <div className="space-y-4">
+            {serialized.length === 0 ? (
+              <div className="bg-card border-2 border-dashed border-border rounded-xl p-10 text-center">
+                <div className="mx-auto w-14 h-14 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-3">
+                  <MessageSquare className="w-7 h-7 text-teal-500" />
+                </div>
+                <p className="text-muted-foreground font-medium">{t('noPosts')}</p>
               </div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl px-5 py-3 border border-white/10 flex items-center gap-3">
-              <MessageSquare className="w-5 h-5 text-teal-200" />
-              <div>
-                <p className="text-lg font-bold">{postCount}</p>
-                <p className="text-[11px] text-teal-200 uppercase font-medium">{t('postsLabel')}</p>
-              </div>
-            </div>
+            ) : (
+              serialized.map((post) => <PostCard key={post.id} {...post} />)
+            )}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ── Feed Content ────────────────────────────── */}
-      <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
-        <PostComposer />
-
-        <div className="space-y-4">
-          {serialized.length === 0 ? (
-            <div className="bg-card border-2 border-dashed border-border rounded-xl p-10 text-center">
-              <div className="mx-auto w-14 h-14 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-3">
-                <MessageSquare className="w-7 h-7 text-teal-500" />
-              </div>
-              <p className="text-muted-foreground font-medium">{t('noPosts')}</p>
+      {/* ── RIGHT SIDEBAR ───────────────────────────── */}
+      <aside className="hidden lg:flex flex-col gap-4 border-l border-border p-4 overflow-y-auto no-scrollbar">
+        {/* Suggested People */}
+        <Card className="border-border shadow-sm">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                <Sparkles className="h-4 w-4 text-amber-500" />
+                {t('suggestedPeople')}
+              </CardTitle>
+              <Link href="/community/suggested" className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                {t('viewAll')}
+              </Link>
             </div>
-          ) : (
-            serialized.map((post) => <PostCard key={post.id} {...post} />)
-          )}
-        </div>
-      </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {sidebarPeople.length === 0 ? (
+              <p className="text-xs text-muted-foreground">{t('noSuggestions')}</p>
+            ) : (
+              sidebarPeople.map((user) => (
+                <div key={user.id} className="flex items-center gap-2.5">
+                  <Avatar className="h-8 w-8 border border-border">
+                    <AvatarImage src={user.image || ''} />
+                    <AvatarFallback className="bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-xs font-bold">
+                      {user.name?.[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <Link href={`/profile/${user.username}`} className="text-sm font-semibold truncate block hover:underline">
+                      {user.name}
+                    </Link>
+                    <p className="text-[10px] text-muted-foreground">{t('levelLabel')} {user.level}</p>
+                  </div>
+                  <FollowButton targetUserId={user.id} initialIsFollowing={false} />
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Discover People */}
+        <Card className="border-border shadow-sm">
+          <CardContent className="py-4 space-y-2">
+            <Link href="/community/people">
+              <Button variant="outline" className="w-full gap-2 text-sm">
+                <Search className="h-4 w-4" /> {t('findPeople')}
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </aside>
     </div>
   )
 }

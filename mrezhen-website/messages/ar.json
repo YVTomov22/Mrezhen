@@ -4,6 +4,7 @@
     "dashboard": "لوحة القيادة",
     "goals": "الأهداف",
     "community": "مجتمع",
+    "features": "سمات",
     "messages": "رسائل",
     "notifications": "الإشعارات",
     "settings": "الإعدادات",
@@ -115,7 +116,11 @@
     "suggestedDesc": "بناءً على اهتماماتك ومستوى خبرتك وقطاعات المعرفة.",
     "noSuggestions": "لا توجد اقتراحات حتى الآن",
     "noSuggestionsDesc": "أكمل ملفك الشخصي وأضف الاهتمامات حتى نتمكن من العثور على الأشخاص الذين قد يعجبونك.",
-    "matchLabel": "مباراة"
+    "matchLabel": "مباراة",
+    "communityStats": "مجتمع",
+    "suggestedPeople": "الأشخاص المقترحون",
+    "viewAll": "عرض الكل",
+    "discoverPeople": "اكتشف الناس"
   },
   "settings": {
     "title": "إعدادات",

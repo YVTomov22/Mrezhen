@@ -126,3 +126,23 @@
    on the page or inside the panel. */
 .no-scrollbar::-webkit-scrollbar { display: none; }          /* Chrome / Safari */
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } /* IE / Firefox */
+
+/* ── Comment section slide-down / fade-in animation ── */
+.comment-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 300ms ease-out, opacity 250ms ease-out;
+}
+.comment-collapse[data-open="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.comment-collapse > div {
+  overflow: hidden;
+}
+
+/* ── Stories gradient ring (Instagram-style) ── */
+.story-ring {
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}

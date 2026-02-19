@@ -4,6 +4,7 @@
     "dashboard": "Oversikt",
     "goals": "Mål",
     "community": "Fellesskap",
+    "features": "Funksjoner",
     "messages": "Meldinger",
     "notifications": "Varsler",
     "settings": "Innstillinger",
@@ -115,7 +116,11 @@
     "suggestedDesc": "Basert på dine interesser, erfaringsnivå og kunnskapssektorer.",
     "noSuggestions": "Ingen forslag ennå",
     "noSuggestionsDesc": "Fullfør profilen din og legg til interesser slik at vi kan finne personer du kanskje liker.",
-    "matchLabel": "kamp"
+    "matchLabel": "kamp",
+    "communityStats": "Fellesskap",
+    "suggestedPeople": "Foreslåtte personer",
+    "viewAll": "Se alle",
+    "discoverPeople": "Oppdag mennesker"
   },
   "settings": {
     "title": "Innstillinger",

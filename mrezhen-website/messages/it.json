@@ -4,6 +4,7 @@
     "dashboard": "Pannello di controllo",
     "goals": "Obiettivi",
     "community": "Comunità",
+    "features": "Caratteristiche",
     "messages": "Messaggi",
     "notifications": "Notifiche",
     "settings": "Impostazioni",
@@ -115,7 +116,11 @@
     "suggestedDesc": "In base ai tuoi interessi, livello di esperienza e settori di conoscenza.",
     "noSuggestions": "Nessun suggerimento ancora",
     "noSuggestionsDesc": "Completa il tuo profilo e aggiungi interessi in modo che possiamo trovare persone che potrebbero piacerti.",
-    "matchLabel": "incontro"
+    "matchLabel": "incontro",
+    "communityStats": "Comunità",
+    "suggestedPeople": "Persone suggerite",
+    "viewAll": "Visualizza tutto",
+    "discoverPeople": "Scopri le persone"
   },
   "settings": {
     "title": "Impostazioni",

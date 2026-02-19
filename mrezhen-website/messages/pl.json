@@ -4,6 +4,7 @@
     "dashboard": "Panel",
     "goals": "Cele",
     "community": "Społeczność",
+    "features": "Cechy",
     "messages": "Wiadomości",
     "notifications": "Powiadomienia",
     "settings": "Ustawienia",
@@ -115,7 +116,11 @@
     "suggestedDesc": "Na podstawie Twoich zainteresowań, poziomu doświadczenia i sektorów wiedzy.",
     "noSuggestions": "Nie ma jeszcze żadnych sugestii",
     "noSuggestionsDesc": "Uzupełnij swój profil i dodaj zainteresowania, abyśmy mogli znaleźć osoby, które mogą Cię zainteresować.",
-    "matchLabel": "mecz"
+    "matchLabel": "mecz",
+    "communityStats": "Wspólnota",
+    "suggestedPeople": "Sugerowane osoby",
+    "viewAll": "Zobacz wszystkie",
+    "discoverPeople": "Odkryj ludzi"
   },
   "settings": {
     "title": "Ustawienia",

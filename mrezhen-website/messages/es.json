@@ -4,6 +4,7 @@
     "dashboard": "Panel",
     "goals": "Objetivos",
     "community": "Comunidad",
+    "features": "Características",
     "messages": "Mensajes",
     "notifications": "Notificaciones",
     "settings": "Configuración",
@@ -115,7 +116,11 @@
     "suggestedDesc": "En función de tus intereses, nivel de experiencia y sectores de conocimiento.",
     "noSuggestions": "Aún no hay sugerencias",
     "noSuggestionsDesc": "Complete su perfil y agregue intereses para que podamos encontrar personas que le gusten.",
-    "matchLabel": "fósforo"
+    "matchLabel": "fósforo",
+    "communityStats": "Comunidad",
+    "suggestedPeople": "Personas sugeridas",
+    "viewAll": "Ver todo",
+    "discoverPeople": "descubrir personas"
   },
   "settings": {
     "title": "Ajustes",

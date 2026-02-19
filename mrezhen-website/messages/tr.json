@@ -4,6 +4,7 @@
     "dashboard": "Pano",
     "goals": "Hedefler",
     "community": "Topluluk",
+    "features": "Özellikler",
     "messages": "Mesajlar",
     "notifications": "Bildirimler",
     "settings": "Ayarlar",
@@ -115,7 +116,11 @@
     "suggestedDesc": "İlgi alanlarınıza, deneyim seviyenize ve bilgi sektörlerinize göre.",
     "noSuggestions": "Henüz öneri yok",
     "noSuggestionsDesc": "Beğenebileceğiniz kişileri bulabilmemiz için profilinizi tamamlayın ve ilgi alanlarınızı ekleyin.",
-    "matchLabel": "kibrit"
+    "matchLabel": "kibrit",
+    "communityStats": "Toplum",
+    "suggestedPeople": "Önerilen Kişiler",
+    "viewAll": "Tümünü görüntüle",
+    "discoverPeople": "İnsanları Keşfedin"
   },
   "settings": {
     "title": "Ayarlar",

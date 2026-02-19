@@ -4,6 +4,7 @@
     "dashboard": "仪表板",
     "goals": "目标",
     "community": "社区",
+    "features": "特征",
     "messages": "留言",
     "notifications": "通知",
     "settings": "设置",
@@ -115,7 +116,11 @@
     "suggestedDesc": "基于您的兴趣、经验水平和知识领域。",
     "noSuggestions": "还没有建议",
     "noSuggestionsDesc": "填写您的个​​人资料并添加兴趣，以便我们找到您可能喜欢的人。",
-    "matchLabel": "匹配"
+    "matchLabel": "匹配",
+    "communityStats": "社区",
+    "suggestedPeople": "推荐人",
+    "viewAll": "查看全部",
+    "discoverPeople": "发现人"
   },
   "settings": {
     "title": "设置",
