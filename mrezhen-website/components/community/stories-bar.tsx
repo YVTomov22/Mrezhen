@@ -17,9 +17,9 @@ type StoriesBarProps = {
 
 export function StoriesBar({ currentUser, users }: StoriesBarProps) {
   return (
-    <div className="flex flex-col items-center gap-4 py-4 h-full overflow-y-auto no-scrollbar">
+    <div className="flex flex-row items-start gap-4 px-4 py-3 overflow-x-auto no-scrollbar">
       {/* Your Story */}
-      <button className="flex flex-col items-center gap-1 group" type="button">
+      <button className="flex flex-col items-center gap-1 group shrink-0" type="button">
         <div className="relative">
           <Avatar className="h-[52px] w-[52px] border-2 border-border">
             <AvatarImage src={currentUser.image || ''} />
@@ -36,11 +36,11 @@ export function StoriesBar({ currentUser, users }: StoriesBarProps) {
         </span>
       </button>
 
-      <div className="w-8 h-px bg-border" />
+      <div className="h-12 w-px self-center bg-border" />
 
       {/* Other users' stories */}
       {users.map((user) => (
-        <button key={user.id} className="flex flex-col items-center gap-1 group" type="button">
+        <button key={user.id} className="flex flex-col items-center gap-1 group shrink-0" type="button">
           <div className="story-ring rounded-full p-[2.5px]">
             <Avatar className="h-[52px] w-[52px] border-[2.5px] border-background">
               <AvatarImage src={user.image || ''} />

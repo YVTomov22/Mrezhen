@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useTransition, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -7,7 +7,7 @@ import { Heart, MessageCircle, Share2, Bookmark, CornerDownRight } from 'lucide-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { togglePostLike, addPostComment, togglePostBookmark } from '@/app/actions/posts'
+import { togglePostLike, addPostComment, togglePostBookmark, toggleCommentLike } from '@/app/actions/posts'
 import { cn } from '@/lib/utils'
 import type { ChangeEvent } from 'react'
 
@@ -27,6 +27,8 @@ type CommentReply = {
   content: string
   createdAt: string
   author: Author
+  likedByMe: boolean
+  likeCount: number
 }
 
 type Comment = {
@@ -34,6 +36,8 @@ type Comment = {
   content: string
   createdAt: string
   author: Author
+  likedByMe: boolean
+  likeCount: number
   replies: CommentReply[]
 }
 
@@ -61,6 +65,15 @@ export function PostCard(props: PostCardProps) {
   const [bookmarked, setBookmarked] = useState(props.bookmarkedByMe)
   const [replyingTo, setReplyingTo] = useState<{ id: string; name: string } | null>(null)
   const commentInputRef = useRef<HTMLInputElement>(null)
+
+  const [commentLikes, setCommentLikes] = useState<Map<string, { liked: boolean; count: number }>>(() => {
+    const m = new Map<string, { liked: boolean; count: number }>()
+    props.recentComments.forEach((c) => {
+      m.set(c.id, { liked: c.likedByMe, count: c.likeCount })
+      c.replies.forEach((r) => m.set(r.id, { liked: r.likedByMe, count: r.likeCount }))
+    })
+    return m
+  })
 
   async function onLike() {
     setError(null)
@@ -114,6 +127,25 @@ export function PostCard(props: PostCardProps) {
     setReplyingTo({ id: commentId, name: authorName })
     setShowComments(true)
     setTimeout(() => commentInputRef.current?.focus(), 100)
+  }
+
+  function onLikeComment(id: string) {
+    const cur = commentLikes.get(id) ?? { liked: false, count: 0 }
+    setCommentLikes((prev) => {
+      const next = new Map(prev)
+      next.set(id, { liked: !cur.liked, count: cur.liked ? cur.count - 1 : cur.count + 1 })
+      return next
+    })
+    startTransition(async () => {
+      const res = await toggleCommentLike(id)
+      if ('error' in res && res.error) {
+        setCommentLikes((prev) => {
+          const next = new Map(prev)
+          next.set(id, cur)
+          return next
+        })
+      }
+    })
   }
 
   function onShare() {
@@ -233,32 +265,48 @@ export function PostCard(props: PostCardProps) {
                   .reverse()
                   .map((c) => {
                     const name = c.author.username || c.author.name || 'User'
+                    const profileHref = c.author.username ? `/profile/${c.author.username}` : '#'
+                    const cLike = commentLikes.get(c.id) ?? { liked: false, count: 0 }
                     return (
                       <div key={c.id} className="space-y-2">
                         {/* ─ Parent comment ─ */}
                         <div className="flex items-start gap-2.5">
-                          <Avatar className="h-7 w-7 mt-0.5 shrink-0 border border-border">
-                            <AvatarImage src={c.author.image || ''} />
-                            <AvatarFallback className="text-[10px] font-bold">
-                              {name[0]?.toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
+                          <Link href={profileHref} className="shrink-0 mt-0.5">
+                            <Avatar className="h-7 w-7 border border-border">
+                              <AvatarImage src={c.author.image || ''} />
+                              <AvatarFallback className="text-[10px] font-bold">
+                                {name[0]?.toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </Link>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-baseline gap-2">
-                              <span className="text-sm font-semibold">{name}</span>
+                              <Link href={profileHref} className="text-sm font-semibold hover:underline">
+                                {name}
+                              </Link>
                               <span className="text-[10px] text-muted-foreground">
                                 {new Date(c.createdAt).toLocaleString()}
                               </span>
                             </div>
                             <p className="text-sm text-foreground mt-0.5">{c.content}</p>
-                            <button
-                              type="button"
-                              onClick={() => onReply(c.id, name)}
-                              className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground mt-1 transition-colors"
-                            >
-                              <CornerDownRight className="h-3 w-3" />
-                              Reply
-                            </button>
+                            <div className="flex items-center gap-3 mt-1">
+                              <button
+                                type="button"
+                                onClick={() => onReply(c.id, name)}
+                                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                              >
+                                <CornerDownRight className="h-3 w-3" />
+                                Reply
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => onLikeComment(c.id)}
+                                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-red-500 transition-colors"
+                              >
+                                <Heart className={cn('h-3 w-3', cLike.liked && 'fill-red-500 text-red-500')} />
+                                {cLike.count > 0 && <span>{cLike.count}</span>}
+                              </button>
+                            </div>
                           </div>
                         </div>
 
@@ -267,22 +315,36 @@ export function PostCard(props: PostCardProps) {
                           <div className="ml-9 pl-3 border-l-2 border-border space-y-2">
                             {c.replies.map((r) => {
                               const rName = r.author.username || r.author.name || 'User'
+                              const rHref = r.author.username ? `/profile/${r.author.username}` : '#'
+                              const rLike = commentLikes.get(r.id) ?? { liked: false, count: 0 }
                               return (
                                 <div key={r.id} className="flex items-start gap-2">
-                                  <Avatar className="h-6 w-6 mt-0.5 shrink-0 border border-border">
-                                    <AvatarImage src={r.author.image || ''} />
-                                    <AvatarFallback className="text-[9px] font-bold">
-                                      {rName[0]?.toUpperCase()}
-                                    </AvatarFallback>
-                                  </Avatar>
+                                  <Link href={rHref} className="shrink-0 mt-0.5">
+                                    <Avatar className="h-6 w-6 border border-border">
+                                      <AvatarImage src={r.author.image || ''} />
+                                      <AvatarFallback className="text-[9px] font-bold">
+                                        {rName[0]?.toUpperCase()}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </Link>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-baseline gap-2">
-                                      <span className="text-xs font-semibold">{rName}</span>
+                                      <Link href={rHref} className="text-xs font-semibold hover:underline">
+                                        {rName}
+                                      </Link>
                                       <span className="text-[10px] text-muted-foreground">
                                         {new Date(r.createdAt).toLocaleString()}
                                       </span>
                                     </div>
                                     <p className="text-xs text-foreground mt-0.5">{r.content}</p>
+                                    <button
+                                      type="button"
+                                      onClick={() => onLikeComment(r.id)}
+                                      className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-red-500 transition-colors mt-1"
+                                    >
+                                      <Heart className={cn('h-3 w-3', rLike.liked && 'fill-red-500 text-red-500')} />
+                                      {rLike.count > 0 && <span>{rLike.count}</span>}
+                                    </button>
                                   </div>
                                 </div>
                               )

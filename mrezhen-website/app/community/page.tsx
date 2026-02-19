@@ -49,11 +49,21 @@ export default async function CommunityFeedPage() {
           orderBy: { createdAt: 'desc' },
           include: {
             author: { select: { name: true, username: true, image: true } },
+            likes: {
+              where: { userId: currentUser.id },
+              select: { userId: true },
+            },
+            _count: { select: { likes: true } },
             replies: {
               take: 3,
               orderBy: { createdAt: 'asc' },
               include: {
                 author: { select: { name: true, username: true, image: true } },
+                likes: {
+                  where: { userId: currentUser.id },
+                  select: { userId: true },
+                },
+                _count: { select: { likes: true } },
               },
             },
           },
@@ -85,11 +95,15 @@ export default async function CommunityFeedPage() {
       content: c.content,
       createdAt: c.createdAt.toISOString(),
       author: c.author,
+      likedByMe: c.likes.length > 0,
+      likeCount: c._count.likes,
       replies: c.replies.map((r) => ({
         id: r.id,
         content: r.content,
         createdAt: r.createdAt.toISOString(),
         author: r.author,
+        likedByMe: r.likes.length > 0,
+        likeCount: r._count.likes,
       })),
     })),
   }))
@@ -97,28 +111,26 @@ export default async function CommunityFeedPage() {
   const sidebarPeople = recommendedUsers.slice(0, 5)
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[80px_220px_1fr_320px]">
-      {/* ── STORIES COLUMN ──────────────────────────── */}
-      <aside className="hidden lg:flex flex-col border-r border-border bg-card/40">
-        <StoriesBar
-          currentUser={{
-            id: currentUser.id,
-            name: currentUser.name,
-            username: currentUser.username,
-            image: currentUser.image,
-          }}
-          users={storyUsers}
-        />
-      </aside>
-
-      {/* ── LEFT SIDEBAR ────────────────────────────── */}
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[220px_1fr_320px]">
+      {/* ── LEFT SIDEBAR ─────────────────────────────── */}
       <aside className="hidden lg:block border-r border-border p-4 overflow-y-auto no-scrollbar">
         <CommunityLeftSidebar user={currentUser} />
       </aside>
 
       {/* ── FEED (center, scrollable) ─────────────── */}
       <section className="overflow-y-auto no-scrollbar p-6">
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="max-w-2xl mx-auto space-y-6">          {/* Horizontal stories strip */}
+          <div className="border border-border bg-card/60">
+            <StoriesBar
+              currentUser={{
+                id: currentUser.id,
+                name: currentUser.name,
+                username: currentUser.username,
+                image: currentUser.image,
+              }}
+              users={storyUsers}
+            />
+          </div>
           <PostComposer />
 
           <div className="space-y-4">

@@ -147,3 +147,33 @@ export async function togglePostBookmark(postId: string) {
   revalidatePath('/community')
   return { success: true, bookmarked: true }
 }
+
+export async function toggleCommentLike(commentId: string) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: 'Unauthorized' }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  })
+  if (!user) return { error: 'User not found' }
+
+  const existing = await prisma.postCommentLike.findUnique({
+    where: { commentId_userId: { commentId, userId: user.id } },
+    select: { commentId: true },
+  })
+
+  if (existing) {
+    await prisma.postCommentLike.delete({
+      where: { commentId_userId: { commentId, userId: user.id } },
+    })
+    revalidatePath('/community')
+    return { success: true, liked: false }
+  }
+
+  await prisma.postCommentLike.create({
+    data: { commentId, userId: user.id },
+  })
+  revalidatePath('/community')
+  return { success: true, liked: true }
+}
