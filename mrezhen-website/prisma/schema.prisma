@@ -101,6 +101,12 @@ model User {
   posts        Post[]
   postComments PostComment[]
   postLikes    PostLike[]
+
+  // ── Battle System ──
+  battlesAsChallenger  Battle[]           @relation("BattlesAsChallenger")
+  battlesAsChallenged  Battle[]           @relation("BattlesAsChallenged")
+  battlesWon           Battle[]           @relation("BattleWinner")
+  battleDailyQuests    BattleDailyQuest[]
 }
 
 model Follows {
@@ -128,6 +134,10 @@ model Milestone {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   quests      Quest[]
+
+  // Battle references (milestone selected for a battle)
+  battlesAsChallenger Battle[] @relation("BattleChallengerMilestone")
+  battlesAsChallenged Battle[] @relation("BattleChallengedMilestone")
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -198,6 +208,20 @@ enum Difficulty {
   MEDIUM
   HARD
   EPIC
+}
+
+enum BattleStatus {
+  PENDING     // Challenge sent, awaiting acceptance
+  ACTIVE      // Both agreed, battle in progress
+  COMPLETED   // 7-day period ended, winner resolved
+  CANCELLED   // Challenger withdrew before acceptance
+  DECLINED    // Challenged user declined
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model Message {
@@ -325,4 +349,79 @@ model PostLike {
 
   @@id([postId, userId])
   @@index([userId])
+}
+
+// ── 1v1 Battle System ──
+
+model Battle {
+  id              String       @id @default(cuid())
+
+  challengerId    String
+  challenger      User         @relation("BattlesAsChallenger", fields: [challengerId], references: [id], onDelete: Cascade)
+
+  challengedId    String
+  challenged      User         @relation("BattlesAsChallenged", fields: [challengedId], references: [id], onDelete: Cascade)
+
+  // Each user picks their own milestone to battle over
+  challengerMilestoneId String?
+  challengerMilestone   Milestone? @relation("BattleChallengerMilestone", fields: [challengerMilestoneId], references: [id], onDelete: SetNull)
+
+  challengedMilestoneId String?
+  challengedMilestone   Milestone? @relation("BattleChallengedMilestone", fields: [challengedMilestoneId], references: [id], onDelete: SetNull)
+
+  goalDescription String       // Shared goal both users agree on
+
+  status          BattleStatus @default(PENDING)
+
+  startDate       DateTime?    // Set when status -> ACTIVE
+  endDate         DateTime?    // startDate + 7 days
+
+  challengerXP    Int          @default(0)
+  challengedXP    Int          @default(0)
+
+  winnerId        String?      // Set on resolution (null = tie)
+  winner          User?        @relation("BattleWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+
+  dailyQuests     BattleDailyQuest[]
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([challengerId])
+  @@index([challengedId])
+  @@index([status])
+  @@index([endDate])
+  @@index([challengerId, challengedId])
+}
+
+model BattleDailyQuest {
+  id              String             @id @default(cuid())
+
+  battleId        String
+  battle          Battle             @relation(fields: [battleId], references: [id], onDelete: Cascade)
+
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  day             Int                // 1-7
+  description     String             // What the user must do today
+
+  proofText       String?            // Explanation of what was done
+  proofImageUrl   String?            // Optional image proof
+
+  verification    VerificationStatus @default(PENDING)
+  xpAwarded       Int                @default(0)
+
+  submittedAt     DateTime?
+  verifiedAt      DateTime?
+  verifiedById    String?            // The opponent who verified
+
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@unique([battleId, userId, day])  // One quest per user per day per battle
+  @@index([battleId])
+  @@index([userId])
+  @@index([battleId, userId])
+  @@index([verification])
 }
