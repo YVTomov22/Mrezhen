@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PostComposer } from '@/components/feed/post-composer'
+import { PostComposerModal } from '@/components/feed/post-composer-modal'
 import { PostCard } from '@/components/feed/post-card'
 import { FollowButton } from '@/components/follow-button'
 import { StoriesBar } from '@/components/community/stories-bar'
@@ -112,46 +113,11 @@ export default async function CommunityFeedPage() {
 
   return (
     <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[220px_1fr_320px]">
+      <PostComposerModal />
       {/* ── LEFT SIDEBAR ─────────────────────────────── */}
-      <aside className="hidden lg:block border-r border-border p-4 overflow-y-auto no-scrollbar">
-        <CommunityLeftSidebar user={currentUser} />
-      </aside>
-
-      {/* ── FEED (center, scrollable) ─────────────── */}
-      <section className="overflow-y-auto no-scrollbar p-6">
-        <div className="max-w-2xl mx-auto space-y-6">          {/* Horizontal stories strip */}
-          <div className="border border-border bg-card/60">
-            <StoriesBar
-              currentUser={{
-                id: currentUser.id,
-                name: currentUser.name,
-                username: currentUser.username,
-                image: currentUser.image,
-              }}
-              users={storyUsers}
-            />
-          </div>
-          <PostComposer />
-
-          <div className="space-y-4">
-            {serialized.length === 0 ? (
-              <div className="bg-card border-2 border-dashed border-border rounded-xl p-10 text-center">
-                <div className="mx-auto w-14 h-14 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-3">
-                  <MessageSquare className="w-7 h-7 text-teal-500" />
-                </div>
-                <p className="text-muted-foreground font-medium">{t('noPosts')}</p>
-              </div>
-            ) : (
-              serialized.map((post) => <PostCard key={post.id} {...post} />)
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── RIGHT SIDEBAR ───────────────────────────── */}
-      <aside className="hidden lg:flex flex-col gap-4 border-l border-border p-4 overflow-y-auto no-scrollbar">
+      <aside className="hidden lg:flex flex-col gap-4 border-r border-border p-4 overflow-y-auto no-scrollbar">
         {/* Suggested People */}
-        <Card className="border-border shadow-sm">
+        <Card className="border border-border shadow-none bg-transparent">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
@@ -189,7 +155,7 @@ export default async function CommunityFeedPage() {
         </Card>
 
         {/* Discover People */}
-        <Card className="border-border shadow-sm">
+        <Card className="border-0 shadow-none bg-transparent">
           <CardContent className="py-4 space-y-2">
             <Link href="/community/people">
               <Button variant="outline" className="w-full gap-2 text-sm">
@@ -198,6 +164,42 @@ export default async function CommunityFeedPage() {
             </Link>
           </CardContent>
         </Card>
+      </aside>
+
+      {/* ── FEED (center, scrollable) ─────────────── */}
+      <section className="overflow-y-auto no-scrollbar p-6">
+        <div className="max-w-2xl mx-auto space-y-6">          {/* Horizontal stories strip */}
+          <div className="border border-border bg-card/60">
+            <StoriesBar
+              currentUser={{
+                id: currentUser.id,
+                name: currentUser.name,
+                username: currentUser.username,
+                image: currentUser.image,
+              }}
+              users={storyUsers}
+            />
+          </div>
+          <PostComposer />
+
+          <div className="space-y-4">
+            {serialized.length === 0 ? (
+              <div className="bg-card border-2 border-dashed border-border rounded-xl p-10 text-center">
+                <div className="mx-auto w-14 h-14 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-3">
+                  <MessageSquare className="w-7 h-7 text-teal-500" />
+                </div>
+                <p className="text-muted-foreground font-medium">{t('noPosts')}</p>
+              </div>
+            ) : (
+              serialized.map((post) => <PostCard key={post.id} {...post} />)
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── RIGHT SIDEBAR ───────────────────────────── */}
+      <aside className="hidden lg:block border-l border-border p-4 overflow-y-auto no-scrollbar">
+        <CommunityLeftSidebar user={currentUser} />
       </aside>
     </div>
   )

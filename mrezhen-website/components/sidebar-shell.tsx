@@ -18,7 +18,7 @@ export function SidebarShell({ children }: { children: React.ReactNode }) {
         onMouseEnter={() => setExpanded(true)}
         onMouseLeave={() => setExpanded(false)}
         className={cn(
-          "hidden md:flex fixed left-0 top-0 h-screen z-50 border-r border-border bg-background/95 backdrop-blur-xl flex-col justify-between py-6 px-2 transition-[width] duration-200 ease-in-out overflow-hidden",
+          "hidden md:flex fixed left-0 top-0 h-screen z-50 border-r border-border bg-background/95 backdrop-blur-xl flex-col justify-between py-6 px-2 transition-[width] duration-200 ease-in-out overflow-x-hidden overflow-y-auto no-scrollbar",
           expanded ? "w-[220px]" : "w-[72px]"
         )}
       >

@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { uploadImages } from '@/app/actions/upload'
 import { createPost } from '@/app/actions/posts'
 
-export function PostComposer() {
+export function PostComposer({ onSuccess }: { onSuccess?: () => void } = {}) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -61,7 +61,7 @@ export function PostComposer() {
 
         setContent('')
         setFiles([])
-        router.refresh()
+        onSuccess ? onSuccess() : router.refresh()
       } catch (e: any) {
         setError(e?.message ?? 'Failed to post')
       }
