@@ -33,11 +33,10 @@ export function SidebarLinks({ items }: SidebarLinksProps) {
   const expanded = useSidebarExpanded()
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-0.5">
       {items.map((item) => {
         const Icon = iconMap[item.icon]
         const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-        const isGradient = item.icon === 'sparkles'
 
         return (
           <Link
@@ -45,19 +44,21 @@ export function SidebarLinks({ items }: SidebarLinksProps) {
             href={item.href}
             title={!expanded ? item.label : undefined}
             className={cn(
-              "flex items-center justify-center gap-4 px-3 py-3 rounded-lg transition-all",
+              "flex items-center justify-center gap-4 px-3 py-3 transition-all duration-200",
               expanded && "justify-start",
-              isGradient && "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:opacity-90 shadow-md",
-              !isGradient && isActive && "bg-muted font-semibold text-foreground",
-              !isGradient && !isActive && "text-muted-foreground hover:bg-muted hover:text-foreground"
+              isActive && "text-amber-700 dark:text-[#E5483B] font-semibold dark:bg-[#2E1614] border-l-2 border-transparent dark:border-[#E5483B]/60",
+              !isActive && "text-muted-foreground hover:text-foreground border-l-2 border-transparent"
             )}
           >
             <Icon className={cn(
-              "h-6 w-6 shrink-0",
-              isGradient && "fill-white",
-              !isGradient && isActive && "stroke-[2.5px]"
+              "h-[22px] w-[22px] shrink-0 transition-all duration-200",
+              isActive && "stroke-[2.5px] text-amber-600 dark:text-[#E5483B]"
             )} />
-            {expanded && <span className="text-sm whitespace-nowrap">{item.label}</span>}
+            {expanded && (
+              <span className="text-[13px] whitespace-nowrap tracking-tight">
+                {item.label}
+              </span>
+            )}
           </Link>
         )
       })}

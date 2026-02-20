@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/app/auth'
 import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PostComposer } from '@/components/feed/post-composer'
 import { PostComposerModal } from '@/components/feed/post-composer-modal'
@@ -11,7 +10,7 @@ import { PostCard } from '@/components/feed/post-card'
 import { FollowButton } from '@/components/follow-button'
 import { StoriesBar } from '@/components/community/stories-bar'
 import { CommunityLeftSidebar } from '@/components/community/left-sidebar'
-import { Sparkles, MessageSquare, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { getRecommendedUsers } from '@/app/actions/recommend'
 
@@ -112,64 +111,60 @@ export default async function CommunityFeedPage() {
   const sidebarPeople = recommendedUsers.slice(0, 5)
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[220px_1fr_320px]">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[240px_1fr_300px]">
       <PostComposerModal />
       {/* ── LEFT SIDEBAR ─────────────────────────────── */}
-      <aside className="hidden lg:flex flex-col gap-4 border-r border-border p-4 overflow-y-auto no-scrollbar">
+      <aside className="hidden lg:flex flex-col gap-8 border-r border-border px-6 py-8 overflow-y-auto no-scrollbar">
         {/* Suggested People */}
-        <Card className="border border-border shadow-none bg-transparent">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <Sparkles className="h-4 w-4 text-amber-500" />
-                {t('suggestedPeople')}
-              </CardTitle>
-              <Link href="/community/suggested" className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                {t('viewAll')}
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="editorial-caption text-muted-foreground">
+              {t('suggestedPeople')}
+            </h3>
+            <Link href="/community/suggested" className="text-[11px] text-muted-foreground hover:text-foreground transition-colors tracking-wide uppercase">
+              {t('viewAll')}
+            </Link>
+          </div>
+          <div className="space-y-4">
             {sidebarPeople.length === 0 ? (
-              <p className="text-xs text-muted-foreground">{t('noSuggestions')}</p>
+              <p className="text-xs text-muted-foreground editorial-body">{t('noSuggestions')}</p>
             ) : (
               sidebarPeople.map((user) => (
-                <div key={user.id} className="flex items-center gap-2.5">
-                  <Avatar className="h-8 w-8 border border-border">
+                <div key={user.id} className="flex items-center gap-3 group">
+                  <Avatar className="h-9 w-9 border border-border shrink-0">
                     <AvatarImage src={user.image || ''} />
-                    <AvatarFallback className="bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-xs font-bold">
+                    <AvatarFallback className="bg-foreground text-background text-xs font-semibold">
                       {user.name?.[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <Link href={`/profile/${user.username}`} className="text-sm font-semibold truncate block hover:underline">
+                    <Link href={`/profile/${user.username}`} className="text-[13px] font-medium truncate block group-hover:underline tracking-tight">
                       {user.name}
                     </Link>
-                    <p className="text-[10px] text-muted-foreground">{t('levelLabel')} {user.level}</p>
+                    <p className="text-[10px] text-muted-foreground tracking-wide uppercase">{t('levelLabel')} {user.level}</p>
                   </div>
                   <FollowButton targetUserId={user.id} initialIsFollowing={false} />
                 </div>
               ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Discover People */}
-        <Card className="border-0 shadow-none bg-transparent">
-          <CardContent className="py-4 space-y-2">
-            <Link href="/community/people">
-              <Button variant="outline" className="w-full gap-2 text-sm">
-                <Search className="h-4 w-4" /> {t('findPeople')}
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div>
+          <Link href="/community/people">
+            <Button variant="outline" className="w-full gap-2 text-[13px] tracking-tight h-10 border-foreground/20 hover:bg-foreground hover:text-background transition-all duration-200">
+              <Search className="h-4 w-4" /> {t('findPeople')}
+            </Button>
+          </Link>
+        </div>
       </aside>
 
       {/* ── FEED (center, scrollable) ─────────────── */}
-      <section className="overflow-y-auto no-scrollbar p-6">
-        <div className="max-w-2xl mx-auto space-y-6">          {/* Horizontal stories strip */}
-          <div className="border border-border bg-card/60">
+      <section className="overflow-y-auto no-scrollbar px-6 py-8">
+        <div className="max-w-[640px] mx-auto space-y-8">
+          {/* Horizontal stories strip */}
+          <div className="border-b border-border pb-6">
             <StoriesBar
               currentUser={{
                 id: currentUser.id,
@@ -180,15 +175,13 @@ export default async function CommunityFeedPage() {
               users={storyUsers}
             />
           </div>
+
           <PostComposer />
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {serialized.length === 0 ? (
-              <div className="bg-card border-2 border-dashed border-border rounded-xl p-10 text-center">
-                <div className="mx-auto w-14 h-14 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-3">
-                  <MessageSquare className="w-7 h-7 text-teal-500" />
-                </div>
-                <p className="text-muted-foreground font-medium">{t('noPosts')}</p>
+              <div className="border border-dashed border-border py-16 text-center">
+                <p className="editorial-caption text-muted-foreground">{t('noPosts')}</p>
               </div>
             ) : (
               serialized.map((post) => <PostCard key={post.id} {...post} />)
@@ -198,7 +191,7 @@ export default async function CommunityFeedPage() {
       </section>
 
       {/* ── RIGHT SIDEBAR ───────────────────────────── */}
-      <aside className="hidden lg:block border-l border-border p-4 overflow-y-auto no-scrollbar">
+      <aside className="hidden lg:block border-l border-border px-6 py-8 overflow-y-auto no-scrollbar">
         <CommunityLeftSidebar user={currentUser} />
       </aside>
     </div>

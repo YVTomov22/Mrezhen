@@ -83,13 +83,13 @@ export async function Navbar() {
       </SidebarShell>
 
       {/* Mobile Top Bar + Hamburger */}
-      <header className="md:hidden sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl">
+      <header className="md:hidden sticky top-0 z-50 w-full border-b border-border bg-background">
         <div className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="bg-teal-600 text-white p-1.5 rounded-lg">
-              <Image src="/favicon.ico" alt="Mrezhen Logo" height={20} width={20} />
+            <div className="bg-foreground text-background p-1.5 flex items-center justify-center">
+              <span className="font-editorial text-sm font-black leading-none">M</span>
             </div>
-            <Link href="/dashboard" className="text-lg font-bold tracking-tight">
+            <Link href="/dashboard" className="editorial-subhead text-base">
               Mrezhen
             </Link>
           </div>
@@ -123,8 +123,8 @@ export async function Navbar() {
                   </Link>
                   <div className="h-px bg-border my-2" />
                   <Link href="/ai-chat">
-                    <Button className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0">
-                      <Sparkles className="mr-2 h-4 w-4 fill-white" /> {t("askAi")}
+                    <Button className="w-full bg-foreground text-background hover:bg-foreground/90 border-0">
+                      <Sparkles className="mr-2 h-4 w-4" /> {t("askAi")}
                     </Button>
                   </Link>
                   <Link href="/settings" className="flex items-center gap-3 text-lg font-medium">

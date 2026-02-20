@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { CreateMilestoneBtn } from "@/components/game/creation-forms"
 import { MilestoneItem } from "@/components/game/milestone-item"
-import { ArrowLeft, Target, CheckCircle2, Clock, Trophy } from "lucide-react"
+import { ArrowLeft, Target } from "lucide-react"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Progress } from "@/components/ui/progress"
@@ -41,70 +41,52 @@ export default async function GoalsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ── Header Banner ───────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2" />
-        </div>
-        <div className="relative max-w-5xl mx-auto px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* ── Header ───────────────────────────────────── */}
+      <div className="border-b border-border">
+        <div className="max-w-5xl mx-auto px-6 py-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-              <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-teal-200 hover:text-white text-sm mb-2 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> {t("backToDashboard")}
+              <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-[12px] tracking-wide uppercase mb-3 transition-colors">
+                <ArrowLeft className="w-3.5 h-3.5" /> {t("backToDashboard")}
               </Link>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{t("title")}</h1>
-              <p className="text-teal-200 mt-1">{t("description")}</p>
+              <h1 className="editorial-headline text-4xl md:text-5xl">{t("title")}</h1>
+              <p className="editorial-body text-muted-foreground mt-2">{t("description")}</p>
             </div>
             <CreateMilestoneBtn />
           </div>
 
           {/* ── Stats Row ────────────────────────────── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-1">
-                <Target className="w-4 h-4 text-teal-200" />
-                <span className="text-xs text-teal-100">{t("totalMilestones")}</span>
-              </div>
-              <p className="text-2xl font-bold">{totalMilestones}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-px mt-10 border border-border">
+            <div className="p-5 bg-background">
+              <p className="editorial-caption text-muted-foreground mb-1">{t("totalMilestones")}</p>
+              <p className="text-3xl font-black tracking-tighter">{totalMilestones}</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-4 h-4 text-amber-300" />
-                <span className="text-xs text-teal-100">{t("inProgressLabel")}</span>
-              </div>
-              <p className="text-2xl font-bold">{inProgress}</p>
+            <div className="p-5 bg-background border-l border-border">
+              <p className="editorial-caption text-muted-foreground mb-1">{t("inProgressLabel")}</p>
+              <p className="text-3xl font-black tracking-tighter">{inProgress}</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-1">
-                <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                <span className="text-xs text-teal-100">{t("completedLabel")}</span>
-              </div>
-              <p className="text-2xl font-bold">{completed}</p>
+            <div className="p-5 bg-background border-l border-border">
+              <p className="editorial-caption text-muted-foreground mb-1">{t("completedLabel")}</p>
+              <p className="text-3xl font-black tracking-tighter">{completed}</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-1">
-                <Trophy className="w-4 h-4 text-yellow-300" />
-                <span className="text-xs text-teal-100">{t("overallProgress")}</span>
+            <div className="p-5 bg-background border-l border-border">
+              <p className="editorial-caption text-muted-foreground mb-1">{t("overallProgress")}</p>
+              <p className="text-3xl font-black tracking-tighter">{overallProgress}%</p>
+              <div className="w-full bg-muted h-1 mt-2">
+                <div className="bg-foreground h-1 transition-all" style={{ width: `${overallProgress}%` }} />
               </div>
-              <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold">{overallProgress}%</p>
-              </div>
-              <Progress value={overallProgress} className="h-1.5 mt-2 bg-white/20 [&>div]:bg-emerald-300" />
             </div>
           </div>
         </div>
       </div>
 
       {/* ── Milestones List ──────────────────────────── */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="grid gap-6">
           {user.milestones.length === 0 && (
-            <div className="text-center py-20 bg-card border-2 border-dashed border-border rounded-xl">
-              <div className="mx-auto w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-4">
-                <Target className="w-8 h-8 text-teal-500" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">{t("noMilestones")}</h3>
-              <p className="text-muted-foreground mb-4 mt-1">{t("startByCreating")}</p>
+            <div className="text-center py-20 border border-dashed border-border">
+              <p className="editorial-caption text-muted-foreground mb-4">{t("noMilestones")}</p>
+              <h3 className="editorial-subhead text-foreground mb-2">{t("startByCreating")}</h3>
               <CreateMilestoneBtn />
             </div>
           )}

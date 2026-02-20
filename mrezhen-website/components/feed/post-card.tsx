@@ -161,32 +161,36 @@ export function PostCard(props: PostCardProps) {
   const when = new Date(props.createdAt).toLocaleString()
 
   return (
-    <div className="border-2 border-border rounded-xl bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <article className="border-b border-border pb-8 mb-8 last:border-b-0 last:pb-0 last:mb-0">
       {/* Header */}
-      <div className="flex items-center gap-3 p-4">
-        <Avatar className="h-10 w-10 border border-border">
+      <div className="flex items-center gap-3 mb-4">
+        <Avatar className="h-9 w-9 border border-border">
           <AvatarImage src={props.author.image || ''} />
-          <AvatarFallback className="bg-blue-50 text-blue-600 font-bold">
+          <AvatarFallback className="bg-foreground text-background text-xs font-bold">
             {displayName[0]?.toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <Link
-              href={props.author.username ? `/profile/${props.author.username}` : '#'}
-              className="font-bold text-sm truncate hover:underline"
-            >
-              {displayName}
-            </Link>
-            <span className="text-xs text-muted-foreground">•</span>
-            <span className="text-xs text-muted-foreground">{when}</span>
-          </div>
+          <Link
+            href={props.author.username ? `/profile/${props.author.username}` : '#'}
+            className="text-[13px] font-semibold tracking-tight hover:underline underline-offset-2"
+          >
+            {displayName}
+          </Link>
+          <p className="editorial-caption text-muted-foreground !text-[10px]">{when}</p>
         </div>
       </div>
 
+      {/* Content */}
+      {props.content && (
+        <div className="mb-4">
+          <p className="editorial-body text-[15px]">{props.content}</p>
+        </div>
+      )}
+
       {/* Images */}
       {props.images.length > 0 && (
-        <div className={props.images.length === 1 ? '' : 'grid grid-cols-2 gap-1'}>
+        <div className={cn("mb-4", props.images.length === 1 ? '' : 'grid grid-cols-2 gap-1')}>
           {props.images.map((img) => (
             <img
               key={img.id}
@@ -198,66 +202,57 @@ export function PostCard(props: PostCardProps) {
         </div>
       )}
 
-      {/* Content */}
-      {props.content && (
-        <div className="px-4 pt-3">
-          <p className="text-sm text-foreground whitespace-pre-wrap">{props.content}</p>
-        </div>
-      )}
-
       {/* Action Buttons */}
-      <div className="flex items-center justify-between px-4 py-2 border-t border-border mt-3">
-        {/* Left: Like, Comment, Share */}
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-0.5">
           <Button
             variant="ghost"
             size="sm"
             onClick={onLike}
             disabled={isPending}
-            className="gap-1.5 text-muted-foreground hover:text-foreground"
+            className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2"
           >
-            <Heart className={cn("h-5 w-5", liked && "fill-red-500 text-red-500")} />
-            <span className="text-xs">{likeCount > 0 ? likeCount : ''}</span>
+            <Heart className={cn("h-[18px] w-[18px] transition-colors", liked && "fill-amber-500 text-amber-500")} />
+            <span className="text-[11px] tabular-nums">{likeCount > 0 ? likeCount : ''}</span>
           </Button>
 
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowComments((prev) => !prev)}
-            className={cn("gap-1.5 text-muted-foreground hover:text-foreground", showComments && "text-foreground")}
+            className={cn("gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2", showComments && "text-foreground")}
           >
-            <MessageCircle className={cn("h-5 w-5", showComments && "fill-foreground")} />
-            <span className="text-xs">{props.commentCount > 0 ? props.commentCount : ''}</span>
+            <MessageCircle className={cn("h-[18px] w-[18px]", showComments && "fill-foreground")} />
+            <span className="text-[11px] tabular-nums">{props.commentCount > 0 ? props.commentCount : ''}</span>
           </Button>
 
           <Button
             variant="ghost"
             size="sm"
             onClick={onShare}
-            className="gap-1.5 text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground h-8 px-2"
           >
-            <Share2 className="h-5 w-5" />
+            <Share2 className="h-[18px] w-[18px]" />
           </Button>
         </div>
 
-        {/* Right: Save / Bookmark */}
         <Button
           variant="ghost"
           size="sm"
           onClick={onBookmark}
           disabled={isPending}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground h-8 px-2"
         >
-          <Bookmark className={cn("h-5 w-5", bookmarked && "fill-foreground text-foreground")} />
+          <Bookmark className={cn("h-[18px] w-[18px]", bookmarked && "fill-foreground text-foreground")} />
         </Button>
       </div>
 
-      {error && <p className="text-sm text-red-600 px-4 pb-2">{error}</p>}
+      {error && <p className="text-[12px] text-foreground mt-2">{error}</p>}
 
-      {/* ── Animated Comment Section (slide-down / fade-in) ── */}
+      {/* ── Comment Section ── */}
       <div className="comment-collapse" data-open={showComments}>
         <div>
-          <div className="border-t border-border px-4 py-3 space-y-3">
+          <div className="border-t border-border mt-4 pt-4 space-y-3">
             {props.recentComments.length > 0 && (
               <div className="space-y-3">
                 {props.recentComments
@@ -269,26 +264,25 @@ export function PostCard(props: PostCardProps) {
                     const cLike = commentLikes.get(c.id) ?? { liked: false, count: 0 }
                     return (
                       <div key={c.id} className="space-y-2">
-                        {/* ─ Parent comment ─ */}
                         <div className="flex items-start gap-2.5">
                           <Link href={profileHref} className="shrink-0 mt-0.5">
-                            <Avatar className="h-7 w-7 border border-border">
+                            <Avatar className="h-6 w-6 border border-border">
                               <AvatarImage src={c.author.image || ''} />
-                              <AvatarFallback className="text-[10px] font-bold">
+                              <AvatarFallback className="text-[9px] font-bold bg-foreground text-background">
                                 {name[0]?.toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                           </Link>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-baseline gap-2">
-                              <Link href={profileHref} className="text-sm font-semibold hover:underline">
+                              <Link href={profileHref} className="text-[13px] font-semibold tracking-tight hover:underline underline-offset-2">
                                 {name}
                               </Link>
-                              <span className="text-[10px] text-muted-foreground">
+                              <span className="text-[10px] text-muted-foreground tracking-wide uppercase">
                                 {new Date(c.createdAt).toLocaleString()}
                               </span>
                             </div>
-                            <p className="text-sm text-foreground mt-0.5">{c.content}</p>
+                            <p className="text-[13px] text-foreground mt-0.5 leading-relaxed">{c.content}</p>
                             <div className="flex items-center gap-3 mt-1">
                               <button
                                 type="button"
@@ -301,18 +295,18 @@ export function PostCard(props: PostCardProps) {
                               <button
                                 type="button"
                                 onClick={() => onLikeComment(c.id)}
-                                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-red-500 transition-colors"
+                                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
                               >
-                                <Heart className={cn('h-3 w-3', cLike.liked && 'fill-red-500 text-red-500')} />
+                                <Heart className={cn('h-3 w-3', cLike.liked && 'fill-foreground text-foreground')} />
                                 {cLike.count > 0 && <span>{cLike.count}</span>}
                               </button>
                             </div>
                           </div>
                         </div>
 
-                        {/* ─ Nested replies ─ */}
+                        {/* Nested replies */}
                         {c.replies && c.replies.length > 0 && (
-                          <div className="ml-9 pl-3 border-l-2 border-border space-y-2">
+                          <div className="ml-8 pl-3 border-l border-border space-y-2">
                             {c.replies.map((r) => {
                               const rName = r.author.username || r.author.name || 'User'
                               const rHref = r.author.username ? `/profile/${r.author.username}` : '#'
@@ -320,29 +314,29 @@ export function PostCard(props: PostCardProps) {
                               return (
                                 <div key={r.id} className="flex items-start gap-2">
                                   <Link href={rHref} className="shrink-0 mt-0.5">
-                                    <Avatar className="h-6 w-6 border border-border">
+                                    <Avatar className="h-5 w-5 border border-border">
                                       <AvatarImage src={r.author.image || ''} />
-                                      <AvatarFallback className="text-[9px] font-bold">
+                                      <AvatarFallback className="text-[8px] font-bold bg-foreground text-background">
                                         {rName[0]?.toUpperCase()}
                                       </AvatarFallback>
                                     </Avatar>
                                   </Link>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-baseline gap-2">
-                                      <Link href={rHref} className="text-xs font-semibold hover:underline">
+                                      <Link href={rHref} className="text-[12px] font-semibold tracking-tight hover:underline underline-offset-2">
                                         {rName}
                                       </Link>
                                       <span className="text-[10px] text-muted-foreground">
                                         {new Date(r.createdAt).toLocaleString()}
                                       </span>
                                     </div>
-                                    <p className="text-xs text-foreground mt-0.5">{r.content}</p>
+                                    <p className="text-[12px] text-foreground mt-0.5 leading-relaxed">{r.content}</p>
                                     <button
                                       type="button"
                                       onClick={() => onLikeComment(r.id)}
-                                      className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-red-500 transition-colors mt-1"
+                                      className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors mt-1"
                                     >
-                                      <Heart className={cn('h-3 w-3', rLike.liked && 'fill-red-500 text-red-500')} />
+                                      <Heart className={cn('h-3 w-3', rLike.liked && 'fill-foreground text-foreground')} />
                                       {rLike.count > 0 && <span>{rLike.count}</span>}
                                     </button>
                                   </div>
@@ -359,7 +353,7 @@ export function PostCard(props: PostCardProps) {
 
             {/* Reply indicator */}
             {replyingTo && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-1.5">
+              <div className="flex items-center gap-2 text-[11px] text-muted-foreground border border-border px-3 py-1.5">
                 <CornerDownRight className="h-3 w-3 shrink-0" />
                 <span>
                   Replying to <strong className="text-foreground">{replyingTo.name}</strong>
@@ -383,14 +377,15 @@ export function PostCard(props: PostCardProps) {
                 placeholder={replyingTo ? `Reply to ${replyingTo.name}...` : 'Add a comment...'}
                 disabled={isPending}
                 onKeyDown={(e) => e.key === 'Enter' && onAddComment()}
+                className="text-[13px]"
               />
-              <Button onClick={onAddComment} disabled={isPending || !comment.trim()} size="sm">
+              <Button onClick={onAddComment} disabled={isPending || !comment.trim()} size="sm" className="bg-amber-600 hover:bg-amber-700 text-white text-[12px] tracking-wide uppercase">
                 Post
               </Button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </article>
   )
 }

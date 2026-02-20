@@ -44,19 +44,19 @@ export function SidebarProfile({ user }: SidebarProfileProps) {
   const truncatedName = displayName.length > 14 ? displayName.slice(0, 14) + '\u2026' : displayName
 
   return (
-    <div className="mt-1">
+    <div className="mt-2">
       <Link
         href="/profile"
-        className={`relative flex w-full rounded-lg px-3 py-2 items-center hover:bg-accent transition-colors ${expanded ? 'justify-start gap-3' : 'justify-center'}`}
+        className={`relative flex w-full px-3 py-2.5 items-center hover:bg-accent transition-colors duration-200 ${expanded ? 'justify-start gap-3' : 'justify-center'}`}
       >
         <Avatar className="h-8 w-8 border border-border shrink-0">
           <AvatarImage src={localImage || ''} alt={displayName} />
-          <AvatarFallback className="font-bold bg-muted text-xs">
+          <AvatarFallback className="font-semibold bg-foreground text-background text-xs">
             {displayName[0]?.toUpperCase() || 'U'}
           </AvatarFallback>
         </Avatar>
         {expanded && (
-          <span className="text-sm font-medium truncate whitespace-nowrap">
+          <span className="text-[13px] font-medium truncate whitespace-nowrap tracking-tight">
             {truncatedName}
           </span>
         )}
