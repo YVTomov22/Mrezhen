@@ -88,7 +88,7 @@ export function PostComposer({ onSuccess }: { onSuccess?: () => void } = {}) {
             disabled={isPending}
             className="text-[13px]"
           />
-          <Button onClick={onSubmit} disabled={isPending} className="bg-foreground text-background hover:bg-foreground/90 text-[12px] tracking-wide uppercase">
+          <Button onClick={onSubmit} disabled={isPending} className="bg-foreground text-background hover:bg-foreground/90 dark:bg-[#0095F6] dark:hover:bg-[#0080D6] dark:text-white text-[12px] tracking-wide uppercase">
             {isPending ? 'Posting...' : 'Publish'}
           </Button>
         </div>

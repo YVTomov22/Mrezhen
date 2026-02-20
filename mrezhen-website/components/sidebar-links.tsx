@@ -46,13 +46,13 @@ export function SidebarLinks({ items }: SidebarLinksProps) {
             className={cn(
               "flex items-center justify-center gap-4 px-3 py-3 transition-all duration-200",
               expanded && "justify-start",
-              isActive && "text-amber-700 dark:text-[#E5483B] font-semibold dark:bg-[#2E1614] border-l-2 border-transparent dark:border-[#E5483B]/60",
+              isActive && "text-amber-700 dark:text-[#14B8A6] font-semibold dark:bg-[#042F2E] border-l-2 border-transparent dark:border-[#14B8A6]/60",
               !isActive && "text-muted-foreground hover:text-foreground border-l-2 border-transparent"
             )}
           >
             <Icon className={cn(
               "h-[22px] w-[22px] shrink-0 transition-all duration-200",
-              isActive && "stroke-[2.5px] text-amber-600 dark:text-[#E5483B]"
+              isActive && "stroke-[2.5px] text-amber-600 dark:text-[#14B8A6]"
             )} />
             {expanded && (
               <span className="text-[13px] whitespace-nowrap tracking-tight">

@@ -212,7 +212,7 @@ export function PostCard(props: PostCardProps) {
             disabled={isPending}
             className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2"
           >
-            <Heart className={cn("h-[18px] w-[18px] transition-colors", liked && "fill-amber-500 text-amber-500")} />
+            <Heart className={cn("h-[18px] w-[18px] transition-colors", liked && "fill-amber-500 text-amber-500 dark:fill-[#22D3EE] dark:text-[#22D3EE]")} />
             <span className="text-[11px] tabular-nums">{likeCount > 0 ? likeCount : ''}</span>
           </Button>
 
@@ -243,7 +243,7 @@ export function PostCard(props: PostCardProps) {
           disabled={isPending}
           className="text-muted-foreground hover:text-foreground h-8 px-2"
         >
-          <Bookmark className={cn("h-[18px] w-[18px]", bookmarked && "fill-foreground text-foreground")} />
+          <Bookmark className={cn("h-[18px] w-[18px]", bookmarked && "fill-foreground text-foreground dark:fill-[#0095F6] dark:text-[#0095F6]")} />
         </Button>
       </div>
 
@@ -297,7 +297,7 @@ export function PostCard(props: PostCardProps) {
                                 onClick={() => onLikeComment(c.id)}
                                 className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
                               >
-                                <Heart className={cn('h-3 w-3', cLike.liked && 'fill-foreground text-foreground')} />
+                                <Heart className={cn('h-3 w-3', cLike.liked && 'fill-foreground text-foreground dark:fill-[#0095F6] dark:text-[#0095F6]')} />
                                 {cLike.count > 0 && <span>{cLike.count}</span>}
                               </button>
                             </div>
@@ -336,7 +336,7 @@ export function PostCard(props: PostCardProps) {
                                       onClick={() => onLikeComment(r.id)}
                                       className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors mt-1"
                                     >
-                                      <Heart className={cn('h-3 w-3', rLike.liked && 'fill-foreground text-foreground')} />
+                                      <Heart className={cn('h-3 w-3', rLike.liked && 'fill-foreground text-foreground dark:fill-[#0095F6] dark:text-[#0095F6]')} />
                                       {rLike.count > 0 && <span>{rLike.count}</span>}
                                     </button>
                                   </div>
@@ -379,7 +379,7 @@ export function PostCard(props: PostCardProps) {
                 onKeyDown={(e) => e.key === 'Enter' && onAddComment()}
                 className="text-[13px]"
               />
-              <Button onClick={onAddComment} disabled={isPending || !comment.trim()} size="sm" className="bg-amber-600 hover:bg-amber-700 text-white text-[12px] tracking-wide uppercase">
+              <Button onClick={onAddComment} disabled={isPending || !comment.trim()} size="sm" className="bg-amber-600 hover:bg-amber-700 dark:bg-[#14B8A6] dark:hover:bg-[#0F9688] text-white text-[12px] tracking-wide uppercase">
                 Post
               </Button>
             </div>

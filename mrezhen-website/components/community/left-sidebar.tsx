@@ -40,27 +40,27 @@ export function CommunityLeftSidebar({ user }: LeftSidebarProps) {
       <nav className="space-y-0.5">
         <Link
           href="/community"
-          className="flex items-center gap-3 px-2 py-2 text-[13px] font-semibold tracking-tight text-amber-700 dark:text-amber-400 border-l-2 border-amber-500"
+          className="flex items-center gap-3 px-2 py-2 text-[13px] font-semibold tracking-tight text-amber-700 dark:text-[#22D3EE] dark:bg-[#042F2E] border-l-2 border-amber-500 dark:border-[#22D3EE]/60"
         >
           For You
         </Link>
         <Link
           href="/community?filter=saved"
-          className="flex items-center gap-3 px-2 py-2 text-[13px] tracking-tight text-muted-foreground hover:text-amber-700 dark:hover:text-[#E5483B] border-l-2 border-transparent hover:border-amber-400 dark:hover:border-[#E5483B]/50 transition-colors"
+          className="flex items-center gap-3 px-2 py-2 text-[13px] tracking-tight text-muted-foreground hover:text-amber-700 dark:hover:text-[#14B8A6] border-l-2 border-transparent hover:border-amber-400 dark:hover:border-[#14B8A6]/50 transition-colors"
         >
           <Bookmark className="h-3.5 w-3.5" />
           Saved
         </Link>
         <Link
           href="/community?filter=liked"
-          className="flex items-center gap-3 px-2 py-2 text-[13px] tracking-tight text-muted-foreground hover:text-amber-700 dark:hover:text-[#E5483B] border-l-2 border-transparent hover:border-amber-400 dark:hover:border-[#E5483B]/50 transition-colors"
+          className="flex items-center gap-3 px-2 py-2 text-[13px] tracking-tight text-muted-foreground hover:text-amber-700 dark:hover:text-[#14B8A6] border-l-2 border-transparent hover:border-amber-400 dark:hover:border-[#14B8A6]/50 transition-colors"
         >
           <Heart className="h-3.5 w-3.5" />
           Liked
         </Link>
         <Link
           href={`/profile/${user.username}`}
-          className="flex items-center gap-3 px-2 py-2 text-[13px] tracking-tight text-muted-foreground hover:text-amber-700 dark:hover:text-[#E5483B] border-l-2 border-transparent hover:border-amber-400 dark:hover:border-[#E5483B]/50 transition-colors"
+          className="flex items-center gap-3 px-2 py-2 text-[13px] tracking-tight text-muted-foreground hover:text-amber-700 dark:hover:text-[#14B8A6] border-l-2 border-transparent hover:border-amber-400 dark:hover:border-[#14B8A6]/50 transition-colors"
         >
           <FileText className="h-3.5 w-3.5" />
           My Posts

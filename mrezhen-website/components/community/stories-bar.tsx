@@ -27,7 +27,7 @@ export function StoriesBar({ currentUser, users }: StoriesBarProps) {
               {currentUser.name?.[0]?.toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
-          <div className="absolute -bottom-0.5 -right-0.5 bg-amber-500 text-white rounded-full p-[3px] shadow-sm">
+          <div className="absolute -bottom-0.5 -right-0.5 bg-amber-500 dark:bg-[#0095F6] text-white rounded-full p-[3px] shadow-sm">
             <Plus className="h-2.5 w-2.5" strokeWidth={3} />
           </div>
         </div>
