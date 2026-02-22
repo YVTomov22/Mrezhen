@@ -4,9 +4,10 @@ import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { Difficulty } from "@/lib/generated/prisma/enums"
+import { resolveQuestDeadline } from "@/lib/deadline"
 
 // --- MILESTONES ---
-export async function createMilestone(title: string, description: string, category?: string) {
+export async function createMilestone(title: string, description: string, category?: string, dueDate?: Date | null) {
   const session = await auth()
   if (!session?.user?.email) return { error: "Unauthorized" }
   const milestone = await prisma.milestone.create({
@@ -14,6 +15,7 @@ export async function createMilestone(title: string, description: string, catego
       title,
       description,
       category: category?.toLowerCase().trim() || null,
+      dueDate: dueDate ?? null,
       user: { connect: { email: session.user.email } },
     }
   })
@@ -22,10 +24,10 @@ export async function createMilestone(title: string, description: string, catego
   return { success: true, data: milestone }
 }
 
-export async function updateMilestone(id: string, title: string, description: string, category?: string) {
+export async function updateMilestone(id: string, title: string, description: string, category?: string, dueDate?: Date | null) {
   await prisma.milestone.update({
     where: { id },
-    data: { title, description, category: category?.toLowerCase().trim() || null },
+    data: { title, description, category: category?.toLowerCase().trim() || null, dueDate: dueDate ?? null },
   })
   revalidatePath("/dashboard")
   revalidatePath("/goals")
@@ -77,7 +79,8 @@ export async function createQuest(
   title: string, 
   description: string,
   difficulty: Difficulty, 
-  tasks: string[] = []
+  tasks: string[] = [],
+  deadline?: Date | null,
 ) {
   const session = await auth()
   if (!session?.user?.email) return { error: "Unauthorized" }
@@ -87,13 +90,27 @@ export async function createQuest(
   if (difficulty === 'HARD') completionPoints = 100
   if (difficulty === 'EPIC') completionPoints = 500
 
+  // Fetch the parent milestone's dueDate for deadline resolution
+  const milestone = await prisma.milestone.findUnique({
+    where: { id: milestoneId },
+    select: { dueDate: true },
+  })
+
+  const createdAt = new Date()
+  const resolvedDeadline = resolveQuestDeadline({
+    explicit: deadline,
+    milestoneDueDate: milestone?.dueDate ?? null,
+    createdAt,
+  })
+
   const quest = await prisma.quest.create({
     data: {
       title,
-      description, // <--- ADDED
+      description,
       difficulty,
       completionPoints,
       status: "IN_PROGRESS",
+      deadline: resolvedDeadline,
       milestone: { connect: { id: milestoneId } },
       user: { connect: { email: session.user.email } },
       tasks: {

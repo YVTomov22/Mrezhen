@@ -129,7 +129,8 @@ model Milestone {
   category    String?
   status      QuestStatus @default(IN_PROGRESS)
   progress    Float       @default(0)
-  
+  dueDate     DateTime?
+
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
