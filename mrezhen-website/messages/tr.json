@@ -1,9 +1,15 @@
 {
   "nav": {
+    "home": "Ana Sayfa",
     "dashboard": "Pano",
     "goals": "Hedefler",
     "community": "Topluluk",
+    "features": "Özellikler",
     "messages": "Mesajlar",
+    "notifications": "Bildirimler",
+    "settings": "Ayarlar",
+    "search": "Ara",
+    "newPost": "Yeni gönderi",
     "askAi": "Yapay Zekaya Sor",
     "logIn": "Giriş Yap",
     "signUp": "Kayıt Ol"
@@ -129,11 +135,16 @@
     "suggestedDesc": "İlgi alanlarınıza, deneyim seviyenize ve bilgi sektörlerinize göre.",
     "noSuggestions": "Henüz öneri yok",
     "noSuggestionsDesc": "Beğenebileceğiniz kişileri bulabilmemiz için profilinizi tamamlayın ve ilgi alanlarınızı ekleyin.",
-    "matchLabel": "kibrit"
+    "matchLabel": "kibrit",
+    "communityStats": "Toplum",
+    "suggestedPeople": "Önerilen Kişiler",
+    "viewAll": "Tümünü görüntüle",
+    "discoverPeople": "İnsanları Keşfedin"
   },
   "settings": {
     "title": "Ayarlar",
     "description": "Profil bilgilerinizi ve hesap tercihlerinizi yönetin.",
+    "backToCategories": "Kategorilere geri dön",
     "groupAccount": "Hesap",
     "groupAccountDesc": "Temel kimlik kontrolleri.",
     "menuUsername": "Kullanıcı adı",
