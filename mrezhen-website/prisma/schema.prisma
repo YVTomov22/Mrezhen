@@ -98,9 +98,11 @@ model User {
 
   activityLogs ActivityLog[]
 
-  posts        Post[]
-  postComments PostComment[]
-  postLikes    PostLike[]
+  posts         Post[]
+  postComments  PostComment[]
+  postLikes     PostLike[]
+  postBookmarks    PostBookmark[]
+  postCommentLikes PostCommentLike[]
 
   // ── Battle System ──
   battlesAsChallenger  Battle[]           @relation("BattlesAsChallenger")
@@ -361,6 +363,19 @@ model PostCommentLike {
 }
 
 model PostLike {
+  postId   String
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([postId, userId])
+  @@index([userId])
+}
+
+model PostBookmark {
   postId   String
   post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
