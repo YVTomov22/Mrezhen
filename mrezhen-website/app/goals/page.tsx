@@ -7,36 +7,55 @@ import { ArrowLeft, Target, CheckCircle2, Clock, Trophy } from "lucide-react"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Progress } from "@/components/ui/progress"
+import { CategoryFilter } from "@/components/game/category-filter"
+import { GOAL_CATEGORIES } from "@/lib/constants"
 
 export const dynamic = 'force-dynamic'
 
-export default async function GoalsPage() {
+interface GoalsPageProps {
+  searchParams: Promise<{ category?: string }>
+}
+
+export default async function GoalsPage({ searchParams }: GoalsPageProps) {
   const session = await auth()
   if (!session?.user?.email) redirect("/auth/login")
   const t = await getTranslations("goals")
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  // ── Parse category filter from URL ──
+  const params = await searchParams
+  const categoryParam = params.category?.trim() || ""
+  const CATEGORY_REGEX = /^[a-zA-Z0-9\s\-_]+$/
+  const activeCategories = categoryParam
+    ? categoryParam.split(",").map(c => c.trim().toLowerCase()).filter(c => c.length > 0 && CATEGORY_REGEX.test(c))
+    : []
+
+  // ── Build Prisma where clause ──
+  const where: Record<string, unknown> = {
+    user: { email: session.user.email },
+  }
+
+  if (activeCategories.length === 1) {
+    where.category = { equals: activeCategories[0], mode: "insensitive" }
+  } else if (activeCategories.length > 1) {
+    where.category = { in: activeCategories, mode: "insensitive" }
+  }
+
+  const milestones = await prisma.milestone.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
     include: {
-      milestones: {
-        orderBy: { createdAt: 'desc' },
-        include: {
-          quests: {
-            orderBy: { createdAt: 'desc' },
-            include: { tasks: { orderBy: { createdAt: 'asc' } } }
-          }
-        }
-      }
-    }
+      quests: {
+        orderBy: { createdAt: "desc" },
+        include: { tasks: { orderBy: { createdAt: "asc" } } },
+      },
+    },
   })
 
-  if (!user) return null
-
-  const totalMilestones = user.milestones.length
-  const inProgress = user.milestones.filter(m => m.status === 'IN_PROGRESS').length
-  const completed = user.milestones.filter(m => m.status === 'COMPLETED').length
-  const totalQuests = user.milestones.reduce((sum, m) => sum + m.quests.length, 0)
-  const completedQuests = user.milestones.reduce((sum, m) => sum + m.quests.filter((q: any) => q.status === 'COMPLETED').length, 0)
+  const totalMilestones = milestones.length
+  const inProgress = milestones.filter(m => m.status === 'IN_PROGRESS').length
+  const completed = milestones.filter(m => m.status === 'COMPLETED').length
+  const totalQuests = milestones.reduce((sum, m) => sum + m.quests.length, 0)
+  const completedQuests = milestones.reduce((sum, m) => sum + m.quests.filter((q: any) => q.status === 'COMPLETED').length, 0)
   const overallProgress = totalQuests === 0 ? 0 : Math.round((completedQuests / totalQuests) * 100)
 
   return (
@@ -95,21 +114,28 @@ export default async function GoalsPage() {
         </div>
       </div>
 
-      {/* ── Milestones List ──────────────────────────── */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      {/* ── Category Filter + Milestones List ────────── */}
+      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+        <CategoryFilter
+          categories={GOAL_CATEGORIES as unknown as string[]}
+          activeCategories={activeCategories}
+        />
+
         <div className="grid gap-6">
-          {user.milestones.length === 0 && (
+          {milestones.length === 0 && (
             <div className="text-center py-20 bg-card border-2 border-dashed border-border rounded-xl">
               <div className="mx-auto w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-4">
                 <Target className="w-8 h-8 text-teal-500" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground">{t("noMilestones")}</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                {activeCategories.length > 0 ? t("noFilteredMilestones") : t("noMilestones")}
+              </h3>
               <p className="text-muted-foreground mb-4 mt-1">{t("startByCreating")}</p>
               <CreateMilestoneBtn />
             </div>
           )}
 
-          {user.milestones.map((milestone) => (
+          {milestones.map((milestone) => (
             <MilestoneItem key={milestone.id} milestone={milestone} />
           ))}
         </div>
