@@ -7,6 +7,7 @@ import {
   createQuest, updateQuest, deleteQuest,
   createTask, updateTask, deleteTask
 } from "@/app/actions/game"
+import { GOAL_CATEGORIES } from "@/lib/constants"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,7 +26,7 @@ import { useTranslations } from "next-intl"
 // --- TYPES ---
 type Task = { id: string; content: string; isCompleted: boolean } 
 type Quest = { id: string; title: string; description: string | null; difficulty: string; tasks: Task[] }
-type Milestone = { id: string; title: string; description: string | null; quests: Quest[] }
+type Milestone = { id: string; title: string; description: string | null; category: string | null; quests: Quest[] }
 
 interface GoalManagerProps {
   milestones: Milestone[]
@@ -227,8 +228,11 @@ function MilestoneForm({ editData, onCancel }: { editData?: Milestone, onCancel:
    
   const action = (formData: FormData) => {
     startTransition(async () => {
-      if (editData) await updateMilestone(editData.id, formData.get('title') as string, formData.get('description') as string)
-      else await createMilestone(formData.get('title') as string, formData.get('description') as string)
+      const title = formData.get('title') as string
+      const description = formData.get('description') as string
+      const category = (formData.get('category') as string) || undefined
+      if (editData) await updateMilestone(editData.id, title, description, category)
+      else await createMilestone(title, description, category)
       onCancel()
     })
   }
@@ -238,6 +242,19 @@ function MilestoneForm({ editData, onCancel }: { editData?: Milestone, onCancel:
       <DialogHeader><DialogTitle>{editData ? t('editMilestone') : t('createMilestone')}</DialogTitle></DialogHeader>
       <div className="space-y-2"><Label>{tCommon("title")}</Label><Input name="title" defaultValue={editData?.title} required /></div>
       <div className="space-y-2"><Label>{tCommon("description")}</Label><Textarea name="description" defaultValue={editData?.description || ""} /></div>
+      <div className="space-y-2">
+        <Label>{t("category")}</Label>
+        <Select name="category" defaultValue={editData?.category || undefined}>
+          <SelectTrigger><SelectValue placeholder={t("selectCategory")} /></SelectTrigger>
+          <SelectContent>
+            {GOAL_CATEGORIES.map(cat => (
+              <SelectItem key={cat} value={cat}>
+                {t(`categories.${cat}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <div className="flex justify-between pt-2">
         <Button variant="ghost" type="button" onClick={onCancel}>{tCommon("cancel")}</Button>
         <Button type="submit" disabled={isPending}>{isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : tCommon('save')}</Button>

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { createMilestone, createQuest } from "@/app/actions/game"
+import { GOAL_CATEGORIES } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -19,7 +20,8 @@ export function CreateMilestoneBtn() {
   async function onSubmit(formData: FormData) {
     await createMilestone(
       formData.get("title") as string, 
-      formData.get("description") as string
+      formData.get("description") as string,
+      formData.get("category") as string || undefined,
     )
     setOpen(false)
   }
@@ -32,6 +34,19 @@ export function CreateMilestoneBtn() {
         <form action={onSubmit} className="space-y-4">
           <div><Label>{tCommon("title")}</Label><Input name="title" required /></div>
           <div><Label>{tCommon("description")}</Label><Textarea name="description" /></div>
+          <div className="space-y-2">
+            <Label>{t("category")}</Label>
+            <Select name="category">
+              <SelectTrigger><SelectValue placeholder={t("selectCategory")} /></SelectTrigger>
+              <SelectContent>
+                {GOAL_CATEGORIES.map(cat => (
+                  <SelectItem key={cat} value={cat}>
+                    {t(`categories.${cat}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Button type="submit" className="w-full">{tCommon("create")}</Button>
         </form>
       </DialogContent>
