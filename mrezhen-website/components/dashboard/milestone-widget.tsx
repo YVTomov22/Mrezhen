@@ -19,7 +19,7 @@ export function MilestoneWidget({ milestone }: { milestone: any }) {
             </div>
             <span className="editorial-caption text-muted-foreground">{Math.round(percent)}%</span>
         </div>
-        <Progress value={percent} className="h-1 bg-muted [&>div]:bg-foreground" />
+        <Progress value={percent} className="h-1 bg-muted [&>div]:bg-foreground dark:[&>div]:bg-blue-900" />
         <p className="text-[10px] text-muted-foreground mt-2 text-right">
             {completed}/{total} {t("quests")}
         </p>

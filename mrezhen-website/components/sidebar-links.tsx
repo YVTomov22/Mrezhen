@@ -22,6 +22,7 @@ interface NavItem {
   href: string
   label: string
   icon: keyof typeof iconMap
+  exact?: boolean
 }
 
 interface SidebarLinksProps {
@@ -36,7 +37,7 @@ export function SidebarLinks({ items }: SidebarLinksProps) {
     <div className="flex flex-col gap-0.5">
       {items.map((item) => {
         const Icon = iconMap[item.icon]
-        const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+        const isActive = pathname === item.href || (!item.exact && pathname.startsWith(item.href + '/'))
 
         return (
           <Link

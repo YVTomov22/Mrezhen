@@ -24,7 +24,7 @@ export function XpChart({ logs }: { logs: any[] }) {
       {data.map((item, i) => (
         <div key={item.date} className="flex flex-col items-center flex-1 h-full justify-end group">
             <div 
-                className="w-full bg-amber-500 hover:bg-amber-400 transition-all relative"
+                className="w-full bg-amber-500 hover:bg-amber-400 dark:bg-blue-900 dark:hover:bg-blue-800 transition-all relative"
                 style={{ height: `${(item.xp / maxVal) * 100}%`, minHeight: '4px' }}
             >
                 {/* Tooltip */}
