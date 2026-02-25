@@ -36,8 +36,8 @@ export async function Navbar() {
   }
 
   // ─── Logged-in: vertical sidebar (Instagram-style) ────────────────────
-  const navItems: { href: string; label: string; icon: "home" | "dashboard" | "target" | "messages" | "heart" | "sparkles" | "search" | "plus" }[] = [
-    { href: "/community", label: t("home"), icon: "home" },
+  const navItems: { href: string; label: string; icon: "home" | "dashboard" | "target" | "messages" | "heart" | "sparkles" | "search" | "plus"; exact?: boolean }[] = [
+    { href: "/community", label: t("home"), icon: "home", exact: true },
     { href: "/community/people", label: t("search"), icon: "search" },
     { href: "/dashboard", label: t("dashboard"), icon: "dashboard" },
     { href: "/goals", label: t("goals"), icon: "target" },
