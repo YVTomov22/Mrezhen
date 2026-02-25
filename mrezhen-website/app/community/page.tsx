@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PostComposer } from '@/components/feed/post-composer'
 import { PostComposerModal } from '@/components/feed/post-composer-modal'
-import { PostCard } from '@/components/feed/post-card'
+import { CommunityFeed } from '@/components/feed/community-feed'
 import { FollowButton } from '@/components/follow-button'
 import { StoriesBar } from '@/components/community/stories-bar'
 import { CommunityLeftSidebar } from '@/components/community/left-sidebar'
@@ -114,7 +114,7 @@ export default async function CommunityFeedPage() {
     <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[240px_1fr_300px]">
       <PostComposerModal />
       {/* ── LEFT SIDEBAR ─────────────────────────────── */}
-      <aside className="hidden lg:flex flex-col gap-8 border-r border-border px-6 py-8 overflow-y-auto no-scrollbar">
+      <aside className="hidden lg:flex flex-col gap-8 border-r border-border/60 px-6 py-8 overflow-y-auto no-scrollbar">
         {/* Suggested People */}
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -162,9 +162,9 @@ export default async function CommunityFeedPage() {
 
       {/* ── FEED (center, scrollable) ─────────────── */}
       <section className="overflow-y-auto no-scrollbar px-6 py-8">
-        <div className="max-w-[640px] mx-auto space-y-8">
+        <div className="max-w-[640px] mx-auto space-y-6">
           {/* Horizontal stories strip */}
-          <div className="border-b border-border pb-6">
+          <div className="pb-4">
             <StoriesBar
               currentUser={{
                 id: currentUser.id,
@@ -178,20 +178,12 @@ export default async function CommunityFeedPage() {
 
           <PostComposer />
 
-          <div className="space-y-6">
-            {serialized.length === 0 ? (
-              <div className="border border-dashed border-border py-16 text-center">
-                <p className="editorial-caption text-muted-foreground">{t('noPosts')}</p>
-              </div>
-            ) : (
-              serialized.map((post) => <PostCard key={post.id} {...post} />)
-            )}
-          </div>
+          <CommunityFeed initialPosts={serialized} />
         </div>
       </section>
 
       {/* ── RIGHT SIDEBAR ───────────────────────────── */}
-      <aside className="hidden lg:block border-l border-border px-6 py-8 overflow-y-auto no-scrollbar">
+      <aside className="hidden lg:block border-l border-border/60 px-6 py-8 overflow-y-auto no-scrollbar">
         <CommunityLeftSidebar user={currentUser} />
       </aside>
     </div>

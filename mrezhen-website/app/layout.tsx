@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { auth } from "@/app/auth";
@@ -88,6 +89,7 @@ export default async function RootLayout({
             >
                 {children}
             </main>
+            <Toaster position="bottom-right" richColors closeButton />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>
