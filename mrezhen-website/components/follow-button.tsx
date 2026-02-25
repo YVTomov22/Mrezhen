@@ -36,7 +36,7 @@ export function FollowButton({ targetUserId, initialIsFollowing }: FollowButtonP
       variant={isFollowing ? "secondary" : "default"}
       onClick={handleToggle}
       disabled={isPending}
-      className={isFollowing ? "hover:bg-red-100 hover:text-red-600" : ""}
+      className={isFollowing ? "hover:bg-muted hover:text-foreground" : "bg-amber-600 hover:bg-amber-700 text-white"}
     >
       {isPending ? (
         <Loader2 className="h-4 w-4 animate-spin" />

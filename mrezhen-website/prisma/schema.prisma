@@ -98,9 +98,11 @@ model User {
 
   activityLogs ActivityLog[]
 
-  posts        Post[]
-  postComments PostComment[]
-  postLikes    PostLike[]
+  posts         Post[]
+  postComments  PostComment[]
+  postLikes     PostLike[]
+  postBookmarks    PostBookmark[]
+  postCommentLikes PostCommentLike[]
 
   // ── Battle System ──
   battlesAsChallenger  Battle[]           @relation("BattlesAsChallenger")
@@ -302,6 +304,7 @@ model Post {
   images    PostImage[]
   comments  PostComment[]
   likes     PostLike[]
+  bookmarks PostBookmark[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -332,14 +335,47 @@ model PostComment {
   authorId  String
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
+  parentId  String?
+  parent    PostComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   PostComment[] @relation("CommentReplies")
+
+  likes     PostCommentLike[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([postId])
   @@index([authorId])
+  @@index([parentId])
+}
+
+model PostCommentLike {
+  commentId String
+  comment   PostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([commentId, userId])
+  @@index([userId])
 }
 
 model PostLike {
+  postId   String
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([postId, userId])
+  @@index([userId])
+}
+
+model PostBookmark {
   postId   String
   post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 

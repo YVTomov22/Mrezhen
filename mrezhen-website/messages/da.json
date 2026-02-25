@@ -1,9 +1,15 @@
 {
   "nav": {
+    "home": "Hjem",
     "dashboard": "Oversigt",
     "goals": "Mål",
     "community": "Fællesskab",
+    "features": "Funktioner",
     "messages": "Beskeder",
+    "notifications": "Notifikationer",
+    "settings": "Indstillinger",
+    "search": "Søg",
+    "newPost": "Nyt opslag",
     "askAi": "Spørg AI",
     "logIn": "Log ind",
     "signUp": "Opret konto"
@@ -129,11 +135,16 @@
     "suggestedDesc": "Baseret på dine interesser, erfaringsniveau og videnssektorer.",
     "noSuggestions": "Ingen forslag endnu",
     "noSuggestionsDesc": "Udfyld din profil og tilføj interesser, så vi kan finde personer, du måske kan lide.",
-    "matchLabel": "kamp"
+    "matchLabel": "kamp",
+    "communityStats": "Fællesskab",
+    "suggestedPeople": "Foreslåede personer",
+    "viewAll": "Se alle",
+    "discoverPeople": "Opdag mennesker"
   },
   "settings": {
     "title": "Indstillinger",
     "description": "Administrer dine profiloplysninger og kontoindstillinger.",
+    "backToCategories": "Tilbage til kategorier",
     "groupAccount": "Konto",
     "groupAccountDesc": "Kerne identitetskontrol.",
     "menuUsername": "Brugernavn",

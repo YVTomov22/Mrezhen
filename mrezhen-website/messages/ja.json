@@ -1,9 +1,15 @@
 {
   "nav": {
+    "home": "ホーム",
     "dashboard": "ダッシュボード",
     "goals": "目標",
     "community": "コミュニティ",
+    "features": "特徴",
     "messages": "メッセージ",
+    "notifications": "通知",
+    "settings": "設定",
+    "search": "検索",
+    "newPost": "新規投稿",
     "askAi": "AIに聞く",
     "logIn": "ログイン",
     "signUp": "サインアップ"
@@ -129,11 +135,16 @@
     "suggestedDesc": "あなたの興味、経験レベル、知識分野に基づいて。",
     "noSuggestions": "まだ提案はありません",
     "noSuggestionsDesc": "プロフィールを完成させ、興味のあることを追加すると、あなたが好みそうな人が見つかります。",
-    "matchLabel": "マッチ"
+    "matchLabel": "マッチ",
+    "communityStats": "コミュニティ",
+    "suggestedPeople": "候補者",
+    "viewAll": "すべて見る",
+    "discoverPeople": "人々を発見する"
   },
   "settings": {
     "title": "設定",
     "description": "プロフィールの詳細とアカウント設定を管理します。",
+    "backToCategories": "カテゴリーに戻る",
     "groupAccount": "アカウント",
     "groupAccountDesc": "コア ID 制御。",
     "menuUsername": "ユーザー名",

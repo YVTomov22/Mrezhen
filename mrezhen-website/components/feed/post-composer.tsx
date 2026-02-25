@@ -4,13 +4,12 @@ import { useMemo, useState, useTransition } from 'react'
 import type { ChangeEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { uploadImages } from '@/app/actions/upload'
 import { createPost } from '@/app/actions/posts'
 
-export function PostComposer() {
+export function PostComposer({ onSuccess }: { onSuccess?: () => void } = {}) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -61,7 +60,7 @@ export function PostComposer() {
 
         setContent('')
         setFiles([])
-        router.refresh()
+        onSuccess ? onSuccess() : router.refresh()
       } catch (e: any) {
         setError(e?.message ?? 'Failed to post')
       }
@@ -69,16 +68,14 @@ export function PostComposer() {
   }
 
   return (
-    <Card className="border-border shadow-sm overflow-hidden">
-      <CardHeader className="pb-3 bg-muted/30">
-        <CardTitle className="text-base">Create a post</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 pt-4">
+    <div className="border-b border-border pb-6 mb-6">
+      <h3 className="editorial-caption text-muted-foreground mb-3">New Post</h3>
+      <div className="space-y-3">
         <Textarea
           value={content}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
           placeholder="What's on your mind?"
-          className="min-h-[90px] resize-none"
+          className="min-h-[90px] resize-none text-[15px] border-border"
           disabled={isPending}
         />
 
@@ -89,30 +86,30 @@ export function PostComposer() {
             multiple
             onChange={onFileChange}
             disabled={isPending}
+            className="text-[13px]"
           />
-          <Button onClick={onSubmit} disabled={isPending} className="bg-teal-600 hover:bg-teal-700 text-white">
-            {isPending ? 'Posting...' : 'Post'}
+          <Button onClick={onSubmit} disabled={isPending} className="bg-foreground text-background hover:bg-foreground/90 dark:bg-[#0095F6] dark:hover:bg-[#0080D6] dark:text-white text-[12px] tracking-wide uppercase">
+            {isPending ? 'Posting...' : 'Publish'}
           </Button>
         </div>
 
         {error && (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-[12px] text-foreground">{error}</p>
         )}
 
         {previews.length > 0 && (
           <div className="grid grid-cols-3 gap-2">
             {previews.map((p: { name: string; url: string }) => (
-              // Use plain img to avoid Next remote config issues
               <img
                 key={p.url}
                 src={p.url}
                 alt={p.name}
-                className="h-24 w-full object-cover rounded-md border"
+                className="h-24 w-full object-cover border border-border"
               />
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

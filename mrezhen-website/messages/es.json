@@ -1,9 +1,15 @@
 {
   "nav": {
+    "home": "Inicio",
     "dashboard": "Panel",
     "goals": "Objetivos",
     "community": "Comunidad",
+    "features": "Características",
     "messages": "Mensajes",
+    "notifications": "Notificaciones",
+    "settings": "Configuración",
+    "search": "Buscar",
+    "newPost": "Nueva publicación",
     "askAi": "Pregúntale a la IA",
     "logIn": "Acceso",
     "signUp": "Inscribirse"
@@ -129,11 +135,16 @@
     "suggestedDesc": "En función de tus intereses, nivel de experiencia y sectores de conocimiento.",
     "noSuggestions": "Aún no hay sugerencias",
     "noSuggestionsDesc": "Complete su perfil y agregue intereses para que podamos encontrar personas que le gusten.",
-    "matchLabel": "fósforo"
+    "matchLabel": "fósforo",
+    "communityStats": "Comunidad",
+    "suggestedPeople": "Personas sugeridas",
+    "viewAll": "Ver todo",
+    "discoverPeople": "descubrir personas"
   },
   "settings": {
     "title": "Ajustes",
     "description": "Administre los detalles de su perfil y las preferencias de su cuenta.",
+    "backToCategories": "Volver a categorías",
     "groupAccount": "Cuenta",
     "groupAccountDesc": "Controles básicos de identidad.",
     "menuUsername": "Nombre de usuario",
