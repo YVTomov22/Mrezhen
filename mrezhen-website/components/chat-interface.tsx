@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useLayoutEffect } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { sendMessage, deleteMessage, editMessage } from "@/app/actions/chat"
 import { uploadImages } from "@/app/actions/upload"
+import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -175,6 +176,11 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
         const formData = new FormData()
         selectedFiles.forEach(file => formData.append("file", file))
         const uploadRes = await uploadImages(formData)
+        if ('error' in uploadRes && uploadRes.error) {
+          toast.error(uploadRes.error)
+          setIsSending(false)
+          return
+        }
         if (uploadRes.urls) uploadedUrls = uploadRes.urls
       }
 
