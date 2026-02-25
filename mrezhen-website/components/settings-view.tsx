@@ -72,7 +72,7 @@ import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
 /* ── Sidebar menu items ────────────────────────────────────── */
-type SectionId = "username" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility"
+type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility"
 
 /* ── Root component ────────────────────────────────────────── */
 
@@ -100,6 +100,7 @@ export function SettingsView({ user }: { user: any }) {
       description: t("groupAccountDesc"),
       items: [
         { id: "username" as SectionId,    label: t("menuUsername"),           icon: AtSign },
+        { id: "displayname" as SectionId, label: t("menuDisplayName"),       icon: User },
         { id: "bio" as SectionId,         label: t("menuBio"),                icon: FileText },
         { id: "photo" as SectionId,       label: t("menuProfilePhoto"),      icon: ImageIcon },
         { id: "email" as SectionId,       label: t("menuEmail"),              icon: Mail },
@@ -248,6 +249,8 @@ function SectionPanel({ id, user }: { id: SectionId; user: any }) {
   switch (id) {
     case "username":
       return <UsernameSection user={user} />
+    case "displayname":
+      return <DisplayNameSection user={user} />
     case "bio":
       return <BioSection user={user} />
     case "photo":
@@ -317,6 +320,31 @@ function UsernameSection({ user }: { user: any }) {
           <div className="grid w-full gap-2">
             <Label htmlFor="name">{t("usernameLabel")}</Label>
             <Input id="name" name="name" defaultValue={user.name || ""} placeholder={t("usernamePlaceholder")} />
+          </div>
+          <SubmitBtn />
+        </div>
+        <Feedback msg={msg} />
+      </form>
+    </SettingsCard>
+  )
+}
+
+/* ── Display Name ──────────────────────────────────────────── */
+function DisplayNameSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const tCommon = useTranslations("common")
+  const [msg, setMsg] = useState("")
+  async function action(data: FormData) {
+    const res = await updateUsername(null, data)
+    setMsg(res?.error || res?.success || "")
+  }
+  return (
+    <SettingsCard title={t("displayNameTitle")} description={t("displayNameDescription")}>
+      <form action={action}>
+        <div className="flex gap-4 items-end">
+          <div className="grid w-full gap-2">
+            <Label htmlFor="displayName">{t("displayNameLabel")}</Label>
+            <Input id="displayName" name="name" defaultValue={user.name || ""} placeholder={t("displayNamePlaceholder")} />
           </div>
           <SubmitBtn />
         </div>
@@ -1201,6 +1229,14 @@ function DiscoverySection({ user }: { user: any }) {
    ══════════════════════════════════════════════════════════════ */
 
 /* ── Reusable appearance toggle row ─────────────────── */
+
+/** Map toggle field names to their HTML data-attribute on <html> */
+const TOGGLE_ATTR_MAP: Record<string, string> = {
+  highContrast: "data-high-contrast",
+  screenReader: "data-screen-reader",
+  reduceMotion: "data-reduce-motion",
+}
+
 function AppearanceToggleRow({
   label,
   description,
@@ -1227,6 +1263,12 @@ function AppearanceToggleRow({
           checked={value}
           onCheckedChange={(checked: boolean) => {
             setValue(checked)
+            // Apply immediately to the DOM so user sees the effect
+            const attr = TOGGLE_ATTR_MAP[field]
+            if (attr) {
+              if (checked) document.documentElement.setAttribute(attr, "")
+              else document.documentElement.removeAttribute(attr)
+            }
             startTransition(async () => {
               await updateAppearanceToggle(field, checked)
             })
@@ -1386,6 +1428,8 @@ function AccessibilitySection({ user }: { user: any }) {
     { value: "xlarge", label: t("fontXlarge"), sample: "text-lg" },
   ]
 
+  const [activeFont, setActiveFont] = useState(user.fontSize ?? "medium")
+
   return (
     <SettingsCard title={t("accessibilityTitle")} description={t("accessibilityDescription")}>
       <div className="divide-y divide-border">
@@ -1416,11 +1460,14 @@ function AccessibilitySection({ user }: { user: any }) {
             {isPending && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
             <div className="grid grid-cols-4 gap-2 w-full max-w-sm">
               {fontSizes.map((fs) => {
-                const isActive = (user.fontSize ?? "medium") === fs.value
+                const isActive = activeFont === fs.value
                 return (
                   <button
                     key={fs.value}
                     onClick={() => {
+                      setActiveFont(fs.value)
+                      // Apply immediately so user sees the change
+                      document.documentElement.setAttribute("data-font-size", fs.value)
                       startTransition(async () => {
                         await updateAppearanceSelect("fontSize", fs.value)
                       })

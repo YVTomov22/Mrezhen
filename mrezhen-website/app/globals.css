@@ -46,7 +46,7 @@
 
 /* ── Beehive Color System ───────────────────────────── */
 :root {
-  --radius: 0rem;
+  --radius: 0.75rem;
   /* Honey cream backgrounds */
   --background: #FFFBF0;
   --foreground: #1C0A00;
@@ -196,12 +196,133 @@
 }
 .editorial-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 .dark .editorial-lift:hover {
-  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-/* ── Sharp corners everywhere, preserve round avatars ── */
-* { border-radius: 0 !important; }
-.rounded-full { border-radius: 9999px !important; }
+/* ── Like heart pop animation ── */
+@keyframes heart-pop {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.animate-heart-pop {
+  animation: heart-pop 350ms cubic-bezier(0.17, 0.89, 0.32, 1.28);
+}
+
+/* ── Bookmark bounce animation ── */
+@keyframes bookmark-bounce {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+  60% { transform: translateY(1px); }
+  100% { transform: translateY(0); }
+}
+.animate-bookmark-bounce {
+  animation: bookmark-bounce 350ms ease-out;
+}
+
+/* ── Tab slide underline ── */
+.tab-underline {
+  position: relative;
+}
+.tab-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+  transform: scaleX(0);
+  transition: transform 250ms ease;
+}
+.tab-underline[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+/* ── Smooth card hover ── */
+.card-hover {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.card-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+.dark .card-hover:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACCESSIBILITY — Font Size
+   Maps data-font-size on <html> to a CSS custom property that
+   scales the root font-size.  All rem-based sizing follows.
+   ══════════════════════════════════════════════════════════════ */
+html[data-font-size="small"]  { font-size: 14px; }
+html[data-font-size="medium"] { font-size: 16px; }
+html[data-font-size="large"]  { font-size: 18px; }
+html[data-font-size="xlarge"] { font-size: 20px; }
+
+/* ══════════════════════════════════════════════════════════════
+   ACCESSIBILITY — High Contrast
+   Increases text contrast, strengthens borders and removes
+   translucent overlays so everything is crisply legible.
+   ══════════════════════════════════════════════════════════════ */
+html[data-high-contrast] {
+  --foreground: #000000;
+  --muted-foreground: #333333;
+  --border: #000000;
+  --input: #000000;
+  --ring: #000000;
+}
+html[data-high-contrast].dark,
+html[data-high-contrast]:is(.dark) {
+  --foreground: #FFFFFF;
+  --muted-foreground: #DDDDDD;
+  --border: #FFFFFF;
+  --input: #FFFFFF;
+  --ring: #FFFFFF;
+}
+html[data-high-contrast] *:focus-visible {
+  outline: 3px solid var(--ring) !important;
+  outline-offset: 2px;
+}
+html[data-high-contrast] .text-muted-foreground {
+  opacity: 1 !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACCESSIBILITY — Reduce Motion
+   Disables transitions and animations app-wide.
+   ══════════════════════════════════════════════════════════════ */
+html[data-reduce-motion] *,
+html[data-reduce-motion] *::before,
+html[data-reduce-motion] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACCESSIBILITY — Screen Reader Optimized
+   Adds visible focus indicators and skip-navigation support.
+   Content is already semantic; these reinforce interactive cues.
+   ══════════════════════════════════════════════════════════════ */
+html[data-screen-reader] *:focus-visible {
+  outline: 3px solid var(--ring) !important;
+  outline-offset: 2px;
+}
+html[data-screen-reader] .sr-only-when-no-screenreader {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
