@@ -8,13 +8,21 @@ import { FollowButton } from "@/components/follow-button"
 import { Map as MapIcon, Sparkles, Swords, Users, ArrowLeft, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getTranslations } from "next-intl/server"
+import { PeopleSearchBar } from "@/components/community/people-search-bar"
 
 export const dynamic = 'force-dynamic'
 
-export default async function CommunityPeoplePage() {
+export default async function CommunityPeoplePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>
+}) {
   const session = await auth()
   if (!session?.user?.email) redirect("/auth/login")
   const t = await getTranslations("community")
+  
+  const resolvedSearchParams = await searchParams
+  const query = resolvedSearchParams.q || ""
 
   const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
@@ -25,7 +33,13 @@ export default async function CommunityPeoplePage() {
 
   const users = await prisma.user.findMany({
     where: {
-      id: { not: currentUser.id }
+      id: { not: currentUser.id },
+      ...(query ? {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { username: { contains: query, mode: 'insensitive' } }
+        ]
+      } : {})
     },
     take: 50,
     orderBy: { score: 'desc' },
@@ -77,14 +91,21 @@ export default async function CommunityPeoplePage() {
               </div>
             </div>
           </div>
+          
+          <PeopleSearchBar />
         </div>
       </div>
 
       {/* ── User Grid ───────────────────────────── */}
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {users.map(user => {
-            const totalQuests = user.milestones.reduce((acc, m) => acc + m._count.quests, 0)
+        {users.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">No people found matching your search.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {users.map(user => {
+              const totalQuests = user.milestones.reduce((acc, m) => acc + m._count.quests, 0)
             
             return (
               <Card key={user.id} className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-all border-border group">
@@ -139,7 +160,8 @@ export default async function CommunityPeoplePage() {
               </Card>
             )
           })}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )

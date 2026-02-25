@@ -2,7 +2,8 @@
 
 import { Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { PostComposer } from './post-composer'
 
 function PostComposerModalInner() {
@@ -16,7 +17,10 @@ function PostComposerModalInner() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose() }}>
-      <DialogContent className="p-0 overflow-hidden max-w-lg" showCloseButton={false}>
+      <DialogContent className="p-6 overflow-hidden max-w-3xl w-full" showCloseButton={false}>
+        <VisuallyHidden>
+          <DialogTitle>New Post</DialogTitle>
+        </VisuallyHidden>
         <PostComposer onSuccess={handleClose} />
       </DialogContent>
     </Dialog>
