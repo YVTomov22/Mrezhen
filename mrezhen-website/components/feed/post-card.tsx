@@ -135,7 +135,7 @@ export function PostCard(props: PostCardProps) {
   const when = new Date(props.createdAt).toLocaleString()
 
   return (
-    <article className="border-b border-border/40 py-6 last:border-0">
+    <article className="py-4 feed-entrance">
       {/* Header */}
       <div className="flex items-center gap-3 pb-3">
         <Avatar className="h-10 w-10 ring-2 ring-background shadow-sm">

@@ -22,9 +22,15 @@ function FeedTabs() {
           <p className="text-sm text-muted-foreground max-w-[260px]">Be the first to share something with the community!</p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <PostCard key={post.id} {...post} />
+        <div className="divide-y divide-border/40">
+          {posts.map((post, index) => (
+            <div
+              key={post.id}
+              className="feed-entrance"
+              style={{ animationDelay: `${index * 0.06}s` }}
+            >
+              <PostCard {...post} />
+            </div>
           ))}
         </div>
       )}

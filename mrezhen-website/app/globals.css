@@ -257,6 +257,111 @@
 }
 
 /* ══════════════════════════════════════════════════════════════
+   HOMEPAGE STYLING OVERHAUL
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Theme-Aware Card Depth ── */
+.homepage-card {
+  transition: box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Light mode: clean lifted card */
+.homepage-card {
+  background: #F8F9FA;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Dark mode: frosted glass card */
+.dark .homepage-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.homepage-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+.dark .homepage-card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ── 2. Gamified XP Progress Bar ── */
+.xp-bar-fill {
+  background: linear-gradient(90deg, #8B5CF6, #06B6D4);
+}
+
+/* Dark mode: neon glow on the bar */
+.dark .xp-bar-fill {
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.5), 0 0 16px rgba(6, 182, 212, 0.3);
+}
+
+/* Light mode: very subtle shadow */
+.xp-bar-fill {
+  box-shadow: 0 1px 3px rgba(139, 92, 246, 0.15);
+}
+
+.xp-bar-track {
+  position: relative;
+}
+
+/* ── 3. Interactive Trending Pills ── */
+.trending-pill {
+  cursor: pointer;
+}
+.trending-pill:active {
+  transform: scale(0.97);
+}
+.dark .trending-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.dark .trending-pill:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: #0095F6;
+  color: #0095F6;
+  box-shadow: 0 2px 8px rgba(0, 149, 246, 0.15);
+}
+
+/* ── 4. Custom Drop Zone ── */
+.drop-zone {
+  min-height: 64px;
+}
+.drop-zone svg {
+  color: var(--muted-foreground);
+  transition: color 0.2s ease;
+}
+.drop-zone:hover svg {
+  color: var(--primary);
+}
+
+/* ── 5. Feed Entrance Animation ── */
+@keyframes feed-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feed-entrance {
+  animation: feed-slide-in 0.4s ease-out both;
+}
+
+/* Respect reduce motion preference */
+html[data-reduce-motion] .feed-entrance {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
    ACCESSIBILITY — Font Size
    Maps data-font-size on <html> to a CSS custom property that
    scales the root font-size.  All rem-based sizing follows.
