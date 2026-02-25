@@ -1,15 +1,9 @@
 {
   "nav": {
-    "home": "Home",
     "dashboard": "Dashboard",
     "goals": "Goals",
     "community": "Community",
-    "features": "Features",
     "messages": "Messages",
-    "notifications": "Notifications",
-    "settings": "Settings",
-    "search": "Search",
-    "newPost": "New Post",
     "askAi": "Ask AI",
     "logIn": "Log In",
     "signUp": "Sign Up"
@@ -135,16 +129,11 @@
     "suggestedDesc": "Based on your interests, experience level, and knowledge sectors.",
     "noSuggestions": "No suggestions yet",
     "noSuggestionsDesc": "Complete your profile and add interests so we can find people you may like.",
-    "matchLabel": "match",
-    "communityStats": "Community",
-    "suggestedPeople": "Suggested People",
-    "viewAll": "View all",
-    "discoverPeople": "Discover People"
+    "matchLabel": "match"
   },
   "settings": {
     "title": "Settings",
     "description": "Manage your profile details and account preferences.",
-    "backToCategories": "Back to categories",
     "groupAccount": "Account",
     "groupAccountDesc": "Core identity controls.",
     "menuUsername": "Username",

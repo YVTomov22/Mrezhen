@@ -1,15 +1,9 @@
 {
   "nav": {
-    "home": "الرئيسية",
     "dashboard": "لوحة القيادة",
     "goals": "الأهداف",
     "community": "مجتمع",
-    "features": "سمات",
     "messages": "رسائل",
-    "notifications": "الإشعارات",
-    "settings": "الإعدادات",
-    "search": "بحث",
-    "newPost": "منشور جديد",
     "askAi": "اسأل الذكاء الاصطناعي",
     "logIn": "تسجيل الدخول",
     "signUp": "اشتراك"
@@ -135,16 +129,11 @@
     "suggestedDesc": "بناءً على اهتماماتك ومستوى خبرتك وقطاعات المعرفة.",
     "noSuggestions": "لا توجد اقتراحات حتى الآن",
     "noSuggestionsDesc": "أكمل ملفك الشخصي وأضف الاهتمامات حتى نتمكن من العثور على الأشخاص الذين قد يعجبونك.",
-    "matchLabel": "مباراة",
-    "communityStats": "مجتمع",
-    "suggestedPeople": "الأشخاص المقترحون",
-    "viewAll": "عرض الكل",
-    "discoverPeople": "اكتشف الناس"
+    "matchLabel": "مباراة"
   },
   "settings": {
     "title": "إعدادات",
     "description": "إدارة تفاصيل ملفك الشخصي وتفضيلات الحساب.",
-    "backToCategories": "العودة إلى الفئات",
     "groupAccount": "حساب",
     "groupAccountDesc": "ضوابط الهوية الأساسية.",
     "menuUsername": "اسم المستخدم",

@@ -1,15 +1,9 @@
 {
   "nav": {
-    "home": "Startseite",
     "dashboard": "Armaturenbrett",
     "goals": "Ziele",
     "community": "Gemeinschaft",
-    "features": "Merkmale",
     "messages": "Nachrichten",
-    "notifications": "Benachrichtigungen",
-    "settings": "Einstellungen",
-    "search": "Suche",
-    "newPost": "Neuer Beitrag",
     "askAi": "Fragen Sie die KI",
     "logIn": "Einloggen",
     "signUp": "Melden Sie sich an"
@@ -135,16 +129,11 @@
     "suggestedDesc": "Basierend auf Ihren Interessen, Ihrem Erfahrungsniveau und Ihren Wissensbereichen.",
     "noSuggestions": "Noch keine Vorschläge",
     "noSuggestionsDesc": "Vervollständigen Sie Ihr Profil und fügen Sie Interessen hinzu, damit wir Personen finden können, die Ihnen gefallen könnten.",
-    "matchLabel": "übereinstimmen",
-    "communityStats": "Gemeinschaft",
-    "suggestedPeople": "Vorgeschlagene Personen",
-    "viewAll": "Alle anzeigen",
-    "discoverPeople": "Entdecken Sie Menschen"
+    "matchLabel": "übereinstimmen"
   },
   "settings": {
     "title": "Einstellungen",
     "description": "Verwalten Sie Ihre Profildetails und Kontoeinstellungen.",
-    "backToCategories": "Zurück zu Kategorien",
     "groupAccount": "Konto",
     "groupAccountDesc": "Kernidentitätskontrollen.",
     "menuUsername": "Benutzername",

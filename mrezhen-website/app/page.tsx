@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "motion/react"
-import { ArrowRight, Bot, CheckCircle2, ChevronLeft, MessageCircle, Sparkles, Star, Target, Trophy, Users } from "lucide-react"
+import { ArrowRight, Bot, CheckCircle2, MessageCircle, Sparkles, Star, Target, Trophy, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
@@ -12,9 +12,11 @@ import { useTranslations } from "next-intl"
 
 function Hero({ t }: { t: any }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-teal-600 dark:from-slate-950 dark:via-slate-900 dark:to-teal-800">
+    <section className="relative overflow-hidden">
+      {/* Teal gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 -z-10" />
       {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
+      <div className="absolute inset-0 opacity-10 -z-[5]">
         <div className="absolute top-10 right-10 w-20 h-20 border-2 border-white/30 rounded-lg rotate-12" />
         <div className="absolute top-32 right-40 w-14 h-14 border-2 border-white/20 rounded-full" />
         <div className="absolute bottom-20 right-20 w-16 h-16 border-2 border-white/25 rounded-lg -rotate-6" />
@@ -123,7 +125,7 @@ function Features({ t }: { t: any }) {
   ]
 
   return (
-    <section id="features" className="py-20 bg-background">
+    <section className="py-20 bg-background">
       <div className="container px-4 mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -132,10 +134,7 @@ function Features({ t }: { t: any }) {
           transition={{ duration: 0.5 }}
           className="text-center mb-14"
         >
-          <h2 className="text-3xl font-bold tracking-tight mb-3 flex items-center justify-center gap-1">
-            <ChevronLeft className="w-7 h-7 text-teal-600" />
-            {t("featuresTitle")}
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight mb-3">{t("featuresTitle")}</h2>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -222,8 +221,10 @@ function Stats({ t }: { t: any }) {
 
 function CTA({ t }: { t: any }) {
   return (
-    <section className="py-20 relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-800 to-emerald-900 dark:from-teal-900 dark:via-teal-950 dark:to-emerald-950">
-      <div className="container px-4 mx-auto relative text-center">
+    <section className="py-20 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-teal-700 via-teal-800 to-emerald-900 z-0" />
+
+      <div className="container px-4 mx-auto relative z-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -251,7 +252,7 @@ function CTA({ t }: { t: any }) {
 
 function Footer({ t }: { t: any }) {
   return (
-    <footer className="py-10 bg-slate-900 dark:bg-slate-950 text-white">
+    <footer className="py-10 bg-card border-t border-border">
       <div className="container px-4 mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           {/* Logo */}
@@ -263,24 +264,16 @@ function Footer({ t }: { t: any }) {
           </div>
 
           {/* Links */}
-          <div className="flex gap-6 text-sm font-medium text-gray-400">
-            <Link href="#" className="hover:text-white transition-colors">{t("aboutUs")}</Link>
-            <Link href="#" className="hover:text-white transition-colors">{t("terms")}</Link>
-            <Link href="#" className="hover:text-white transition-colors">{t("privacy")}</Link>
+          <div className="flex gap-6 text-sm font-medium text-muted-foreground">
+            <Link href="#" className="hover:text-foreground transition-colors">{t("aboutUs")}</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">{t("terms")}</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">{t("privacy")}</Link>
           </div>
 
-          {/* Social icons */}
-          <div className="flex items-center gap-3">
-            <a href="#" className="w-9 h-9 rounded-full bg-gray-700 hover:bg-teal-600 flex items-center justify-center transition-colors" aria-label="Twitter">
-              <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </a>
-            <a href="#" className="w-9 h-9 rounded-full bg-gray-700 hover:bg-teal-600 flex items-center justify-center transition-colors" aria-label="Twitter Alt">
-              <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
-            </a>
-            <a href="#" className="w-9 h-9 rounded-full bg-gray-700 hover:bg-teal-600 flex items-center justify-center transition-colors" aria-label="YouTube">
-              <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-            </a>
-          </div>
+          {/* Copyright */}
+          <p className="text-xs text-muted-foreground">
+            {t("allRights", { year: new Date().getFullYear() })}
+          </p>
         </div>
       </div>
     </footer>
@@ -291,13 +284,13 @@ export default function LandingPage() {
   const t = useTranslations("home")
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Hero t={t} />
       <Features t={t} />
       <Mission t={t} />
       <Stats t={t} />
       <CTA t={t} />
       <Footer t={t} />
-    </div>
+    </main>
   )
 }

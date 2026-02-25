@@ -37,8 +37,8 @@ export function QuestCard({ quest }: { quest: Quest }) {
   }
 
   return (
-    <Card className={cn("border-l-4 transition-all bg-card overflow-hidden", 
-      isQuestCompleted ? "border-l-amber-300 opacity-75" : "border-l-amber-500"
+    <Card className={cn("border-l-4 transition-all bg-card shadow-sm hover:shadow-md overflow-hidden", 
+      isQuestCompleted ? "border-l-emerald-500 opacity-75" : "border-l-teal-500"
     )}>
       <CardHeader 
         className="pb-2 cursor-pointer hover:bg-accent/50 transition-colors select-none"
@@ -64,7 +64,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
               </CardTitle>
               <div className="flex gap-2 mt-2">
                 <Badge variant="secondary" className="text-xs font-medium">{quest.difficulty}</Badge>
-                <Badge variant="outline" className="text-foreground border-border">
+                <Badge variant="outline" className="text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-900/30">
                   +{quest.completionPoints} XP
                 </Badge>
               </div>
@@ -78,7 +78,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
               disabled={!allTasksCompleted || isPending}
               className={cn(
                   "transition-all ml-2 shrink-0", 
-                  allTasksCompleted ? "bg-foreground hover:bg-foreground/90 text-background" : "bg-muted text-muted-foreground hover:bg-accent"
+                  allTasksCompleted ? "bg-green-600 hover:bg-green-700 text-white" : "bg-muted text-muted-foreground hover:bg-accent"
               )}
             >
               <Trophy className="w-4 h-4 mr-1" />

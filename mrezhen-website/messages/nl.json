@@ -1,15 +1,9 @@
 {
   "nav": {
-    "home": "Home",
     "dashboard": "Dashboard",
     "goals": "Doelen",
     "community": "Gemeenschap",
-    "features": "Functies",
     "messages": "Berichten",
-    "notifications": "Meldingen",
-    "settings": "Instellingen",
-    "search": "Zoeken",
-    "newPost": "Nieuw bericht",
     "askAi": "Vraag het AI",
     "logIn": "Inloggen",
     "signUp": "Aanmelden"
@@ -135,16 +129,11 @@
     "suggestedDesc": "Op basis van jouw interesses, ervaringsniveau en kennissectoren.",
     "noSuggestions": "Nog geen suggesties",
     "noSuggestionsDesc": "Vul uw profiel in en voeg interesses toe, zodat we mensen kunnen vinden die u mogelijk leuk vindt.",
-    "matchLabel": "overeenkomst",
-    "communityStats": "Gemeenschap",
-    "suggestedPeople": "Voorgestelde mensen",
-    "viewAll": "Bekijk alles",
-    "discoverPeople": "Ontdek mensen"
+    "matchLabel": "overeenkomst"
   },
   "settings": {
     "title": "Instellingen",
     "description": "Beheer uw profielgegevens en accountvoorkeuren.",
-    "backToCategories": "Terug naar categorieën",
     "groupAccount": "Rekening",
     "groupAccountDesc": "Kernidentiteitscontroles.",
     "menuUsername": "Gebruikersnaam",

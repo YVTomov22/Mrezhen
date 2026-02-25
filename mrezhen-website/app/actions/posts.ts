@@ -80,7 +80,7 @@ export async function togglePostLike(postId: string) {
   return { success: true, liked: true }
 }
 
-export async function addPostComment(postId: string, content: string, parentId?: string) {
+export async function addPostComment(postId: string, content: string) {
   const session = await auth()
   if (!session?.user?.email) return { error: 'Unauthorized' }
 
@@ -94,86 +94,14 @@ export async function addPostComment(postId: string, content: string, parentId?:
   })
   if (!user) return { error: 'User not found' }
 
-  // If replying to a comment, verify the parent comment exists and belongs to the same post
-  if (parentId) {
-    const parent = await prisma.postComment.findUnique({
-      where: { id: parentId },
-      select: { postId: true },
-    })
-    if (!parent || parent.postId !== postId) {
-      return { error: 'Parent comment not found' }
-    }
-  }
-
   await prisma.postComment.create({
     data: {
       postId,
       authorId: user.id,
       content: trimmed,
-      ...(parentId ? { parentId } : {}),
     },
   })
 
   revalidatePath('/community')
   return { success: true }
-}
-
-export async function togglePostBookmark(postId: string) {
-  const session = await auth()
-  if (!session?.user?.email) return { error: 'Unauthorized' }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  })
-  if (!user) return { error: 'User not found' }
-
-  const existing = await prisma.postBookmark.findUnique({
-    where: { postId_userId: { postId, userId: user.id } },
-    select: { postId: true },
-  })
-
-  if (existing) {
-    await prisma.postBookmark.delete({
-      where: { postId_userId: { postId, userId: user.id } },
-    })
-    revalidatePath('/community')
-    return { success: true, bookmarked: false }
-  }
-
-  await prisma.postBookmark.create({
-    data: { postId, userId: user.id },
-  })
-  revalidatePath('/community')
-  return { success: true, bookmarked: true }
-}
-
-export async function toggleCommentLike(commentId: string) {
-  const session = await auth()
-  if (!session?.user?.email) return { error: 'Unauthorized' }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  })
-  if (!user) return { error: 'User not found' }
-
-  const existing = await prisma.postCommentLike.findUnique({
-    where: { commentId_userId: { commentId, userId: user.id } },
-    select: { commentId: true },
-  })
-
-  if (existing) {
-    await prisma.postCommentLike.delete({
-      where: { commentId_userId: { commentId, userId: user.id } },
-    })
-    revalidatePath('/community')
-    return { success: true, liked: false }
-  }
-
-  await prisma.postCommentLike.create({
-    data: { commentId, userId: user.id },
-  })
-  revalidatePath('/community')
-  return { success: true, liked: true }
 }

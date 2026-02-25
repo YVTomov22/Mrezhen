@@ -1,15 +1,9 @@
 {
   "nav": {
-    "home": "Koti",
     "dashboard": "Hallintapaneeli",
     "goals": "Tavoitteet",
     "community": "Yhteisö",
-    "features": "Ominaisuudet",
     "messages": "Viestit",
-    "notifications": "Ilmoitukset",
-    "settings": "Asetukset",
-    "search": "Haku",
-    "newPost": "Uusi julkaisu",
     "askAi": "Kysy tekoälyltä",
     "logIn": "Kirjaudu sisään",
     "signUp": "Rekisteröidy"
@@ -135,16 +129,11 @@
     "suggestedDesc": "Perustuu kiinnostuksesi, kokemustasosi ja osaamisalojesi mukaan.",
     "noSuggestions": "Ei vielä ehdotuksia",
     "noSuggestionsDesc": "Täydennä profiilisi ja lisää kiinnostuksen kohteita, jotta voimme löytää ihmisiä, joista saatat pitää.",
-    "matchLabel": "ottelu",
-    "communityStats": "yhteisössä",
-    "suggestedPeople": "Ehdotetut ihmiset",
-    "viewAll": "Näytä kaikki",
-    "discoverPeople": "Tutustu ihmisiin"
+    "matchLabel": "ottelu"
   },
   "settings": {
     "title": "Asetukset",
     "description": "Hallitse profiilitietojasi ja tiliasetuksiasi.",
-    "backToCategories": "Takaisin kategorioihin",
     "groupAccount": "Tili",
     "groupAccountDesc": "Perusidentiteetin hallinta.",
     "menuUsername": "Käyttäjätunnus",

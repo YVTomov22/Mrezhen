@@ -130,13 +130,13 @@ function ChoiceView({ onSelectManual }: { onSelectManual: () => void }) {
         <DialogTitle className="text-center text-xl">{t("goalManagement")}</DialogTitle>
       </DialogHeader>
       <div className="grid grid-cols-2 gap-4">
-        <button onClick={onSelectManual} className="flex flex-col items-center justify-center p-6 border border-border hover:border-foreground hover:bg-muted transition-all group">
-          <div className="p-3 bg-muted mb-3 group-hover:bg-foreground group-hover:text-background transition-colors"><PenTool className="w-6 h-6" /></div>
+        <button onClick={onSelectManual} className="flex flex-col items-center justify-center p-6 border-2 border-border rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group">
+          <div className="p-3 bg-muted rounded-full mb-3 group-hover:bg-blue-200 transition-colors"><PenTool className="w-6 h-6 text-muted-foreground group-hover:text-blue-700" /></div>
           <span className="font-bold text-foreground">{t("manual")}</span>
           <span className="text-xs text-muted-foreground text-center mt-1">{t("fullControl")}</span>
         </button>
-        <button onClick={() => router.push('/ai-chat')} className="flex flex-col items-center justify-center p-6 border border-border hover:border-foreground hover:bg-muted transition-all group">
-          <div className="p-3 bg-muted mb-3 group-hover:bg-foreground group-hover:text-background transition-colors"><Sparkles className="w-6 h-6" /></div>
+        <button onClick={() => router.push('/ai-chat')} className="flex flex-col items-center justify-center p-6 border-2 border-border rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all group">
+          <div className="p-3 bg-muted rounded-full mb-3 group-hover:bg-purple-200 transition-colors"><Sparkles className="w-6 h-6 text-muted-foreground group-hover:text-purple-700" /></div>
           <span className="font-bold text-foreground">{t("aiAssistant")}</span>
           <span className="text-xs text-muted-foreground text-center mt-1">{t("autoGenerate")}</span>
         </button>

@@ -72,7 +72,7 @@ import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
 /* ── Sidebar menu items ────────────────────────────────────── */
-type SectionId = "username" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility"
+type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility"
 
 /* ── Root component ────────────────────────────────────────── */
 
@@ -81,25 +81,13 @@ export function SettingsView({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
 
-  // Ref to the scrollable right panel — used for manual scrolling so
-  // we never call window-level scrollIntoView which scrolls the page.
-  const scrollPaneRef = useRef<HTMLElement>(null)
-
-  // Prevent the window from ever scrolling while on the settings page.
-  // Without this, a broken height chain (e.g. margin instead of gap)
-  // or a browser auto-scroll-to-focus event would scroll the page body.
-  useEffect(() => {
-    const prev = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-    return () => { document.body.style.overflow = prev }
-  }, [])
-
   const sections = [
     {
       group: t("groupAccount"),
       description: t("groupAccountDesc"),
       items: [
         { id: "username" as SectionId,    label: t("menuUsername"),           icon: AtSign },
+        { id: "displayname" as SectionId, label: t("menuDisplayName"),       icon: User },
         { id: "bio" as SectionId,         label: t("menuBio"),                icon: FileText },
         { id: "photo" as SectionId,       label: t("menuProfilePhoto"),      icon: ImageIcon },
         { id: "email" as SectionId,       label: t("menuEmail"),              icon: Mail },
@@ -150,93 +138,60 @@ export function SettingsView({ user }: { user: any }) {
     },
   ]
 
-  const [activeCategory, setActiveCategory] = useState<number>(0)
-
-  const categoryIcons = [AtSign, ShieldCheck, Eye, Palette, User]
-
   return (
-    <div className="flex gap-2 flex-1 min-h-0">
-      {/* ── Left: 5 compact category nav buttons ── */}
-      <aside className="flex flex-col gap-1 w-52 shrink-0">
-        {sections.map((section, idx) => {
-          const CatIcon = categoryIcons[idx]
-          const isActive = activeCategory === idx
-          return (
-            <button
-              key={section.group}
-              onClick={() => { setActiveCategory(idx); setActive(section.items[0].id) }}
-              className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-xl border text-left transition-all duration-150",
-                isActive
-                  ? "bg-foreground text-background border-foreground shadow-sm"
-                  : "bg-card border-border hover:bg-accent text-foreground"
-              )}
-            >
-              <span className={cn(
-                "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-150",
-                isActive ? "bg-background/15" : "bg-muted"
-              )}>
-                <CatIcon className="h-3.5 w-3.5" />
-              </span>
-              <span className="flex flex-col min-w-0">
-                <span className="text-xs font-semibold leading-tight truncate">{section.group}</span>
-                <span className={cn(
-                  "text-[10px] leading-tight truncate mt-0.5 transition-colors",
-                  isActive ? "text-background/60" : "text-muted-foreground"
-                )}>
-                  {section.description}
-                </span>
-              </span>
-            </button>
-          )
-        })}
-      </aside>
+    <div className="flex flex-col md:flex-row gap-6">
+      {/* ---- Sidebar ---- */}
+      <aside className="w-full md:w-64 shrink-0 space-y-6">
+        {/* Header card */}
+        <div className="flex items-center gap-4 p-4 bg-card rounded-xl border shadow-sm">
+          <AvatarUpload user={user} size="sm" />
+          <div className="min-w-0">
+            <h2 className="font-bold truncate">{user.name}</h2>
+            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+            <div className="flex gap-1.5 mt-1.5">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full">{tCommon("level")} {user.level}</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded-full">{user.score} {tCommon("xp")}</span>
+            </div>
+          </div>
+        </div>
 
-      {/* ── Middle: sub-nav for selected category ── */}
-      <aside className="flex flex-col gap-0.5 w-44 shrink-0 border-l border-border pl-2">
-        {sections[activeCategory].items.map((item) => {
-          const Icon = item.icon
-          const isActive = active === item.id
-          const isDanger = item.id === "delete" || item.id === "deactivate"
-          return (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActive(item.id)
-                // Scroll within the right panel only — never the window.
-                // scrollIntoView() without a contained scroll ancestor targets
-                // the window, which moves the entire page.
-                const pane = scrollPaneRef.current
-                const target = document.getElementById(`section-${item.id}`)
-                if (pane && target) {
-                  pane.scrollTo({ top: target.offsetTop - pane.offsetTop, behavior: 'smooth' })
-                }
-              }}
-              className={cn(
-                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
-                isActive
-                  ? isDanger
-                    ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400"
-                    : "bg-foreground text-background"
-                  : isDanger
-                  ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
-              )}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-            </button>
-          )
-        })}
-      </aside>
-
-      {/* ── Right: all panels for active category, stacked ── */}
-      <main ref={scrollPaneRef} className="flex-1 min-w-0 border-l border-border pl-6 overflow-y-auto space-y-4 pr-1 no-scrollbar">
-        {sections[activeCategory].items.map((item) => (
-          <div key={item.id} id={`section-${item.id}`} className="scroll-mt-4">
-            <SectionPanel id={item.id} user={user} />
+        {/* Nav groups */}
+        {sections.map((section) => (
+          <div key={section.group}>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 px-1">{section.group}</p>
+            <nav className="flex flex-col gap-0.5">
+              {section.items.map((item) => {
+                const Icon = item.icon
+                const isActive = active === item.id
+                const isDanger = item.id === "delete" || item.id === "deactivate"
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActive(item.id)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
+                      isActive
+                        ? isDanger
+                          ? "bg-red-50 text-red-700"
+                          : "bg-foreground text-background"
+                        : isDanger
+                        ? "text-red-500 hover:bg-red-50"
+                        : "text-muted-foreground hover:bg-accent"
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    {item.label}
+                  </button>
+                )
+              })}
+            </nav>
           </div>
         ))}
+      </aside>
+
+      {/* ---- Content ---- */}
+      <main className="flex-1 min-w-0">
+        <SectionPanel id={active} user={user} />
       </main>
     </div>
   )
@@ -248,6 +203,8 @@ function SectionPanel({ id, user }: { id: SectionId; user: any }) {
   switch (id) {
     case "username":
       return <UsernameSection user={user} />
+    case "displayname":
+      return <DisplayNameSection user={user} />
     case "bio":
       return <BioSection user={user} />
     case "photo":
@@ -317,6 +274,31 @@ function UsernameSection({ user }: { user: any }) {
           <div className="grid w-full gap-2">
             <Label htmlFor="name">{t("usernameLabel")}</Label>
             <Input id="name" name="name" defaultValue={user.name || ""} placeholder={t("usernamePlaceholder")} />
+          </div>
+          <SubmitBtn />
+        </div>
+        <Feedback msg={msg} />
+      </form>
+    </SettingsCard>
+  )
+}
+
+/* ── Display Name ──────────────────────────────────────────── */
+function DisplayNameSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const tCommon = useTranslations("common")
+  const [msg, setMsg] = useState("")
+  async function action(data: FormData) {
+    const res = await updateUsername(null, data)
+    setMsg(res?.error || res?.success || "")
+  }
+  return (
+    <SettingsCard title={t("displayNameTitle")} description={t("displayNameDescription")}>
+      <form action={action}>
+        <div className="flex gap-4 items-end">
+          <div className="grid w-full gap-2">
+            <Label htmlFor="displayName">{t("displayNameLabel")}</Label>
+            <Input id="displayName" name="name" defaultValue={user.name || ""} placeholder={t("displayNamePlaceholder")} />
           </div>
           <SubmitBtn />
         </div>
@@ -647,10 +629,7 @@ function DemographicsSection({ user }: { user: any }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>{t("dateOfBirth")}</Label>
-            {/* tabIndex={-1} stops Chromium auto-scrolling to this input
-                 on render, which was the unique reason Profile Details
-                 caused page scroll while other categories did not. */}
-            <Input name="dateOfBirth" type="date" defaultValue={formatDate(user.dateOfBirth)} tabIndex={-1} />
+            <Input name="dateOfBirth" type="date" defaultValue={formatDate(user.dateOfBirth)} />
           </div>
           <div className="space-y-2">
             <Label>{t("gender")}</Label>

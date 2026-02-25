@@ -49,7 +49,7 @@ export async function register(prevState: any, formData: FormData) {
         await signIn("credentials", {
             email,
             password,
-            redirectTo: "/community",
+            redirectTo: "/dashboard",
         })
 
         return { success: "User created!" }
@@ -71,7 +71,7 @@ export async function login(prevState: any, formData: FormData) {
         await signIn("credentials", {
             email,
             password,
-            redirectTo: "/community",
+            redirectTo: "/dashboard",
         })
     } catch (error) {
         if (error instanceof AuthError) {

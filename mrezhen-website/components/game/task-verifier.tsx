@@ -89,14 +89,14 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
         <Button 
           variant="ghost" 
           size="sm" 
-          className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground opacity-0 group-hover/task:opacity-100 transition-all duration-300"
+          className="h-6 px-2 text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 opacity-0 group-hover/task:opacity-100 transition-all duration-300"
         >
           <Sparkles className="w-3 h-3 mr-1" /> {t("verifyWithAi")}
         </Button>
       </PopoverTrigger>
       
-      <PopoverContent className="w-80 p-0 overflow-hidden shadow-xl border-border" align="start" side="right">
-        <div className="bg-foreground p-3 text-background">
+      <PopoverContent className="w-80 p-0 overflow-hidden shadow-xl border-purple-100" align="start" side="right">
+        <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-3 text-white">
           <h4 className="font-bold text-sm flex items-center gap-2">
             <Bot className="w-4 h-4" /> {t("aiJudge")}
           </h4>
@@ -128,7 +128,7 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
                   onChange={handleFileSelect}
                 />
                 {files.length > 0 ? (
-                  <div className="flex items-center justify-center gap-2 text-foreground">
+                  <div className="flex items-center justify-center gap-2 text-purple-600">
                     <ImageIcon className="w-4 h-4" />
                     <span className="text-xs font-medium">{files.length} {t("filesSelected")}</span>
                   </div>
@@ -143,7 +143,7 @@ export function TaskVerifier({ taskId, taskContent, isCompleted }: TaskVerifierP
               {/* Comment Input */}
               <Textarea 
                 placeholder={t("tellAiPlaceholder")} 
-                className="text-xs resize-none bg-muted border-border focus-visible:ring-foreground"
+                className="text-xs resize-none bg-muted border-border focus-visible:ring-purple-500"
                 rows={3}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}

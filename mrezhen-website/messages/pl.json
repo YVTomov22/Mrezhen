@@ -1,15 +1,9 @@
 {
   "nav": {
-    "home": "Strona główna",
     "dashboard": "Panel",
     "goals": "Cele",
     "community": "Społeczność",
-    "features": "Cechy",
     "messages": "Wiadomości",
-    "notifications": "Powiadomienia",
-    "settings": "Ustawienia",
-    "search": "Szukaj",
-    "newPost": "Nowy post",
     "askAi": "Zapytaj AI",
     "logIn": "Zaloguj się",
     "signUp": "Zarejestruj się"
@@ -135,16 +129,11 @@
     "suggestedDesc": "Na podstawie Twoich zainteresowań, poziomu doświadczenia i sektorów wiedzy.",
     "noSuggestions": "Nie ma jeszcze żadnych sugestii",
     "noSuggestionsDesc": "Uzupełnij swój profil i dodaj zainteresowania, abyśmy mogli znaleźć osoby, które mogą Cię zainteresować.",
-    "matchLabel": "mecz",
-    "communityStats": "Wspólnota",
-    "suggestedPeople": "Sugerowane osoby",
-    "viewAll": "Zobacz wszystkie",
-    "discoverPeople": "Odkryj ludzi"
+    "matchLabel": "mecz"
   },
   "settings": {
     "title": "Ustawienia",
     "description": "Zarządzaj szczegółami profilu i preferencjami konta.",
-    "backToCategories": "Powrót do kategorii",
     "groupAccount": "Konto",
     "groupAccountDesc": "Podstawowe kontrole tożsamości.",
     "menuUsername": "Nazwa użytkownika",
