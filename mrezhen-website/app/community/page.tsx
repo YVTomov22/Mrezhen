@@ -10,6 +10,7 @@ import { CommunityFeed } from '@/components/feed/community-feed'
 import { FollowButton } from '@/components/follow-button'
 import { StoriesBar } from '@/components/community/stories-bar'
 import { CommunityLeftSidebar } from '@/components/community/left-sidebar'
+import { LeftAsideShell } from '@/components/community/left-aside-shell'
 import { Search } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { getRecommendedUsers } from '@/app/actions/recommend'
@@ -111,10 +112,10 @@ export default async function CommunityFeedPage() {
   const sidebarPeople = recommendedUsers.slice(0, 5)
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[240px_1fr_300px]">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[240px_1fr_300px_180px]">
       <PostComposerModal />
       {/* ── LEFT SIDEBAR ─────────────────────────────── */}
-      <aside className="hidden lg:flex flex-col gap-8 border-r border-border/60 px-6 py-8 overflow-y-auto no-scrollbar">
+      <LeftAsideShell>
         {/* Suggested People */}
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -158,7 +159,7 @@ export default async function CommunityFeedPage() {
             </Button>
           </Link>
         </div>
-      </aside>
+      </LeftAsideShell>
 
       {/* ── FEED (center, scrollable) ─────────────── */}
       <section className="overflow-y-auto no-scrollbar px-6 py-8">
@@ -183,9 +184,12 @@ export default async function CommunityFeedPage() {
       </section>
 
       {/* ── RIGHT SIDEBAR ───────────────────────────── */}
-      <aside className="hidden lg:block border-l border-border/60 px-6 py-8 overflow-y-auto no-scrollbar">
+      <aside className="hidden lg:block border-l border-r border-border/60 px-6 py-8 overflow-y-auto no-scrollbar">
         <CommunityLeftSidebar user={currentUser} />
       </aside>
+
+      {/* ── RIGHT GUTTER (2.5 × 72px = 180px) ─────── */}
+      <div className="hidden lg:block" aria-hidden="true" />
     </div>
   )
 }

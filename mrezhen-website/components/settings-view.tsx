@@ -67,12 +67,14 @@ import {
   Accessibility,
   Type,
   Palette,
+  Newspaper,
+  Bookmark,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
 /* ── Sidebar menu items ────────────────────────────────────── */
-type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility"
+type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility" | "myposts" | "likedposts" | "savedposts"
 
 /* ── Root component ────────────────────────────────────────── */
 
@@ -149,11 +151,20 @@ export function SettingsView({ user }: { user: any }) {
         { id: "interests" as SectionId,    label: t("menuInterests"),       icon: Heart },
       ],
     },
+    {
+      group: t("groupPosts"),
+      description: t("groupPostsDesc"),
+      items: [
+        { id: "myposts" as SectionId,    label: t("menuMyPosts"),    icon: Newspaper },
+        { id: "likedposts" as SectionId, label: t("menuLikedPosts"), icon: Heart },
+        { id: "savedposts" as SectionId, label: t("menuSavedPosts"), icon: Bookmark },
+      ],
+    },
   ]
 
   const [activeCategory, setActiveCategory] = useState<number>(0)
 
-  const categoryIcons = [AtSign, ShieldCheck, Eye, Palette, User]
+  const categoryIcons = [AtSign, ShieldCheck, Eye, Palette, User, Newspaper]
 
   return (
     <div className="flex gap-2 flex-1 min-h-0">
@@ -295,6 +306,12 @@ function SectionPanel({ id, user }: { id: SectionId; user: any }) {
       return <DataSaverSection user={user} />
     case "accessibility":
       return <AccessibilitySection user={user} />
+    case "myposts":
+      return <MyPostsSection user={user} />
+    case "likedposts":
+      return <LikedPostsSection user={user} />
+    case "savedposts":
+      return <SavedPostsSection user={user} />
     default:
       return null
   }
@@ -1567,5 +1584,126 @@ function SubmitBtn({ label }: { label?: string }) {
     <Button disabled={pending} type="submit" className="min-w-[100px] shrink-0">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : (label || tCommon("save"))}
     </Button>
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════
+   POSTS SECTIONS
+   ══════════════════════════════════════════════════════════════ */
+
+function PostMiniCard({ post }: { post: { id: string; content: string | null; createdAt: string; images: { url: string }[]; _count: { likes: number; comments: number } } }) {
+  const t = useTranslations("settings")
+  return (
+    <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+      {post.content && <p className="text-sm leading-relaxed line-clamp-3">{post.content}</p>}
+      {post.images.length > 0 && (
+        <div className="flex gap-1 overflow-hidden rounded-lg">
+          {post.images.slice(0, 3).map((img, i) => (
+            <img key={i} src={img.url} alt="" className="h-20 w-20 object-cover rounded-md bg-muted" />
+          ))}
+          {post.images.length > 3 && (
+            <span className="flex h-20 w-20 items-center justify-center rounded-md bg-muted text-xs text-muted-foreground font-medium">+{post.images.length - 3}</span>
+          )}
+        </div>
+      )}
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <span suppressHydrationWarning>{new Date(post.createdAt).toLocaleDateString()}</span>
+        <span className="flex items-center gap-1"><Heart className="h-3 w-3" />{post._count.likes}</span>
+        <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" />{post._count.comments}</span>
+      </div>
+    </div>
+  )
+}
+
+function MyPostsSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch(`/api/posts/mine`)
+      .then(r => r.json())
+      .then(data => { setPosts(data.posts ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Newspaper className="h-5 w-5" /> {t("myPostsTitle")}</CardTitle>
+        <CardDescription>{t("myPostsDescription")}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {loading ? (
+          <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+        ) : posts.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">{t("myPostsEmpty")}</p>
+        ) : (
+          posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function LikedPostsSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch(`/api/posts/liked`)
+      .then(r => r.json())
+      .then(data => { setPosts(data.posts ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Heart className="h-5 w-5 text-rose-500" /> {t("likedPostsTitle")}</CardTitle>
+        <CardDescription>{t("likedPostsDescription")}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {loading ? (
+          <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+        ) : posts.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">{t("likedPostsEmpty")}</p>
+        ) : (
+          posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function SavedPostsSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch(`/api/posts/saved`)
+      .then(r => r.json())
+      .then(data => { setPosts(data.posts ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><Bookmark className="h-5 w-5 text-amber-500 dark:text-sky-400" /> {t("savedPostsTitle")}</CardTitle>
+        <CardDescription>{t("savedPostsDescription")}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {loading ? (
+          <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+        ) : posts.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">{t("savedPostsEmpty")}</p>
+        ) : (
+          posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
+        )}
+      </CardContent>
+    </Card>
   )
 }

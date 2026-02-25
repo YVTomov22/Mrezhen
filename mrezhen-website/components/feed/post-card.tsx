@@ -135,9 +135,9 @@ export function PostCard(props: PostCardProps) {
   const when = new Date(props.createdAt).toLocaleString()
 
   return (
-    <article className="bg-card rounded-2xl border border-border/60 shadow-sm card-hover overflow-hidden">
+    <article className="border-b border-border/40 py-6 last:border-0">
       {/* Header */}
-      <div className="flex items-center gap-3 px-5 pt-5 pb-3">
+      <div className="flex items-center gap-3 pb-3">
         <Avatar className="h-10 w-10 ring-2 ring-background shadow-sm">
           <AvatarImage src={props.author.image || ''} />
           <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
@@ -151,13 +151,13 @@ export function PostCard(props: PostCardProps) {
           >
             {displayName}
           </Link>
-          <p className="text-[11px] text-muted-foreground">{when}</p>
+          <p className="text-[11px] text-muted-foreground" suppressHydrationWarning>{when}</p>
         </div>
       </div>
 
       {/* Content */}
       {props.content && (
-        <div className="px-5 pb-3">
+        <div className="pb-3">
           <p className="text-[15px] leading-relaxed">{props.content}</p>
         </div>
       )}
@@ -177,7 +177,7 @@ export function PostCard(props: PostCardProps) {
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between px-3 py-2">
+      <div className="flex items-center justify-between py-1 -mx-1">
         <div className="flex items-center gap-0.5">
           <Button
             variant="ghost"
@@ -243,7 +243,7 @@ export function PostCard(props: PostCardProps) {
       {/* ── Comment Section ── */}
       <div className="comment-collapse" data-open={showComments}>
         <div>
-          <div className="border-t border-border/60 mx-5 pt-4 pb-5 space-y-3">
+          <div className="border-t border-border/40 pt-4 pb-2 space-y-3">
             {props.recentComments.length > 0 && (
               <div className="space-y-3">
                 {props.recentComments
@@ -269,7 +269,7 @@ export function PostCard(props: PostCardProps) {
                               <Link href={profileHref} className="text-[13px] font-semibold tracking-tight hover:underline underline-offset-2">
                                 {name}
                               </Link>
-                              <span className="text-[10px] text-muted-foreground">
+                              <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
                                 {new Date(c.createdAt).toLocaleString()}
                               </span>
                             </div>
@@ -318,7 +318,7 @@ export function PostCard(props: PostCardProps) {
                                         <Link href={rHref} className="text-[12px] font-semibold tracking-tight hover:underline underline-offset-2">
                                           {rName}
                                         </Link>
-                                        <span className="text-[10px] text-muted-foreground">
+                                        <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
                                           {new Date(r.createdAt).toLocaleString()}
                                         </span>
                                       </div>

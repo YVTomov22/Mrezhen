@@ -3,6 +3,8 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/sidebar-shell";
+import { MainShell } from "@/components/main-shell";
 import { Toaster } from "sonner";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -80,15 +82,12 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider messages={messages}>
-            <Navbar />
-            <main
-              id="main-content"
-              role="main"
-              aria-label="Page content"
-              className={isLoggedIn ? "md:pl-[72px] transition-[padding] duration-200" : ""}
-            >
-                {children}
-            </main>
+            <SidebarProvider>
+              <Navbar />
+              <MainShell isLoggedIn={isLoggedIn}>
+                  {children}
+              </MainShell>
+            </SidebarProvider>
             <Toaster position="bottom-right" richColors closeButton />
           </NextIntlClientProvider>
         </ThemeProvider>
