@@ -362,6 +362,48 @@ html[data-reduce-motion] .feed-entrance {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   SETTINGS PAGE STYLING OVERHAUL
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Premium Input Fields ── */
+.settings-input {
+  background-color: rgba(0, 0, 0, 0.02);
+  border-color: transparent;
+  transition: all 0.2s ease;
+}
+.dark .settings-input {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.settings-input:focus-visible {
+  background-color: transparent;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15); /* Orange glow */
+}
+.dark .settings-input:focus-visible {
+  border-color: #00A3FF;
+  box-shadow: 0 0 0 3px rgba(0, 163, 255, 0.15); /* Teal glow */
+}
+
+/* ── Button Consistency ── */
+.settings-btn {
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: white;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.dark .settings-btn {
+  background: linear-gradient(135deg, #00A3FF, #0055FF);
+}
+.settings-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+}
+.dark .settings-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 163, 255, 0.2);
+}
+
+/* ══════════════════════════════════════════════════════════════
    ACCESSIBILITY — Font Size
    Maps data-font-size on <html> to a CSS custom property that
    scales the root font-size.  All rem-based sizing follows.

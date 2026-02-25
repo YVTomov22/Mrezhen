@@ -26,7 +26,6 @@ import {
 } from "@/app/actions/appearance"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -178,15 +177,18 @@ export function SettingsView({ user }: { user: any }) {
               key={section.group}
               onClick={() => { setActiveCategory(idx); setActive(section.items[0].id) }}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-xl border text-left transition-all duration-150",
+                "group flex items-center gap-3 px-3 py-2.5 rounded-full border text-left transition-all duration-150 relative overflow-hidden",
                 isActive
-                  ? "bg-foreground text-background border-foreground shadow-sm"
-                  : "bg-card border-border hover:bg-accent text-foreground"
+                  ? "bg-primary/10 text-primary border-transparent dark:bg-white/5 dark:text-white"
+                  : "bg-transparent border-transparent hover:bg-accent text-foreground"
               )}
             >
+              {isActive && (
+                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary dark:bg-[#00A3FF]" />
+              )}
               <span className={cn(
-                "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-150",
-                isActive ? "bg-background/15" : "bg-muted"
+                "flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors duration-150",
+                isActive ? "bg-primary/20 dark:bg-white/10" : "bg-muted"
               )}>
                 <CatIcon className="h-3.5 w-3.5" />
               </span>
@@ -194,7 +196,7 @@ export function SettingsView({ user }: { user: any }) {
                 <span className="text-xs font-semibold leading-tight truncate">{section.group}</span>
                 <span className={cn(
                   "text-[10px] leading-tight truncate mt-0.5 transition-colors",
-                  isActive ? "text-background/60" : "text-muted-foreground"
+                  isActive ? "text-primary/70 dark:text-white/60" : "text-muted-foreground"
                 )}>
                   {section.description}
                 </span>
@@ -225,16 +227,19 @@ export function SettingsView({ user }: { user: any }) {
                 }
               }}
               className={cn(
-                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
+                "flex items-center gap-2.5 px-3 py-2 rounded-full text-sm font-medium transition-colors text-left relative overflow-hidden",
                 isActive
                   ? isDanger
                     ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400"
-                    : "bg-foreground text-background"
+                    : "bg-primary/10 text-primary dark:bg-white/5 dark:text-white"
                   : isDanger
                   ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
                   : "text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
             >
+              {isActive && !isDanger && (
+                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary dark:bg-[#00A3FF]" />
+              )}
               <Icon className="h-4 w-4 shrink-0" />
               <span className="truncate">{item.label}</span>
             </button>
@@ -243,9 +248,9 @@ export function SettingsView({ user }: { user: any }) {
       </aside>
 
       {/* ── Right: all panels for active category, stacked ── */}
-      <main ref={scrollPaneRef} className="flex-1 min-w-0 border-l border-border pl-6 overflow-y-auto space-y-4 pr-1 no-scrollbar">
+      <main ref={scrollPaneRef} className="flex-1 min-w-0 border-l border-border pl-6 overflow-y-auto pr-1 no-scrollbar divide-y divide-border/40">
         {sections[activeCategory].items.map((item) => (
-          <div key={item.id} id={`section-${item.id}`} className="scroll-mt-4">
+          <div key={item.id} id={`section-${item.id}`} className="scroll-mt-4 py-8 first:pt-0 last:pb-0">
             <SectionPanel id={item.id} user={user} />
           </div>
         ))}
@@ -334,9 +339,9 @@ function UsernameSection({ user }: { user: any }) {
     <SettingsCard title={t("usernameTitle")} description={t("usernameDescription")}>
       <form action={action}>
         <div className="flex gap-4 items-end">
-          <div className="grid w-full gap-2">
-            <Label htmlFor="name">{t("usernameLabel")}</Label>
-            <Input id="name" name="name" defaultValue={user.name || ""} placeholder={t("usernamePlaceholder")} />
+          <div className="grid w-full gap-3">
+            <Label htmlFor="name" className="text-muted-foreground">{t("usernameLabel")}</Label>
+            <Input id="name" name="name" defaultValue={user.name || ""} placeholder={t("usernamePlaceholder")} className="settings-input" />
           </div>
           <SubmitBtn />
         </div>
@@ -359,9 +364,9 @@ function DisplayNameSection({ user }: { user: any }) {
     <SettingsCard title={t("displayNameTitle")} description={t("displayNameDescription")}>
       <form action={action}>
         <div className="flex gap-4 items-end">
-          <div className="grid w-full gap-2">
-            <Label htmlFor="displayName">{t("displayNameLabel")}</Label>
-            <Input id="displayName" name="name" defaultValue={user.name || ""} placeholder={t("displayNamePlaceholder")} />
+          <div className="grid w-full gap-3">
+            <Label htmlFor="displayName" className="text-muted-foreground">{t("displayNameLabel")}</Label>
+            <Input id="displayName" name="name" defaultValue={user.name || ""} placeholder={t("displayNamePlaceholder")} className="settings-input" />
           </div>
           <SubmitBtn />
         </div>
@@ -383,7 +388,7 @@ function BioSection({ user }: { user: any }) {
   return (
     <SettingsCard title={t("bioTitle")} description={t("bioDescription")}>
       <form action={action} className="space-y-4">
-        <Textarea name="bio" placeholder={t("bioPlaceholder")} defaultValue={user.bio || ""} className="resize-none h-28" />
+        <Textarea name="bio" placeholder={t("bioPlaceholder")} defaultValue={user.bio || ""} className="settings-input resize-none h-28" />
         {/* hidden fields so updateDetails doesn't clear other values */}
         <input type="hidden" name="interests" defaultValue={user.interests?.join(", ") || ""} />
         <HiddenDetailsFields user={user} />
@@ -424,9 +429,9 @@ function EmailSection({ user }: { user: any }) {
     <SettingsCard title={t("emailTitle")} description={t("emailDescription")}>
       <form action={action}>
         <div className="flex gap-4 items-end">
-          <div className="grid w-full gap-2">
-            <Label htmlFor="email">{t("emailLabel")}</Label>
-            <Input id="email" name="email" type="email" defaultValue={user.email || ""} />
+          <div className="grid w-full gap-3">
+            <Label htmlFor="email" className="text-muted-foreground">{t("emailLabel")}</Label>
+            <Input id="email" name="email" type="email" defaultValue={user.email || ""} className="settings-input" />
           </div>
           <SubmitBtn />
         </div>
@@ -448,9 +453,9 @@ function PhoneSection({ user }: { user: any }) {
     <SettingsCard title={t("phoneTitle")} description={t("phoneDescription")}>
       <form action={action}>
         <div className="flex gap-4 items-end">
-          <div className="grid w-full gap-2">
-            <Label htmlFor="phone">{t("phoneLabel")}</Label>
-            <Input id="phone" name="phone" type="tel" placeholder={t("phonePlaceholder")} defaultValue={user.phone || ""} />
+          <div className="grid w-full gap-3">
+            <Label htmlFor="phone" className="text-muted-foreground">{t("phoneLabel")}</Label>
+            <Input id="phone" name="phone" type="tel" placeholder={t("phonePlaceholder")} defaultValue={user.phone || ""} className="settings-input" />
           </div>
           <SubmitBtn />
         </div>
@@ -490,13 +495,13 @@ function PasswordSection({ user }: { user: any }) {
   return (
     <SettingsCard title={t("passwordTitle")} description={t("passwordDescription")}>
       <form ref={ref} action={action} className="space-y-4">
-        <div className="grid gap-2">
-          <Label htmlFor="current">{t("currentPassword")}</Label>
-          <Input id="current" name="currentPassword" type="password" required />
+        <div className="grid gap-3">
+          <Label htmlFor="current" className="text-muted-foreground">{t("currentPassword")}</Label>
+          <Input id="current" name="currentPassword" type="password" required className="settings-input" />
         </div>
-        <div className="grid gap-2">
-          <Label htmlFor="new">{t("newPassword")}</Label>
-          <Input id="new" name="password" type="password" required />
+        <div className="grid gap-3">
+          <Label htmlFor="new" className="text-muted-foreground">{t("newPassword")}</Label>
+          <Input id="new" name="password" type="password" required className="settings-input" />
         </div>
         <div className="flex justify-between items-center pt-2">
           <Feedback msg={msg} />
@@ -554,11 +559,11 @@ function DeleteSection() {
           {t("deleteWarning")}
         </p>
         <form action={action} className="space-y-3">
-          <div className="grid gap-2">
+          <div className="grid gap-3">
             <Label htmlFor="confirm" className="text-red-600 font-medium">
               {t("deleteTypeToConfirm")}
             </Label>
-            <Input id="confirm" name="confirmation" placeholder={t("deletePlaceholder")} className="border-red-200 focus-visible:ring-red-400" />
+            <Input id="confirm" name="confirmation" placeholder={t("deletePlaceholder")} className="settings-input border-red-200 focus-visible:ring-red-400" />
           </div>
           <div className="flex justify-between items-center">
             <Feedback msg={msg} />
@@ -690,17 +695,17 @@ function DemographicsSection({ user }: { user: any }) {
         <input type="hidden" name="bio" defaultValue={user.bio || ""} />
         <input type="hidden" name="interests" defaultValue={user.interests?.join(", ") || ""} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>{t("dateOfBirth")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("dateOfBirth")}</Label>
             {/* tabIndex={-1} stops Chromium auto-scrolling to this input
                  on render, which was the unique reason Profile Details
                  caused page scroll while other categories did not. */}
-            <Input name="dateOfBirth" type="date" defaultValue={formatDate(user.dateOfBirth)} tabIndex={-1} />
+            <Input name="dateOfBirth" type="date" defaultValue={formatDate(user.dateOfBirth)} tabIndex={-1} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("gender")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("gender")}</Label>
             <Select name="gender" defaultValue={user.gender || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="male">{t("male")}</SelectItem>
                 <SelectItem value="female">{t("female")}</SelectItem>
@@ -709,10 +714,10 @@ function DemographicsSection({ user }: { user: any }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>{t("maritalStatus")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("maritalStatus")}</Label>
             <Select name="maritalStatus" defaultValue={user.maritalStatus || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="single">{t("single")}</SelectItem>
                 <SelectItem value="married">{t("married")}</SelectItem>
@@ -762,18 +767,18 @@ function HouseholdSection({ user }: { user: any }) {
         <input type="hidden" name="gender" defaultValue={user.gender || ""} />
         <input type="hidden" name="maritalStatus" defaultValue={user.maritalStatus || ""} />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label>{t("householdSize")}</Label>
-            <Input name="householdSize" type="number" min="1" defaultValue={user.householdSize} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("householdSize")}</Label>
+            <Input name="householdSize" type="number" min="1" defaultValue={user.householdSize} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("children")}</Label>
-            <Input name="childrenCount" type="number" min="0" defaultValue={user.childrenCount} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("children")}</Label>
+            <Input name="childrenCount" type="number" min="0" defaultValue={user.childrenCount} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("socialSupport")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("socialSupport")}</Label>
             <Select name="socialSupportLevel" defaultValue={user.socialSupportLevel || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="low">{t("supportLow")}</SelectItem>
                 <SelectItem value="medium">{t("supportMedium")}</SelectItem>
@@ -823,18 +828,18 @@ function HealthSection({ user }: { user: any }) {
         <input type="hidden" name="childhoodMathSkill" defaultValue={user.childhoodMathSkill ?? ""} />
         <input type="hidden" name="booksInHome" defaultValue={user.booksInHome || ""} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>{t("bmi")}</Label>
-            <Input name="bmi" type="number" step="0.1" placeholder="24.5" defaultValue={user.bmi} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("bmi")}</Label>
+            <Input name="bmi" type="number" step="0.1" placeholder="24.5" defaultValue={user.bmi} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("mentalHealth")}</Label>
-            <Input name="mentalHealthScore" type="number" min="0" max="10" defaultValue={user.mentalHealthScore} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("mentalHealth")}</Label>
+            <Input name="mentalHealthScore" type="number" min="0" max="10" defaultValue={user.mentalHealthScore} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("smoking")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("smoking")}</Label>
             <Select name="smoking" defaultValue={user.smoking || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="never">{t("never")}</SelectItem>
                 <SelectItem value="former">{t("former")}</SelectItem>
@@ -891,10 +896,10 @@ function EducationSection({ user }: { user: any }) {
         <input type="hidden" name="alcoholConsumption" defaultValue={user.alcoholConsumption || ""} />
         <input type="hidden" name="mentalHealthScore" defaultValue={user.mentalHealthScore ?? ""} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>{t("education")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("education")}</Label>
             <Select name="education" defaultValue={user.education || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="high_school">{t("highSchool")}</SelectItem>
                 <SelectItem value="bachelors">{t("bachelors")}</SelectItem>
@@ -903,10 +908,10 @@ function EducationSection({ user }: { user: any }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>{t("employment")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("employment")}</Label>
             <Select name="employmentStatus" defaultValue={user.employmentStatus || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="employed">{t("employed")}</SelectItem>
                 <SelectItem value="part_time">{t("partTime")}</SelectItem>
@@ -916,14 +921,14 @@ function EducationSection({ user }: { user: any }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>{t("incomePercentile")}</Label>
-            <Input name="incomePercentile" type="number" min="0" max="100" defaultValue={user.incomePercentile} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("incomePercentile")}</Label>
+            <Input name="incomePercentile" type="number" min="0" max="100" defaultValue={user.incomePercentile} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("booksInHome")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("booksInHome")}</Label>
             <Select name="booksInHome" defaultValue={user.booksInHome || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="0-10">0-10</SelectItem>
                 <SelectItem value="11-25">11-25</SelectItem>
@@ -932,9 +937,9 @@ function EducationSection({ user }: { user: any }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>{t("mathSkill")}</Label>
-            <Input name="childhoodMathSkill" type="number" min="1" max="10" defaultValue={user.childhoodMathSkill} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("mathSkill")}</Label>
+            <Input name="childhoodMathSkill" type="number" min="1" max="10" defaultValue={user.childhoodMathSkill} className="settings-input" />
           </div>
         </div>
         <div className="flex justify-end items-center gap-3 pt-2">
@@ -959,9 +964,9 @@ function InterestsSection({ user }: { user: any }) {
       <form action={action} className="space-y-4">
         <input type="hidden" name="bio" defaultValue={user.bio || ""} />
         <HiddenDetailsFields user={user} />
-        <div className="space-y-2">
-          <Label>{t("interestsLabel")}</Label>
-          <Input name="interests" placeholder={t("interestsPlaceholder")} defaultValue={user.interests?.join(", ") || ""} />
+        <div className="space-y-3">
+          <Label className="text-muted-foreground">{t("interestsLabel")}</Label>
+          <Input name="interests" placeholder={t("interestsPlaceholder")} defaultValue={user.interests?.join(", ") || ""} className="settings-input" />
           <p className="text-[10px] text-muted-foreground">{t("interestsHint")}</p>
         </div>
         {user.interests?.length > 0 && (
@@ -1160,17 +1165,17 @@ function ContentControlsSection({ user }: { user: any }) {
           defaultValue={user.allowResharing ?? true}
         />
 
-        <div className="space-y-2 pt-2">
-          <Label className="text-sm font-medium">{t("hideStoryLabel")}</Label>
+        <div className="space-y-3 pt-2">
+          <Label className="text-sm font-medium text-muted-foreground">{t("hideStoryLabel")}</Label>
           <p className="text-xs text-muted-foreground">{t("hideStoryDesc")}</p>
           <div className="flex gap-2">
             <Input
               value={hiddenInput}
               onChange={(e) => setHiddenInput(e.target.value)}
               placeholder={t("hideStoryPlaceholder")}
-              className="flex-1"
+              className="flex-1 settings-input"
             />
-            <Button size="sm" onClick={saveHidden}>{tCommon("save")}</Button>
+            <Button size="sm" onClick={saveHidden} className="settings-btn">{tCommon("save")}</Button>
           </div>
           {(user.hiddenFromStory ?? []).length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1">
@@ -1183,17 +1188,17 @@ function ContentControlsSection({ user }: { user: any }) {
           )}
         </div>
 
-        <div className="space-y-2 pt-2">
-          <Label className="text-sm font-medium">{t("closeFriendsLabel")}</Label>
+        <div className="space-y-3 pt-2">
+          <Label className="text-sm font-medium text-muted-foreground">{t("closeFriendsLabel")}</Label>
           <p className="text-xs text-muted-foreground">{t("closeFriendsDesc")}</p>
           <div className="flex gap-2">
             <Input
               value={closeFriendsInput}
               onChange={(e) => setCloseFriendsInput(e.target.value)}
               placeholder={t("closeFriendsPlaceholder")}
-              className="flex-1"
+              className="flex-1 settings-input"
             />
-            <Button size="sm" onClick={saveCloseFriends}>{tCommon("save")}</Button>
+            <Button size="sm" onClick={saveCloseFriends} className="settings-btn">{tCommon("save")}</Button>
           </div>
           {(user.closeFriends ?? []).length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1">
@@ -1393,7 +1398,7 @@ function LanguageSection({ user }: { user: any }) {
             })
           }}
         >
-          <SelectTrigger className="w-full max-w-xs">
+          <SelectTrigger className="w-full max-w-xs settings-input">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -1525,13 +1530,13 @@ function SettingsCard({
   danger?: boolean
 }) {
   return (
-    <Card className={cn(danger && "border-red-200")}>
-      <CardHeader>
-        <CardTitle className={cn(danger && "text-red-600")}>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
+    <div className={cn("space-y-5", danger && "text-red-600")}>
+      <div className="space-y-1.5">
+        <h3 className={cn("editorial-subhead text-2xl", danger && "text-red-600")}>{title}</h3>
+        <p className="editorial-body text-muted-foreground">{description}</p>
+      </div>
+      <div>{children}</div>
+    </div>
   )
 }
 
@@ -1581,7 +1586,7 @@ function SubmitBtn({ label }: { label?: string }) {
   const { pending } = useFormStatus()
   const tCommon = useTranslations("common")
   return (
-    <Button disabled={pending} type="submit" className="min-w-[100px] shrink-0">
+    <Button disabled={pending} type="submit" className="settings-btn min-w-[100px] shrink-0">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : (label || tCommon("save"))}
     </Button>
   )
@@ -1628,12 +1633,12 @@ function MyPostsSection({ user }: { user: any }) {
   }, [])
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Newspaper className="h-5 w-5" /> {t("myPostsTitle")}</CardTitle>
-        <CardDescription>{t("myPostsDescription")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <div className="space-y-5">
+      <div className="space-y-1.5">
+        <h3 className="editorial-subhead text-2xl flex items-center gap-2"><Newspaper className="h-5 w-5" /> {t("myPostsTitle")}</h3>
+        <p className="editorial-body text-muted-foreground">{t("myPostsDescription")}</p>
+      </div>
+      <div className="space-y-3">
         {loading ? (
           <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
         ) : posts.length === 0 ? (
@@ -1641,8 +1646,8 @@ function MyPostsSection({ user }: { user: any }) {
         ) : (
           posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
@@ -1659,12 +1664,12 @@ function LikedPostsSection({ user }: { user: any }) {
   }, [])
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Heart className="h-5 w-5 text-rose-500" /> {t("likedPostsTitle")}</CardTitle>
-        <CardDescription>{t("likedPostsDescription")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <div className="space-y-5">
+      <div className="space-y-1.5">
+        <h3 className="editorial-subhead text-2xl flex items-center gap-2"><Heart className="h-5 w-5 text-rose-500" /> {t("likedPostsTitle")}</h3>
+        <p className="editorial-body text-muted-foreground">{t("likedPostsDescription")}</p>
+      </div>
+      <div className="space-y-3">
         {loading ? (
           <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
         ) : posts.length === 0 ? (
@@ -1672,8 +1677,8 @@ function LikedPostsSection({ user }: { user: any }) {
         ) : (
           posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
@@ -1690,12 +1695,12 @@ function SavedPostsSection({ user }: { user: any }) {
   }, [])
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2"><Bookmark className="h-5 w-5 text-amber-500 dark:text-sky-400" /> {t("savedPostsTitle")}</CardTitle>
-        <CardDescription>{t("savedPostsDescription")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <div className="space-y-5">
+      <div className="space-y-1.5">
+        <h3 className="editorial-subhead text-2xl flex items-center gap-2"><Bookmark className="h-5 w-5 text-amber-500 dark:text-sky-400" /> {t("savedPostsTitle")}</h3>
+        <p className="editorial-body text-muted-foreground">{t("savedPostsDescription")}</p>
+      </div>
+      <div className="space-y-3">
         {loading ? (
           <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
         ) : posts.length === 0 ? (
@@ -1703,7 +1708,7 @@ function SavedPostsSection({ user }: { user: any }) {
         ) : (
           posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
