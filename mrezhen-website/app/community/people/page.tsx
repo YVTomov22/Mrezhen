@@ -65,34 +65,33 @@ export default async function CommunityPeoplePage({
   return (
     <div className="min-h-screen bg-background">
       {/* ── Header Banner ───────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/3 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2" />
-        </div>
+      <div className="relative overflow-hidden border-b border-border bg-card">
         <div className="relative max-w-6xl mx-auto px-6 py-8">
-          <Link href="/community" className="inline-flex items-center gap-1.5 text-teal-200 hover:text-white text-sm mb-2 transition-colors">
+          <Link href="/community" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-2 transition-colors">
             <ArrowLeft className="w-4 h-4" /> {t("backToFeed")}
           </Link>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3 text-foreground">
                 <Users className="w-8 h-8" /> {t("findPeopleTitle")}
               </h1>
-              <p className="text-teal-200 mt-1">{t("findPeopleDesc")}</p>
+              <p className="text-muted-foreground mt-1">{t("findPeopleDesc")}</p>
             </div>
             <div className="flex items-center gap-2">
               <Link href="/community/suggested">
-                <Button className="bg-white/15 hover:bg-white/25 text-white border border-white/20 backdrop-blur-sm gap-2">
+                <Button variant="outline" className="gap-2">
                   <Sparkles className="h-4 w-4" /> {t("suggested")}
                 </Button>
               </Link>
-              <div className="text-xs font-bold bg-white/15 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10 text-teal-100">
+              <div className="text-xs font-bold bg-secondary px-4 py-2 rounded-xl border border-border text-secondary-foreground">
                 {users.length} {t("membersLabel")}
               </div>
             </div>
           </div>
           
-          <PeopleSearchBar />
+          <div className="mt-6">
+            <PeopleSearchBar />
+          </div>
         </div>
       </div>
 

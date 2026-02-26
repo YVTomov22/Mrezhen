@@ -10,6 +10,12 @@ function PostComposerModalInner() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const isOpen = searchParams.get('new') === '1'
+  const dashboardParam = searchParams.get('dashboard')
+
+  // Build initial content when sharing a dashboard layout
+  const initialContent = dashboardParam
+    ? `🎨 Check out my custom dashboard layout! Click to use it.\n\n[dashboard:${dashboardParam}]`
+    : undefined
 
   function handleClose() {
     router.back()
@@ -21,7 +27,7 @@ function PostComposerModalInner() {
         <VisuallyHidden>
           <DialogTitle>New Post</DialogTitle>
         </VisuallyHidden>
-        <PostComposer onSuccess={handleClose} />
+        <PostComposer onSuccess={handleClose} initialContent={initialContent} />
       </DialogContent>
     </Dialog>
   )

@@ -68,12 +68,14 @@ import {
   Palette,
   Newspaper,
   Bookmark,
+  LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
+import { signOut } from "next-auth/react"
 
 /* ── Sidebar menu items ────────────────────────────────────── */
-type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility" | "myposts" | "likedposts" | "savedposts"
+type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "logout" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility" | "myposts" | "likedposts" | "savedposts"
 
 /* ── Root component ────────────────────────────────────────── */
 
@@ -109,6 +111,7 @@ export function SettingsView({ user }: { user: any }) {
         { id: "password" as SectionId,    label: t("menuChangePassword"),    icon: Lock },
         { id: "deactivate" as SectionId,  label: t("menuDeactivateAccount"), icon: PowerOff },
         { id: "delete" as SectionId,      label: t("menuDeleteAccount"),     icon: Trash2 },
+        { id: "logout" as SectionId,      label: "Log Out",                  icon: LogOut },
       ],
     },
     {
@@ -211,7 +214,7 @@ export function SettingsView({ user }: { user: any }) {
         {sections[activeCategory].items.map((item) => {
           const Icon = item.icon
           const isActive = active === item.id
-          const isDanger = item.id === "delete" || item.id === "deactivate"
+          const isDanger = item.id === "delete" || item.id === "deactivate" || item.id === "logout"
           return (
             <button
               key={item.id}
@@ -281,6 +284,8 @@ function SectionPanel({ id, user }: { id: SectionId; user: any }) {
       return <DeactivateSection />
     case "delete":
       return <DeleteSection />
+    case "logout":
+      return <LogoutSection />
     case "verification":
       return <VerificationSection user={user} />
     case "accounttype":
@@ -570,6 +575,27 @@ function DeleteSection() {
             <Button type="submit" variant="destructive">{t("deleteConfirm")}</Button>
           </div>
         </form>
+      </div>
+    </SettingsCard>
+  )
+}
+
+/* ── Log Out ───────────────────────────────────────────────── */
+function LogoutSection() {
+  return (
+    <SettingsCard title="Log Out" description="Sign out of your account on this device.">
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          You will be redirected to the login page after signing out.
+        </p>
+        <Button
+          variant="outline"
+          className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30"
+          onClick={() => signOut({ callbackUrl: "/auth/login" })}
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Log Out
+        </Button>
       </div>
     </SettingsCard>
   )

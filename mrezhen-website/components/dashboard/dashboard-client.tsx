@@ -10,9 +10,11 @@ import { GoalManager } from "@/components/dashboard/goal-manager"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
+import { CustomizableLayout } from "@/components/dashboard/customizable-layout"
+
 type LayoutType = 'consistency' | 'fitness' | 'learning' | 'creative' | 'coding'
 
-export function DashboardClient({ user, activeMilestones, completedMilestones, weekXp, xpProgress, xpForNextLevel }: any) {
+export function DashboardClient({ user, activeMilestones, completedMilestones, weekXp, xpProgress, xpForNextLevel, initialLayout }: any) {
   const [layout, setLayout] = useState<LayoutType>('consistency')
   const [isCustomizing, setIsCustomizing] = useState(false)
 
@@ -124,13 +126,14 @@ export function DashboardClient({ user, activeMilestones, completedMilestones, w
 
         {/* Layout Content */}
         {layout === 'consistency' ? (
-          <ConsistencyLayout 
+          <CustomizableLayout 
             user={user} 
             activeMilestones={activeMilestones} 
             completedMilestones={completedMilestones} 
             weekXp={weekXp} 
             xpProgress={xpProgress} 
             xpForNextLevel={xpForNextLevel} 
+            initialLayout={initialLayout}
           />
         ) : layout === 'fitness' ? (
           <FitnessLayout />
@@ -141,109 +144,6 @@ export function DashboardClient({ user, activeMilestones, completedMilestones, w
         ) : (
           <CodingLayout />
         )}
-
-      </div>
-    </div>
-  )
-}
-
-function ConsistencyLayout({ user, activeMilestones, completedMilestones, weekXp, xpProgress, xpForNextLevel }: any) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-      {/* Left Column */}
-      <div className="md:col-span-8 space-y-6">
-        
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col items-center justify-center text-center">
-            <Trophy className="w-6 h-6 text-[#FFCC00] mb-2" />
-            <p className="text-3xl font-bold text-white">{user.level}</p>
-            <p className="text-xs text-[#888888] uppercase tracking-wider mt-1">Current Level</p>
-          </div>
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col items-center justify-center text-center">
-            <Zap className="w-6 h-6 text-[#FF5722] mb-2" />
-            <p className="text-3xl font-bold text-white">{user.score.toLocaleString()}</p>
-            <p className="text-xs text-[#888888] uppercase tracking-wider mt-1">Total XP</p>
-          </div>
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col items-center justify-center text-center">
-            <Flame className="w-6 h-6 text-[#FF3B30] mb-2" />
-            <p className="text-3xl font-bold text-white">+{weekXp}</p>
-            <p className="text-xs text-[#888888] uppercase tracking-wider mt-1">Weekly XP</p>
-          </div>
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col items-center justify-center text-center">
-            <Target className="w-6 h-6 text-[#34C759] mb-2" />
-            <p className="text-3xl font-bold text-white">{completedMilestones}</p>
-            <p className="text-xs text-[#888888] uppercase tracking-wider mt-1">Goals Met</p>
-          </div>
-        </div>
-
-        {/* Level Progress */}
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-white">Level Progress</h3>
-            <span className="text-sm text-[#888888]">{user.score % xpForNextLevel} / {xpForNextLevel} XP to Lvl {user.level + 1}</span>
-          </div>
-          <div className="h-3 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[#FF5722] to-[#FFCC00] rounded-full transition-all duration-1000" style={{ width: `${xpProgress}%` }} />
-          </div>
-        </div>
-
-        {/* Activity Chart */}
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
-          <h3 className="text-lg font-semibold text-white mb-6">Activity History</h3>
-          <div className="h-64">
-            <XpChart logs={user.activityLogs} />
-          </div>
-        </div>
-
-      </div>
-
-      {/* Right Column */}
-      <div className="md:col-span-4 space-y-6">
-        
-        {/* Active Quests */}
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-white">Active Quests</h3>
-          </div>
-          {user.quests.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-[#888888] mb-4">No active quests right now.</p>
-              <GoalManager milestones={user.milestones}>
-                <Button className="bg-[#FF5722] hover:bg-[#E64A19] text-white border-none">
-                  Create One
-                </Button>
-              </GoalManager>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {user.quests.map((quest: any) => (
-                <QuestCard key={quest.id} quest={quest} />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Active Goals */}
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-white">Active Goals</h3>
-            <Link href="/goals" className="text-sm text-[#FF5722] hover:text-[#E64A19] transition-colors">
-              View All
-            </Link>
-          </div>
-          {activeMilestones.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-[#888888]">No active goals.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {activeMilestones.map((m: any) => (
-                <MilestoneWidget key={m.id} milestone={m} />
-              ))}
-            </div>
-          )}
-        </div>
 
       </div>
     </div>

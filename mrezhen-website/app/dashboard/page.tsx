@@ -6,10 +6,17 @@ import { DashboardClient } from "@/components/dashboard/dashboard-client"
 
 export const dynamic = 'force-dynamic'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ layout?: string }>
+}) {
   const session = await auth()
   if (!session?.user?.email) redirect("/auth/login")
   const t = await getTranslations("dashboard")
+  
+  const resolvedSearchParams = await searchParams
+  const initialLayout = resolvedSearchParams.layout || undefined
 
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
@@ -55,6 +62,7 @@ export default async function DashboardPage() {
       weekXp={weekXp}
       xpProgress={xpProgress}
       xpForNextLevel={xpForNextLevel}
+      initialLayout={initialLayout}
     />
   )
 }

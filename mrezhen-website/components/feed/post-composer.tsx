@@ -8,11 +8,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { uploadImages } from '@/app/actions/upload'
 import { createPost } from '@/app/actions/posts'
 
-export function PostComposer({ onSuccess }: { onSuccess?: () => void } = {}) {
+export function PostComposer({ onSuccess, initialContent }: { onSuccess?: () => void; initialContent?: string } = {}) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  const [content, setContent] = useState('')
+  const [content, setContent] = useState(initialContent ?? '')
   const [files, setFiles] = useState<File[]>([])
   const [error, setError] = useState<string | null>(null)
 
