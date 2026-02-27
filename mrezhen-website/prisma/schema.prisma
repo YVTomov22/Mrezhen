@@ -81,6 +81,9 @@ model User {
   employmentStatus   String?
   incomePercentile   Int?
 
+  // ── Region (for leaderboard) ──
+  region             String  @default("global")  // global | na | eu | asia | sa | africa | oceania | mena
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -104,11 +107,23 @@ model User {
   postBookmarks    PostBookmark[]
   postCommentLikes PostCommentLike[]
 
+  // ── Story System ──
+  stories              Story[]
+  storyViews           StoryView[]        @relation("StoryViews")
+  storyLikes           StoryLike[]        @relation("StoryLikes")
+
   // ── Battle System ──
   battlesAsChallenger  Battle[]           @relation("BattlesAsChallenger")
   battlesAsChallenged  Battle[]           @relation("BattlesAsChallenged")
   battlesWon           Battle[]           @relation("BattleWinner")
   battleDailyQuests    BattleDailyQuest[]
+
+  // ── Leaderboard indexes ──
+  // Composite indexes enable efficient ranking queries without full table scans.
+  // The desc sort lets Postgres walk the B-tree in rank order for pagination.
+  @@index([score(sort: Desc)])                       // global leaderboard
+  @@index([region, score(sort: Desc)])                // regional leaderboard
+  @@index([isDeactivated, score(sort: Desc)])          // filter deactivated
 }
 
 model Follows {
@@ -163,7 +178,7 @@ model Quest {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   milestoneId String?
-  milestone   Milestone? @relation(fields: [milestoneId], references: [id])
+  milestone   Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
 
   tasks       Task[]
 
@@ -234,10 +249,10 @@ model Message {
   attachments Attachment[]
 
   senderId    String
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
   receiverId  String
-  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 }
 
 model Attachment {
@@ -461,4 +476,75 @@ model BattleDailyQuest {
   @@index([userId])
   @@index([battleId, userId])
   @@index([verification])
+}
+
+// ── Contact Messages ──
+// Stores messages from the /contact page form.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// ── Story System ──
+// Stories auto-expire after 24 hours.
+model Story {
+  id              String   @id @default(cuid())
+
+  // Content
+  mediaUrl        String?          // Cloudinary URL (image or video)
+  mediaType       String   @default("image") // image | video | text
+  caption         String?
+
+  // Text-only story styling
+  backgroundColor String?          // hex color for background
+  textColor       String?          // hex color for text
+
+  // Privacy
+  audience        String   @default("everyone") // everyone | close_friends
+
+  // Expiration (createdAt + 24 h)
+  expiresAt       DateTime
+
+  creatorId       String
+  creator         User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  views           StoryView[]
+  likes           StoryLike[]
+
+  createdAt       DateTime @default(now())
+
+  @@index([creatorId])
+  @@index([expiresAt])
+  @@index([creatorId, expiresAt])
+}
+
+model StoryView {
+  storyId  String
+  story    Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  viewerId String
+  viewer   User   @relation("StoryViews", fields: [viewerId], references: [id], onDelete: Cascade)
+
+  viewedAt DateTime @default(now())
+
+  @@id([storyId, viewerId])
+  @@index([viewerId])
+}
+
+model StoryLike {
+  storyId String
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  userId  String
+  user    User   @relation("StoryLikes", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([storyId, userId])
+  @@index([userId])
 }

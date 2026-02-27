@@ -75,7 +75,7 @@ import { useTranslations } from "next-intl"
 import { signOut } from "next-auth/react"
 
 /* ── Sidebar menu items ────────────────────────────────────── */
-type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "logout" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility" | "myposts" | "likedposts" | "savedposts"
+type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "logout" | "verification" | "accounttype" | "region" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility" | "myposts" | "likedposts" | "savedposts"
 
 /* ── Root component ────────────────────────────────────────── */
 
@@ -120,6 +120,7 @@ export function SettingsView({ user }: { user: any }) {
       items: [
         { id: "verification" as SectionId, label: t("menuVerificationStatus"), icon: ShieldCheck },
         { id: "accounttype" as SectionId,  label: t("menuAccountType"),        icon: Briefcase },
+        { id: "region" as SectionId,       label: t("menuRegion") ?? "Region",  icon: Globe },
       ],
     },
     {
@@ -290,6 +291,8 @@ function SectionPanel({ id, user }: { id: SectionId; user: any }) {
       return <VerificationSection user={user} />
     case "accounttype":
       return <AccountTypeSection user={user} />
+    case "region":
+      return <RegionSection user={user} />
     case "demographics":
       return <DemographicsSection user={user} />
     case "household":
@@ -677,6 +680,66 @@ function AccountTypeSection({ user }: { user: any }) {
 /* ══════════════════════════════════════════════════════════════
    PROFILE DETAIL SECTIONS
    ══════════════════════════════════════════════════════════════ */
+
+/* ── Region (Leaderboard) ──────────────────────────────────── */
+function RegionSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const [msg, setMsg] = useState("")
+  const [isPending, startTransition] = useTransition()
+
+  const regions = [
+    { value: "global",  label: "🌍 Global" },
+    { value: "na",      label: "🇺🇸 North America" },
+    { value: "eu",      label: "🇪🇺 Europe" },
+    { value: "asia",    label: "🌏 Asia" },
+    { value: "sa",      label: "🌎 South America" },
+    { value: "africa",  label: "🌍 Africa" },
+    { value: "oceania", label: "🌊 Oceania" },
+    { value: "mena",    label: "🏜️ Middle East & North Africa" },
+  ]
+
+  async function handleChange(value: string) {
+    startTransition(async () => {
+      const { updateUserRegion } = await import("@/app/actions/leaderboard")
+      const res = await updateUserRegion(value)
+      setMsg(res?.error || res?.success || "")
+    })
+  }
+
+  return (
+    <SettingsCard title={t("regionTitle") ?? "Region"} description={t("regionDescription") ?? "Choose your region for regional leaderboard rankings."}>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {regions.map((r) => {
+            const isCurrent = (user.region || "global") === r.value
+            return (
+              <button
+                key={r.value}
+                type="button"
+                disabled={isPending}
+                onClick={() => handleChange(r.value)}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors text-left",
+                  isCurrent
+                    ? "border-foreground bg-accent"
+                    : "border-border hover:border-muted-foreground",
+                  isPending && "opacity-50 pointer-events-none"
+                )}
+              >
+                <span className="text-lg">{r.label.split(" ")[0]}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium">{r.label.slice(r.label.indexOf(" ") + 1)}</span>
+                  {isCurrent && <Badge className="ml-2 text-[10px]">Current</Badge>}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+        <Feedback msg={msg} />
+      </div>
+    </SettingsCard>
+  )
+}
 
 function formatDate(date: string | Date | null) {
   if (!date) return ""

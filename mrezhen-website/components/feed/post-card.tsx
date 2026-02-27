@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { togglePostLike, addPostComment, togglePostBookmark, toggleCommentLike } from '@/app/actions/posts'
 import { useFeed, type PostData } from '@/components/feed/feed-context'
+import { StoryAvatarRing } from '@/components/story/story-avatar-ring'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { ChangeEvent } from 'react'
@@ -144,12 +145,13 @@ export function PostCard(props: PostCardProps) {
     <article className="py-4 feed-entrance">
       {/* Header */}
       <div className="flex items-center gap-3 pb-3">
-        <Avatar className="h-10 w-10 ring-2 ring-background shadow-sm">
-          <AvatarImage src={props.author.image || ''} />
-          <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-            {displayName[0]?.toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <StoryAvatarRing
+          userId={props.author.id || ''}
+          image={props.author.image}
+          name={props.author.name}
+          hasActiveStory={props.authorHasActiveStory ?? false}
+          size="sm"
+        />
         <div className="min-w-0 flex-1">
           <Link
             href={props.author.username ? `/profile/${props.author.username}` : '#'}

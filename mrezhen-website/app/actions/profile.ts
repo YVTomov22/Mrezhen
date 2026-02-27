@@ -5,6 +5,7 @@ import { auth, signOut } from "@/app/auth"
 import bcrypt from "bcryptjs"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { isRedirectError } from "next/dist/client/components/redirect-error"
 
 /* ── Update Phone ──────────────────────────────────────────── */
 export async function updatePhone(prevState: any, formData: FormData) {
@@ -57,7 +58,8 @@ export async function deactivateAccount() {
       data: { isDeactivated: true },
     })
     await signOut({ redirectTo: "/auth/login" })
-  } catch {
+  } catch (err) {
+    if (isRedirectError(err)) throw err
     // silently fail — user stays logged in
   }
 }
@@ -73,7 +75,8 @@ export async function deleteAccount(prevState: any, formData: FormData) {
   try {
     await prisma.user.delete({ where: { email: session.user.email } })
     await signOut({ redirectTo: "/auth/login" })
-  } catch {
+  } catch (err) {
+    if (isRedirectError(err)) throw err
     return { error: "Could not delete account" }
   }
 }

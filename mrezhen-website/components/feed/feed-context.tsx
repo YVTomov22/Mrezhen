@@ -12,6 +12,7 @@ import {
 /* ── Shared types ─────────────────────────────────── */
 
 export type Author = {
+  id?: string
   name: string | null
   username: string | null
   image: string | null
@@ -46,6 +47,7 @@ export type PostData = {
   content: string | null
   createdAt: string
   author: Author
+  authorHasActiveStory?: boolean
   images: PostImage[]
   likeCount: number
   commentCount: number

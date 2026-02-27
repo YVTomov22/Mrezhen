@@ -47,85 +47,84 @@
 /* ── Beehive Color System ───────────────────────────── */
 :root {
   --radius: 0.75rem;
-  /* Honey cream backgrounds */
-  --background: #FFFBF0;
-  --foreground: #1C0A00;
-  --card: #FFFBF0;
-  --card-foreground: #1C0A00;
-  --popover: #FFFDF5;
-  --popover-foreground: #1C0A00;
-  /* Amber primary — honeycomb gold */
-  --primary: #D97706;
+  /* Warm light backgrounds */
+  --background: #FAFAFA;
+  --foreground: #0A0A0A;
+  --card: #FFFFFF;
+  --card-foreground: #0A0A0A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A0A;
+  /* Deep orange primary — matches dashboard */
+  --primary: #FF5722;
   --primary-foreground: #FFFFFF;
-  /* Soft honey secondary */
-  --secondary: #FEF3C7;
-  --secondary-foreground: #1C0A00;
-  --muted: #FEF3C7;
-  --muted-foreground: #92600A;
-  --accent: #FEF3C7;
-  --accent-foreground: #1C0A00;
-  --destructive: #B91C1C;
-  /* Warm golden borders */
-  --border: #D4B896;
-  --input: #D4B896;
-  --ring: #D97706;
-  /* Chart — amber spectrum */
-  --chart-1: #D97706;
-  --chart-2: #F59E0B;
-  --chart-3: #FBC02D;
-  --chart-4: #FDD663;
-  --chart-5: #FEF3C7;
+  /* Soft neutral secondary */
+  --secondary: #F5F5F5;
+  --secondary-foreground: #0A0A0A;
+  --muted: #F5F5F5;
+  --muted-foreground: #737373;
+  --accent: #F5F5F5;
+  --accent-foreground: #0A0A0A;
+  --destructive: #DC2626;
+  /* Clean borders */
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #FF5722;
+  /* Chart — orange spectrum */
+  --chart-1: #FF5722;
+  --chart-2: #FF7043;
+  --chart-3: #FF8A65;
+  --chart-4: #FFAB91;
+  --chart-5: #F5F5F5;
   /* Sidebar */
-  --sidebar: #FFF8E7;
-  --sidebar-foreground: #1C0A00;
-  --sidebar-primary: #D97706;
+  --sidebar: #FAFAFA;
+  --sidebar-foreground: #0A0A0A;
+  --sidebar-primary: #FF5722;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #FEF3C7;
-  --sidebar-accent-foreground: #1C0A00;
-  --sidebar-border: #D4B896;
-  --sidebar-ring: #D97706;
-  /* Beehive design tokens */
-  --honey: #D97706;
-  --honey-light: #F59E0B;
-  --honey-pale: #FEF3C7;
+  --sidebar-accent: #F5F5F5;
+  --sidebar-accent-foreground: #0A0A0A;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #FF5722;
+  /* Design tokens */
+  --honey: #FF5722;
+  --honey-light: #FF7043;
+  --honey-pale: #FFF3E0;
 }
 .dark {
-  /* ── Inspired by Instagram Dark Mode with ash text color and slight blue tint: #121212 / #262626 / #363636 / #B2BEBF ── */
-  --background: #121212; /* Main background, similar to IG's primary dark surface */
-  --foreground: #B2BEBF; /* Primary text, ash gray with slight blue tint */
-  --card: #262626; /* Card backgrounds, secondary dark gray */
-  --card-foreground: #B2BEBF;
-  --popover: #262626; /* Popovers and overlays */
-  --popover-foreground: #B2BEBF;
-  --primary: #0095F6; /* Primary accent, IG's blue for buttons/links */
-  --primary-foreground: #B2BEBF;
-  --secondary: #363636; /* Secondary elements, like borders or muted accents */
-  --secondary-foreground: #B2BEBF;
-  --muted: #363636; /* Muted backgrounds */
-  --muted-foreground: #8E8E8E; /* Muted text, secondary labels */
-  --accent: #262626; /* Accents for highlights */
-  --accent-foreground: #B2BEBF;
-  --destructive: #ED4956; /* Destructive actions, IG-like red for warnings */
-  --border: #363636; /* Borders and dividers */
-  --input: #262626; /* Input fields */
-  --ring: #0095F6; /* Focus rings */
-  --chart-1: #0095F6; /* Chart colors inspired by IG accents */
-  --chart-2: #C13584; /* IG pink/purple from brand gradient */
-  --chart-3: #833AB4; /* IG purple */
-  --chart-4: #405DE6; /* IG blue */
-  --chart-5: #363636; /* Neutral dark */
-  --sidebar: #121212; /* Sidebar background */
-  --sidebar-foreground: #B2BEBF;
-  --sidebar-primary: #0095F6;
-  --sidebar-primary-foreground: #B2BEBF;
-  --sidebar-accent: #262626;
-  --sidebar-accent-foreground: #B2BEBF;
-  --sidebar-border: #363636;
-  --sidebar-ring: #0095F6;
-  /* Design tokens inspired by IG */
-  --honey: #0095F6; /* Repurposed to IG blue */
-  --honey-light: #4C68D7; /* Lighter blue from IG palette */
-  --honey-pale: #262626; /* Pale gray */
+  /* ── Dashboard-inspired dark palette: #0A0A0A / #121212 / #1A1A1A / #FF5722 ── */
+  --background: #0A0A0A;
+  --foreground: #F5F5F5;
+  --card: #121212;
+  --card-foreground: #F5F5F5;
+  --popover: #121212;
+  --popover-foreground: #F5F5F5;
+  --primary: #FF5722;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #F5F5F5;
+  --muted: #1A1A1A;
+  --muted-foreground: #888888;
+  --accent: #1A1A1A;
+  --accent-foreground: #F5F5F5;
+  --destructive: #EF4444;
+  --border: #262626;
+  --input: #1A1A1A;
+  --ring: #FF5722;
+  --chart-1: #FF5722;
+  --chart-2: #FF7043;
+  --chart-3: #FF8A65;
+  --chart-4: #FFAB91;
+  --chart-5: #1A1A1A;
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #FF5722;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1A1A1A;
+  --sidebar-accent-foreground: #F5F5F5;
+  --sidebar-border: #262626;
+  --sidebar-ring: #FF5722;
+  --honey: #FF5722;
+  --honey-light: #FF7043;
+  --honey-pale: #1A1A1A;
 }
 @layer base {
   * {
@@ -321,9 +320,9 @@
 }
 .dark .trending-pill:hover {
   background: rgba(255, 255, 255, 0.07);
-  border-color: #0095F6;
-  color: #0095F6;
-  box-shadow: 0 2px 8px rgba(0, 149, 246, 0.15);
+  border-color: #FF5722;
+  color: #FF5722;
+  box-shadow: 0 2px 8px rgba(255, 87, 34, 0.15);
 }
 
 /* ── 4. Custom Drop Zone ── */
@@ -377,30 +376,30 @@ html[data-reduce-motion] .feed-entrance {
 .settings-input:focus-visible {
   background-color: transparent;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15); /* Orange glow */
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
 }
 .dark .settings-input:focus-visible {
-  border-color: #00A3FF;
-  box-shadow: 0 0 0 3px rgba(0, 163, 255, 0.15); /* Teal glow */
+  border-color: #FF5722;
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
 }
 
 /* ── Button Consistency ── */
 .settings-btn {
   border-radius: 9999px;
-  background: linear-gradient(135deg, #F59E0B, #D97706);
+  background: linear-gradient(135deg, #FF7043, #FF5722);
   color: white;
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .dark .settings-btn {
-  background: linear-gradient(135deg, #00A3FF, #0055FF);
+  background: linear-gradient(135deg, #FF7043, #FF5722);
 }
 .settings-btn:hover {
   transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.2);
 }
 .dark .settings-btn:hover {
-  box-shadow: 0 4px 12px rgba(0, 163, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.2);
 }
 
 /* ══════════════════════════════════════════════════════════════

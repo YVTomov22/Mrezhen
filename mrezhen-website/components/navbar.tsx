@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { UserNav } from "@/components/user-nav"
 import { UserStats } from "@/components/user-stats"
 import { Button } from "@/components/ui/button"
-import { Menu, Home, LayoutDashboard, Target, MessageSquareText, Sparkles, Heart, Settings, Search, PlusSquare } from "lucide-react"
+import { Menu, Home, LayoutDashboard, Target, MessageSquareText, Sparkles, Heart, Settings, Search, PlusSquare, Trophy } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
@@ -36,11 +36,12 @@ export async function Navbar() {
   }
 
   // ─── Logged-in: vertical sidebar (Instagram-style) ────────────────────
-  const navItems: { href: string; label: string; icon: "home" | "dashboard" | "target" | "messages" | "heart" | "sparkles" | "search" | "plus" }[] = [
+  const navItems: { href: string; label: string; icon: "home" | "dashboard" | "target" | "messages" | "heart" | "sparkles" | "search" | "plus" | "trophy" }[] = [
     { href: "/community", label: t("home"), icon: "home" },
     { href: "/community/people", label: t("search"), icon: "search" },
     { href: "/dashboard", label: t("dashboard"), icon: "dashboard" },
     { href: "/goals", label: t("goals"), icon: "target" },
+    { href: "/leaderboard", label: t("leaderboard"), icon: "trophy" },
     { href: "/messages", label: t("messages"), icon: "messages" },
     { href: "/notifications", label: t("notifications"), icon: "heart" },
     { href: "/community?new=1", label: t("newPost"), icon: "plus" },
@@ -114,6 +115,9 @@ export async function Navbar() {
                   </Link>
                   <Link href="/goals" className="flex items-center gap-3 text-lg font-medium">
                     <Target className="h-5 w-5" /> {t("goals")}
+                  </Link>
+                  <Link href="/leaderboard" className="flex items-center gap-3 text-lg font-medium">
+                    <Trophy className="h-5 w-5" /> {t("leaderboard")}
                   </Link>
                   <Link href="/messages" className="flex items-center gap-3 text-lg font-medium">
                     <MessageSquareText className="h-5 w-5" /> {t("messages")}

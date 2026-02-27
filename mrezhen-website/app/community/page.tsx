@@ -2,8 +2,6 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { auth } from '@/app/auth'
 import { prisma } from '@/lib/prisma'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PostComposer } from '@/components/feed/post-composer'
 import { PostComposerModal } from '@/components/feed/post-composer-modal'
 import { CommunityFeed } from '@/components/feed/community-feed'
@@ -11,9 +9,11 @@ import { FollowButton } from '@/components/follow-button'
 import { StoriesBar } from '@/components/community/stories-bar'
 import { CommunityLeftSidebar } from '@/components/community/left-sidebar'
 import { LeftAsideShell } from '@/components/community/left-aside-shell'
-import { Search } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import { getRecommendedUsers } from '@/app/actions/recommend'
+import { getUsersWithActiveStories, getStoryFeed } from '@/app/actions/story'
+import { StoryAvatarRing } from '@/components/story/story-avatar-ring'
+import { FindPeopleButton } from '@/components/community/find-people-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,12 +29,12 @@ export default async function CommunityFeedPage() {
 
   if (!currentUser) redirect('/auth/login')
 
-  const [posts, recommendedUsers, storyUsers] = await Promise.all([
+  const [posts, recommendedUsers, storyFeedData, storyBarData] = await Promise.all([
     prisma.post.findMany({
       orderBy: { createdAt: 'desc' },
       take: 50,
       include: {
-        author: { select: { name: true, username: true, image: true } },
+        author: { select: { id: true, name: true, username: true, image: true } },
         images: true,
         likes: {
           where: { userId: currentUser.id },
@@ -49,7 +49,7 @@ export default async function CommunityFeedPage() {
           take: 5,
           orderBy: { createdAt: 'desc' },
           include: {
-            author: { select: { name: true, username: true, image: true } },
+            author: { select: { id: true, name: true, username: true, image: true } },
             likes: {
               where: { userId: currentUser.id },
               select: { userId: true },
@@ -59,7 +59,7 @@ export default async function CommunityFeedPage() {
               take: 3,
               orderBy: { createdAt: 'asc' },
               include: {
-                author: { select: { name: true, username: true, image: true } },
+                author: { select: { id: true, name: true, username: true, image: true } },
                 likes: {
                   where: { userId: currentUser.id },
                   select: { userId: true },
@@ -73,19 +73,36 @@ export default async function CommunityFeedPage() {
       },
     }),
     getRecommendedUsers(),
-    prisma.user.findMany({
-      where: { id: { not: currentUser.id }, image: { not: null } },
-      select: { id: true, name: true, username: true, image: true },
-      take: 15,
-      orderBy: { updatedAt: 'desc' },
-    }),
+    getStoryFeed(),
+    getUsersWithActiveStories(),
   ])
+
+  // Batch-check which post authors (+ sidebar people + current user) have active stories
+  const allAuthorIds = [...new Set(posts.map((p) => p.authorId))]
+  const allIdsToCheck = [...allAuthorIds, ...recommendedUsers.slice(0, 5).map((u) => u.id), currentUser.id]
+  const usersWithStories = await prisma.story.findMany({
+    where: { creatorId: { in: allIdsToCheck }, expiresAt: { gt: new Date() } },
+    select: { creatorId: true },
+    distinct: ['creatorId'],
+  })
+  const storyUserSet = new Set(usersWithStories.map((s) => s.creatorId))
+
+  // Users available for sharing stories (followers / people they messaged)
+  const shareableUsers = await prisma.user.findMany({
+    where: {
+      id: { not: currentUser.id },
+      followedBy: { some: { followerId: currentUser.id } },
+    },
+    select: { id: true, name: true, username: true, image: true },
+    take: 50,
+  })
 
   const serialized = posts.map((p) => ({
     id: p.id,
     content: p.content,
     createdAt: p.createdAt.toISOString(),
     author: p.author,
+    authorHasActiveStory: storyUserSet.has(p.authorId),
     images: p.images,
     likeCount: p._count.likes,
     commentCount: p._count.comments,
@@ -132,12 +149,13 @@ export default async function CommunityFeedPage() {
             ) : (
               sidebarPeople.map((user) => (
                 <div key={user.id} className="flex items-center gap-3 group">
-                  <Avatar className="h-9 w-9 border border-border shrink-0">
-                    <AvatarImage src={user.image || ''} />
-                    <AvatarFallback className="bg-foreground text-background text-xs font-semibold">
-                      {user.name?.[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <StoryAvatarRing
+                    userId={user.id}
+                    image={user.image}
+                    name={user.name}
+                    hasActiveStory={storyUserSet.has(user.id)}
+                    size="xs"
+                  />
                   <div className="flex-1 min-w-0">
                     <Link href={`/profile/${user.username}`} className="text-[13px] font-medium truncate block group-hover:underline tracking-tight">
                       {user.name}
@@ -153,11 +171,7 @@ export default async function CommunityFeedPage() {
 
         {/* Discover People */}
         <div>
-          <Link href="/community/people">
-            <Button variant="outline" className="w-full gap-2 text-[13px] tracking-tight h-10 border-foreground/20 hover:bg-foreground hover:text-background transition-all duration-200">
-              <Search className="h-4 w-4" /> {t('findPeople')}
-            </Button>
-          </Link>
+          <FindPeopleButton label={t('findPeople')} />
         </div>
       </LeftAsideShell>
 
@@ -173,7 +187,11 @@ export default async function CommunityFeedPage() {
                 username: currentUser.username,
                 image: currentUser.image,
               }}
-              users={storyUsers}
+              storyUsers={storyBarData.storyUsers}
+              storyGroups={storyFeedData.stories}
+              currentUserId={storyFeedData.currentUserId || currentUser.id}
+              hasOwnStory={storyBarData.hasOwnStory}
+              shareableUsers={shareableUsers}
             />
           </div>
 
@@ -185,7 +203,7 @@ export default async function CommunityFeedPage() {
 
       {/* ── RIGHT SIDEBAR ───────────────────────────── */}
       <aside className="hidden lg:block border-l border-r border-border/60 px-6 py-8 overflow-y-auto no-scrollbar">
-        <CommunityLeftSidebar user={currentUser} />
+        <CommunityLeftSidebar user={currentUser} hasActiveStory={storyUserSet.has(currentUser.id)} />
       </aside>
 
       {/* ── RIGHT GUTTER (2.5 × 72px = 180px) ─────── */}

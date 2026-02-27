@@ -7,6 +7,8 @@ import { FollowButton } from "@/components/follow-button"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Users, MessageSquare } from "lucide-react"
 import { getTranslations } from "next-intl/server"
+import { checkUserHasActiveStory } from "@/app/actions/story"
+import { StoryAvatarRing } from "@/components/story/story-avatar-ring"
 
 // Next.js 15: params is a Promise
 export default async function PublicProfilePage(props: { params: Promise<{ username: string }> }) {
@@ -15,8 +17,8 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
   const { username } = params;
   const session = await auth()
 
-  // Fetch target user public info
-  const user = await prisma.user.findUnique({
+  // Fetch target user public info (supports both username and user ID lookups)
+  let user = await prisma.user.findUnique({
     where: { username },
     include: {
       _count: {
@@ -35,6 +37,28 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
     }
   })
 
+  // Fallback: try looking up by user ID (for users without a username)
+  if (!user) {
+    user = await prisma.user.findUnique({
+      where: { id: username },
+      include: {
+        _count: {
+          select: {
+            followedBy: true,
+            following: true,
+            milestones: true,
+            quests: true 
+          }
+        },
+        quests: {
+          where: { status: "COMPLETED" },
+          take: 5,
+          orderBy: { updatedAt: 'desc' }
+        }
+      }
+    })
+  }
+
   if (!user) return notFound()
 
   // Check if viewing own profile
@@ -50,16 +74,22 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
     isFollowing = currentUser?.following.some(f => f.followingId === user.id) ?? false
   }
 
+  // Check if user has active (non-expired) stories
+  const hasActiveStory = await checkUserHasActiveStory(user.id)
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border">
         <div className="max-w-3xl mx-auto px-6 py-10">
           <div className="flex items-start gap-6">
-            <Avatar className="h-20 w-20 border border-border shrink-0">
-              <AvatarImage src={user.image || ""} />
-              <AvatarFallback className="text-2xl font-black bg-foreground text-background">{user.name?.[0]}</AvatarFallback>
-            </Avatar>
+            <StoryAvatarRing
+              userId={user.id}
+              image={user.image}
+              name={user.name}
+              hasActiveStory={hasActiveStory}
+              size="lg"
+            />
             
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-4">

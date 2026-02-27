@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { StoryAvatarRing } from '@/components/story/story-avatar-ring'
 import { FileText, Hash, Users } from 'lucide-react'
 
 type UserProfile = {
@@ -13,6 +13,7 @@ type UserProfile = {
 
 type LeftSidebarProps = {
   user: UserProfile
+  hasActiveStory?: boolean
 }
 
 /* ── XP Progress Bar ────────────────────────────────── */
@@ -37,18 +38,19 @@ function XpProgressBar({ level, score }: { level: number; score: number }) {
   )
 }
 
-export function CommunityLeftSidebar({ user }: LeftSidebarProps) {
+export function CommunityLeftSidebar({ user, hasActiveStory = false }: LeftSidebarProps) {
   return (
     <div className="space-y-6">
       {/* Mini Profile */}
       <div>
-        <Link href={`/profile/${user.username}`} className="flex items-center gap-3 group">
-          <Avatar className="h-10 w-10 ring-2 ring-background shadow-sm">
-            <AvatarImage src={user.image || ''} />
-            <AvatarFallback className="text-xs font-bold bg-primary/10 text-primary">
-              {user.name?.[0]?.toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
+        <Link href={`/profile/${user.username ?? user.id}`} className="flex items-center gap-3 group">
+          <StoryAvatarRing
+            userId={user.id}
+            image={user.image}
+            name={user.name}
+            hasActiveStory={hasActiveStory}
+            size="sm"
+          />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold tracking-tight truncate group-hover:underline underline-offset-2">{user.name}</p>
           </div>
@@ -69,7 +71,7 @@ export function CommunityLeftSidebar({ user }: LeftSidebarProps) {
           Community
         </Link>
         <Link
-          href={`/profile/${user.username}`}
+          href={`/profile/${user.username ?? user.id}`}
           className="flex items-center gap-3 px-3 py-2.5 text-sm tracking-tight text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-colors"
         >
           <FileText className="h-4 w-4" />

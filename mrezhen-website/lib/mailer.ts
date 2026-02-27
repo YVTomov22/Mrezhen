@@ -45,3 +45,34 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     `,
   })
 }
+
+/**
+ * Send a notification email when someone submits the /contact form.
+ * Goes to the platform admin address (SMTP_USER by default).
+ */
+export async function sendContactEmail(
+  senderName: string,
+  senderEmail: string,
+  message: string
+) {
+  const from = process.env.SMTP_FROM || "Mrezhen <no-reply@mrezhen.local>"
+  const adminEmail = process.env.SMTP_USER || from
+  const transporter = getTransporter()
+
+  await transporter.sendMail({
+    from,
+    to: adminEmail,
+    replyTo: senderEmail,
+    subject: `[Mrezhen Contact] New message from ${senderName}`,
+    text: `Name: ${senderName}\nEmail: ${senderEmail}\n\nMessage:\n${message}`,
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.5;color:#111827;max-width:560px;margin:0 auto;padding:16px;">
+        <h2 style="margin:0 0 12px 0;">New Contact Form Message</h2>
+        <p><strong>Name:</strong> ${senderName}</p>
+        <p><strong>Email:</strong> <a href="mailto:${senderEmail}">${senderEmail}</a></p>
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;" />
+        <p style="white-space:pre-wrap;">${message}</p>
+      </div>
+    `,
+  })
+}

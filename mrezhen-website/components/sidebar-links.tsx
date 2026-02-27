@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Home, LayoutDashboard, Target, MessageSquareText, Sparkles, Heart, Settings, Search, PlusSquare } from 'lucide-react'
+import { Home, LayoutDashboard, Target, MessageSquareText, Sparkles, Heart, Settings, Search, PlusSquare, Trophy } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebarExpanded } from '@/components/sidebar-shell'
 
@@ -16,6 +16,7 @@ const iconMap = {
   settings: Settings,
   search: Search,
   plus: PlusSquare,
+  trophy: Trophy,
 } as const
 
 interface NavItem {
