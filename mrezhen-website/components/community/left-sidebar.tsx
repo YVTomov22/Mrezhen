@@ -15,24 +15,47 @@ type LeftSidebarProps = {
   user: UserProfile
 }
 
+/* ── XP Progress Bar ────────────────────────────────── */
+function XpProgressBar({ level, score }: { level: number; score: number }) {
+  const xpPerLevel = 1000
+  const xpInCurrentLevel = score % xpPerLevel
+  const progress = Math.min((xpInCurrentLevel / xpPerLevel) * 100, 100)
+
+  return (
+    <div className="w-full mt-1.5">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[10px] font-medium text-muted-foreground">Level {level}</span>
+        <span className="text-[10px] tabular-nums text-muted-foreground">{xpInCurrentLevel} / {xpPerLevel} XP</span>
+      </div>
+      <div className="xp-bar-track h-[6px] w-full rounded-full bg-muted/80 overflow-hidden">
+        <div
+          className="xp-bar-fill h-full rounded-full transition-all duration-700 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  )
+}
+
 export function CommunityLeftSidebar({ user }: LeftSidebarProps) {
   return (
     <div className="space-y-6">
       {/* Mini Profile */}
-      <Link href={`/profile/${user.username}`} className="flex items-center gap-3 group">
-        <Avatar className="h-10 w-10 ring-2 ring-background shadow-sm">
-          <AvatarImage src={user.image || ''} />
-          <AvatarFallback className="text-xs font-bold bg-primary/10 text-primary">
-            {user.name?.[0]?.toUpperCase() || 'U'}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold tracking-tight truncate group-hover:underline underline-offset-2">{user.name}</p>
-          <p className="text-[11px] text-muted-foreground">
-            Level {user.level} &middot; {user.score} XP
-          </p>
-        </div>
-      </Link>
+      <div>
+        <Link href={`/profile/${user.username}`} className="flex items-center gap-3 group">
+          <Avatar className="h-10 w-10 ring-2 ring-background shadow-sm">
+            <AvatarImage src={user.image || ''} />
+            <AvatarFallback className="text-xs font-bold bg-primary/10 text-primary">
+              {user.name?.[0]?.toUpperCase() || 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold tracking-tight truncate group-hover:underline underline-offset-2">{user.name}</p>
+          </div>
+        </Link>
+        {/* Gamified XP Progress Bar */}
+        <XpProgressBar level={user.level} score={user.score} />
+      </div>
 
       <div className="h-px bg-border/60" />
 
@@ -56,20 +79,20 @@ export function CommunityLeftSidebar({ user }: LeftSidebarProps) {
 
       <div className="h-px bg-border/60" />
 
-      {/* Trending Topics */}
-      <div className="space-y-2">
-        <h3 className="text-xs font-medium text-muted-foreground px-3 uppercase tracking-wider">
+      {/* Trending Topics — Interactive Pills */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-medium text-muted-foreground px-1 uppercase tracking-wider">
           Trending
         </h3>
-        <div className="space-y-0.5">
+        <div className="flex flex-wrap gap-2">
           {['productivity', 'goals', 'motivation', 'learning', 'growth'].map((tag) => (
             <button
               key={tag}
               type="button"
-              className="flex items-center gap-2.5 px-3 py-2 w-full text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-colors text-left"
+              className="trending-pill inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-full border transition-all duration-200 text-muted-foreground bg-muted/40 border-border/60 hover:border-primary hover:text-primary hover:-translate-y-0.5 hover:shadow-sm"
             >
-              <Hash className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
-              <span className="truncate">{tag}</span>
+              <Hash className="h-3 w-3 shrink-0" />
+              {tag}
             </button>
           ))}
         </div>

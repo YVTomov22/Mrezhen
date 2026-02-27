@@ -75,24 +75,24 @@ export default async function GoalsPage({ searchParams }: GoalsPageProps) {
           </div>
 
           {/* ── Stats Row ────────────────────────────── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px mt-10 border border-border">
-            <div className="p-5 bg-background">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
+            <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
               <p className="editorial-caption text-muted-foreground mb-1">{t("totalMilestones")}</p>
               <p className="text-3xl font-black tracking-tighter">{totalMilestones}</p>
             </div>
-            <div className="p-5 bg-background border-l border-border">
+            <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
               <p className="editorial-caption text-muted-foreground mb-1">{t("inProgressLabel")}</p>
               <p className="text-3xl font-black tracking-tighter">{inProgress}</p>
             </div>
-            <div className="p-5 bg-background border-l border-border">
+            <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
               <p className="editorial-caption text-muted-foreground mb-1">{t("completedLabel")}</p>
               <p className="text-3xl font-black tracking-tighter">{completed}</p>
             </div>
-            <div className="p-5 bg-background border-l border-border">
+            <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
               <p className="editorial-caption text-muted-foreground mb-1">{t("overallProgress")}</p>
               <p className="text-3xl font-black tracking-tighter">{overallProgress}%</p>
-              <div className="w-full bg-muted h-1 mt-2">
-                <div className="bg-foreground h-1 transition-all" style={{ width: `${overallProgress}%` }} />
+              <div className="w-full h-1.5 mt-2 rounded-full bg-black/10 dark:bg-white/10 shadow-[inset_0_1px_3px_rgba(0,0,0,0.1)] overflow-hidden">
+                <div className="bg-foreground h-full transition-all" style={{ width: `${overallProgress}%` }} />
               </div>
             </div>
           </div>
@@ -108,7 +108,7 @@ export default async function GoalsPage({ searchParams }: GoalsPageProps) {
 
         <div className="grid gap-6">
           {milestones.length === 0 && (
-            <div className="text-center py-20 bg-card border-2 border-dashed border-border rounded-xl">
+            <div className="text-center py-20 border-2 border-dashed rounded-xl bg-primary/5 border-primary/30 dark:bg-white/[0.02] dark:border-white/20">
               <div className="mx-auto w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-4">
                 <Target className="w-8 h-8 text-teal-500" />
               </div>

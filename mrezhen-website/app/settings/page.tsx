@@ -24,8 +24,8 @@ export default async function SettingsPage() {
       {/* gap-6 instead of space-y-6: margins break min-h-0 flex containment, gap does not */}
       <div className="max-w-5xl w-full mx-auto flex flex-col flex-1 min-h-0 gap-6">
         <div className="shrink-0">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t('title')}</h1>
-          <p className="text-muted-foreground">{t('description')}</p>
+          <h1 className="editorial-headline text-4xl md:text-5xl text-foreground">{t('title')}</h1>
+          <p className="editorial-body text-muted-foreground mt-2">{t('description')}</p>
         </div>
         <SettingsView user={user} />
       </div>

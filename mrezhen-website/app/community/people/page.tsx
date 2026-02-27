@@ -8,13 +8,21 @@ import { FollowButton } from "@/components/follow-button"
 import { Map as MapIcon, Sparkles, Swords, Users, ArrowLeft, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getTranslations } from "next-intl/server"
+import { PeopleSearchBar } from "@/components/community/people-search-bar"
 
 export const dynamic = 'force-dynamic'
 
-export default async function CommunityPeoplePage() {
+export default async function CommunityPeoplePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>
+}) {
   const session = await auth()
   if (!session?.user?.email) redirect("/auth/login")
   const t = await getTranslations("community")
+  
+  const resolvedSearchParams = await searchParams
+  const query = resolvedSearchParams.q || ""
 
   const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
@@ -25,7 +33,13 @@ export default async function CommunityPeoplePage() {
 
   const users = await prisma.user.findMany({
     where: {
-      id: { not: currentUser.id }
+      id: { not: currentUser.id },
+      ...(query ? {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { username: { contains: query, mode: 'insensitive' } }
+        ]
+      } : {})
     },
     take: 50,
     orderBy: { score: 'desc' },
@@ -51,40 +65,46 @@ export default async function CommunityPeoplePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* ── Header Banner ───────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/3 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2" />
-        </div>
+      <div className="relative overflow-hidden border-b border-border bg-card">
         <div className="relative max-w-6xl mx-auto px-6 py-8">
-          <Link href="/community" className="inline-flex items-center gap-1.5 text-teal-200 hover:text-white text-sm mb-2 transition-colors">
+          <Link href="/community" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-2 transition-colors">
             <ArrowLeft className="w-4 h-4" /> {t("backToFeed")}
           </Link>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3 text-foreground">
                 <Users className="w-8 h-8" /> {t("findPeopleTitle")}
               </h1>
-              <p className="text-teal-200 mt-1">{t("findPeopleDesc")}</p>
+              <p className="text-muted-foreground mt-1">{t("findPeopleDesc")}</p>
             </div>
             <div className="flex items-center gap-2">
               <Link href="/community/suggested">
-                <Button className="bg-white/15 hover:bg-white/25 text-white border border-white/20 backdrop-blur-sm gap-2">
+                <Button variant="outline" className="gap-2">
                   <Sparkles className="h-4 w-4" /> {t("suggested")}
                 </Button>
               </Link>
-              <div className="text-xs font-bold bg-white/15 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10 text-teal-100">
+              <div className="text-xs font-bold bg-secondary px-4 py-2 rounded-xl border border-border text-secondary-foreground">
                 {users.length} {t("membersLabel")}
               </div>
             </div>
+          </div>
+          
+          <div className="mt-6">
+            <PeopleSearchBar />
           </div>
         </div>
       </div>
 
       {/* ── User Grid ───────────────────────────── */}
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {users.map(user => {
-            const totalQuests = user.milestones.reduce((acc, m) => acc + m._count.quests, 0)
+        {users.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">No people found matching your search.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {users.map(user => {
+              const totalQuests = user.milestones.reduce((acc, m) => acc + m._count.quests, 0)
             
             return (
               <Card key={user.id} className="flex flex-col h-full overflow-hidden hover:shadow-lg transition-all border-border group">
@@ -139,7 +159,8 @@ export default async function CommunityPeoplePage() {
               </Card>
             )
           })}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )

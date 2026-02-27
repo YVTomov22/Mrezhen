@@ -71,19 +71,15 @@ export default async function SuggestedPeoplePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* ── Header Banner ───────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2" />
-          <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-emerald-300 rounded-full blur-3xl translate-y-1/2" />
-        </div>
+      <div className="relative overflow-hidden border-b border-border bg-card">
         <div className="relative max-w-6xl mx-auto px-6 py-8">
-          <Link href="/community/people" className="inline-flex items-center gap-1.5 text-teal-200 hover:text-white text-sm mb-2 transition-colors">
+          <Link href="/community/people" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-2 transition-colors">
             <ArrowLeft className="w-4 h-4" /> {t("backToPeople")}
           </Link>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center gap-3 text-foreground">
             <Sparkles className="h-7 w-7" /> {t("suggestedTitle")}
           </h1>
-          <p className="text-teal-200 mt-1">{t("suggestedDesc")}</p>
+          <p className="text-muted-foreground mt-1">{t("suggestedDesc")}</p>
         </div>
       </div>
 

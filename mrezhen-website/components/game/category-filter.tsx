@@ -50,10 +50,10 @@ export function CategoryFilter({ categories, activeCategories }: CategoryFilterP
       <button
         onClick={clearFilters}
         className={cn(
-          "px-3 py-1.5 text-sm rounded-full border transition-all",
+          "px-3 py-1.5 text-sm rounded-full transition-all",
           activeCategories.length === 0
-            ? "bg-teal-600 text-white border-teal-600 shadow-sm"
-            : "bg-card text-muted-foreground border-border hover:bg-muted"
+            ? "bg-teal-600 text-white shadow-sm"
+            : "bg-black/[0.03] text-muted-foreground hover:bg-primary/10 hover:text-primary dark:bg-white/[0.04] dark:backdrop-blur-sm dark:hover:bg-[#00A3FF]/10 dark:hover:text-[#00A3FF] dark:hover:border-[#00A3FF]/50 border border-transparent"
         )}
       >
         {t("allCategories")}
@@ -66,10 +66,10 @@ export function CategoryFilter({ categories, activeCategories }: CategoryFilterP
             key={cat}
             onClick={() => toggleCategory(cat)}
             className={cn(
-              "px-3 py-1.5 text-sm rounded-full border transition-all capitalize",
+              "px-3 py-1.5 text-sm rounded-full transition-all capitalize",
               isActive
-                ? "bg-teal-600 text-white border-teal-600 shadow-sm"
-                : "bg-card text-muted-foreground border-border hover:bg-muted"
+                ? "bg-teal-600 text-white shadow-sm"
+                : "bg-black/[0.03] text-muted-foreground hover:bg-primary/10 hover:text-primary dark:bg-white/[0.04] dark:backdrop-blur-sm dark:hover:bg-[#00A3FF]/10 dark:hover:text-[#00A3FF] dark:hover:border-[#00A3FF]/50 border border-transparent"
             )}
           >
             {t(`categories.${cat}`)}

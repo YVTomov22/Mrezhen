@@ -3,7 +3,13 @@
 import { useState, useTransition, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Heart, MessageCircle, Share2, Bookmark, CornerDownRight } from 'lucide-react'
+import { Heart, MessageCircle, Share2, Bookmark, CornerDownRight, LayoutDashboard,
+  Trophy, Zap, Flame, Target, Star, Crown, Gem, Skull, Ghost, Bug,
+  Swords, Shield, Anchor, Compass, Mountain, Sun, Moon, CloudLightning,
+  Dumbbell, Brain, Music, Camera, Coffee, BookOpen, Gamepad2, Palette,
+  Sparkles, Rocket, GripVertical,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -135,9 +141,9 @@ export function PostCard(props: PostCardProps) {
   const when = new Date(props.createdAt).toLocaleString()
 
   return (
-    <article className="bg-card rounded-2xl border border-border/60 shadow-sm card-hover overflow-hidden">
+    <article className="py-4 feed-entrance">
       {/* Header */}
-      <div className="flex items-center gap-3 px-5 pt-5 pb-3">
+      <div className="flex items-center gap-3 pb-3">
         <Avatar className="h-10 w-10 ring-2 ring-background shadow-sm">
           <AvatarImage src={props.author.image || ''} />
           <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
@@ -151,14 +157,14 @@ export function PostCard(props: PostCardProps) {
           >
             {displayName}
           </Link>
-          <p className="text-[11px] text-muted-foreground">{when}</p>
+          <p className="text-[11px] text-muted-foreground" suppressHydrationWarning>{when}</p>
         </div>
       </div>
 
       {/* Content */}
       {props.content && (
-        <div className="px-5 pb-3">
-          <p className="text-[15px] leading-relaxed">{props.content}</p>
+        <div className="pb-3">
+          <DashboardAwareContent content={props.content} />
         </div>
       )}
 
@@ -177,7 +183,7 @@ export function PostCard(props: PostCardProps) {
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between px-3 py-2">
+      <div className="flex items-center justify-between py-1 -mx-1">
         <div className="flex items-center gap-0.5">
           <Button
             variant="ghost"
@@ -243,7 +249,7 @@ export function PostCard(props: PostCardProps) {
       {/* ── Comment Section ── */}
       <div className="comment-collapse" data-open={showComments}>
         <div>
-          <div className="border-t border-border/60 mx-5 pt-4 pb-5 space-y-3">
+          <div className="border-t border-border/40 pt-4 pb-2 space-y-3">
             {props.recentComments.length > 0 && (
               <div className="space-y-3">
                 {props.recentComments
@@ -269,7 +275,7 @@ export function PostCard(props: PostCardProps) {
                               <Link href={profileHref} className="text-[13px] font-semibold tracking-tight hover:underline underline-offset-2">
                                 {name}
                               </Link>
-                              <span className="text-[10px] text-muted-foreground">
+                              <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
                                 {new Date(c.createdAt).toLocaleString()}
                               </span>
                             </div>
@@ -318,7 +324,7 @@ export function PostCard(props: PostCardProps) {
                                         <Link href={rHref} className="text-[12px] font-semibold tracking-tight hover:underline underline-offset-2">
                                           {rName}
                                         </Link>
-                                        <span className="text-[10px] text-muted-foreground">
+                                        <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
                                           {new Date(r.createdAt).toLocaleString()}
                                         </span>
                                       </div>
@@ -385,5 +391,117 @@ export function PostCard(props: PostCardProps) {
         </div>
       </div>
     </article>
+  )
+}
+
+/* ── Dashboard-aware content renderer ─────────────────────── */
+
+const DASHBOARD_RE = /\[dashboard:([A-Za-z0-9+/=]+)\]/
+
+const PREVIEW_ICON_MAP: Record<string, LucideIcon> = {
+  Trophy, Zap, Flame, Target, Star, Heart, Sparkles, Rocket, Crown, Gem,
+  Skull, Ghost, Bug, Swords, Shield, Anchor, Compass, Mountain, Sun, Moon,
+  CloudLightning, Dumbbell, Brain, Music, Camera, Coffee, BookOpen, Gamepad2, Palette,
+}
+
+const WIDGET_LABELS: Record<string, string> = {
+  stats: 'Stats',
+  level: 'Level & XP',
+  activity: 'Activity Chart',
+  quests: 'Quests',
+  goals: 'Goals',
+}
+
+function DashboardAwareContent({ content }: { content: string }) {
+  const match = content.match(DASHBOARD_RE)
+
+  if (!match) {
+    return <p className="text-[15px] leading-relaxed">{content}</p>
+  }
+
+  const encoded = match[1]
+  const textBefore = content.slice(0, match.index).trim()
+
+  let config: any = null
+  try {
+    config = JSON.parse(atob(encoded))
+  } catch {}
+
+  function applyDashboard() {
+    if (!config) {
+      toast.error('Invalid dashboard config')
+      return
+    }
+    localStorage.setItem('dashboard-config', JSON.stringify(config))
+    toast.success('Dashboard layout applied! Go to your dashboard to see it.')
+  }
+
+  return (
+    <div>
+      {textBefore && <p className="text-[15px] leading-relaxed mb-3">{textBefore}</p>}
+
+      <div className="rounded-2xl border border-[#FF5722]/20 overflow-hidden bg-gradient-to-br from-[#FF5722]/5 to-[#FFCC00]/5">
+        {/* Preview header */}
+        <div className="flex items-center gap-2 px-4 pt-3 pb-2">
+          <LayoutDashboard className="w-4 h-4 text-[#FF5722]" />
+          <span className="text-xs font-semibold text-foreground">Dashboard Layout Preview</span>
+        </div>
+
+        {/* Stat boxes preview */}
+        {config?.statBoxes && config.statBoxes.length > 0 && (
+          <div className="px-3 pb-2">
+            <div className="grid grid-cols-4 gap-1.5">
+              {config.statBoxes.slice(0, 4).map((box: any, i: number) => {
+                const IconComp = PREVIEW_ICON_MAP[box.icon] || Target
+                return (
+                  <div
+                    key={box.id || i}
+                    className="rounded-xl p-2 flex flex-col items-center justify-center text-center"
+                    style={{ backgroundColor: box.color ? `${box.color}15` : '#FF572215' }}
+                  >
+                    <IconComp className="w-3.5 h-3.5 mb-0.5" style={{ color: box.color || '#FF5722' }} />
+                    <span className="text-[9px] font-medium text-muted-foreground truncate w-full">{box.label || 'Stat'}</span>
+                  </div>
+                )
+              })}
+            </div>
+            {config.statBoxes.length > 4 && (
+              <p className="text-[9px] text-muted-foreground text-center mt-1">+{config.statBoxes.length - 4} more stats</p>
+            )}
+          </div>
+        )}
+
+        {/* Widget order preview */}
+        {config?.widgetOrder && (
+          <div className="px-3 pb-2">
+            <div className="flex flex-wrap gap-1">
+              {config.widgetOrder.map((wid: string, i: number) => (
+                <span
+                  key={wid}
+                  className="inline-flex items-center gap-1 text-[9px] font-medium px-2 py-0.5 rounded-md border"
+                  style={{
+                    backgroundColor: config.widgetColors?.[wid] ? `${config.widgetColors[wid]}20` : '#1A1A1A20',
+                    borderColor: config.widgetColors?.[wid] ? `${config.widgetColors[wid]}40` : '#ffffff15',
+                    color: config.widgetColors?.[wid] || undefined,
+                  }}
+                >
+                  <GripVertical className="w-2.5 h-2.5 opacity-50" />
+                  {WIDGET_LABELS[wid] || wid}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Apply button */}
+        <button
+          onClick={applyDashboard}
+          className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#FF5722]/10 hover:bg-[#FF5722]/20 border-t border-[#FF5722]/10 transition-colors group"
+        >
+          <LayoutDashboard className="w-4 h-4 text-[#FF5722]" />
+          <span className="text-xs font-semibold text-[#FF5722] group-hover:underline">Use This Layout</span>
+        </button>
+      </div>
+    </div>
   )
 }

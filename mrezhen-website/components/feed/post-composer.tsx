@@ -1,19 +1,18 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useMemo, useRef, useState, useTransition } from 'react'
 import type { ChangeEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
 import { uploadImages } from '@/app/actions/upload'
 import { createPost } from '@/app/actions/posts'
 
-export function PostComposer({ onSuccess }: { onSuccess?: () => void } = {}) {
+export function PostComposer({ onSuccess, initialContent }: { onSuccess?: () => void; initialContent?: string } = {}) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  const [content, setContent] = useState('')
+  const [content, setContent] = useState(initialContent ?? '')
   const [files, setFiles] = useState<File[]>([])
   const [error, setError] = useState<string | null>(null)
 
@@ -67,8 +66,28 @@ export function PostComposer({ onSuccess }: { onSuccess?: () => void } = {}) {
     })
   }
 
+  const dropZoneRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragOver, setIsDragOver] = useState(false)
+
+  function onDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault()
+    setIsDragOver(false)
+    const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))
+    if (dropped.length > 0) setFiles(dropped)
+  }
+
+  function onDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault()
+    setIsDragOver(true)
+  }
+
+  function onDragLeave() {
+    setIsDragOver(false)
+  }
+
   return (
-    <div className="border-b border-border pb-6 mb-6">
+    <div className="homepage-card border-b border-border pb-6 mb-6 rounded-2xl px-5 pt-5">
       <h3 className="editorial-caption text-muted-foreground mb-3">New Post</h3>
       <div className="space-y-3">
         <Textarea
@@ -79,15 +98,37 @@ export function PostComposer({ onSuccess }: { onSuccess?: () => void } = {}) {
           disabled={isPending}
         />
 
-        <div className="flex items-center justify-between gap-3">
-          <Input
+        {/* Custom Drop Zone */}
+        <div
+          ref={dropZoneRef}
+          onClick={() => fileInputRef.current?.click()}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          className={`drop-zone flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 py-5 ${
+            isDragOver
+              ? 'border-primary bg-primary/5 scale-[1.01]'
+              : 'border-muted-foreground/30 hover:border-primary/60 hover:bg-muted/30'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+          </svg>
+          <span className="text-xs text-muted-foreground">
+            {files.length > 0 ? `${files.length} file(s) selected` : 'Drop images here or click to browse'}
+          </span>
+          <input
+            ref={fileInputRef}
             type="file"
             accept="image/*"
             multiple
             onChange={onFileChange}
             disabled={isPending}
-            className="text-[13px]"
+            className="hidden"
           />
+        </div>
+
+        <div className="flex items-center justify-end">
           <Button onClick={onSubmit} disabled={isPending} className="bg-foreground text-background hover:bg-foreground/90 dark:bg-[#0095F6] dark:hover:bg-[#0080D6] dark:text-white text-[12px] tracking-wide uppercase">
             {isPending ? 'Posting...' : 'Publish'}
           </Button>
