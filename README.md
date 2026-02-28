@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="pictures/mrezhen-logo.svg" height="600px"/>
+  <img src="pictures/mrezhen-logo.png" height="600px"/>
 </p>
 
 🌍 **Translate this page:** <a href="https://translate.google.com/translate?sl=auto&tl=bg&u=https://github.com/your-org/Mrezhen" target="_blank">🇧🇬 Български</a>
@@ -47,14 +47,7 @@ Mrezhen is a supportive social media platform that connects individuals facing s
   <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png">
 </p>
 
-<p align="center">
-    <img src = "https://img.shields.io/github/languages/count/your-org/Mrezhen?style=for-the-badge">
-    <img src = "https://img.shields.io/github/contributors/your-org/Mrezhen?style=for-the-badge">
-    <img src = "https://img.shields.io/github/repo-size/your-org/Mrezhen?style=for-the-badge">
-    <img src = "https://img.shields.io/github/last-commit/your-org/Mrezhen?style=for-the-badge">
-    <img src = "https://img.shields.io/github/languages/top/your-org/Mrezhen?style=for-the-badge">
-    <img src = "https://img.shields.io/github/issues-closed/your-org/Mrezhen?style=for-the-badge">
-<p>
+
 
 ## ✨ Features
 
@@ -116,11 +109,8 @@ Mrezhen is a supportive social media platform that connects individuals facing s
 <a href="https://www.prisma.io/"><img src="https://cdn.worldvectorlogo.com/logos/prisma-2.svg" height="60" alt="Prisma Logo"/></a>
 <a href="https://www.postgresql.org/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Postgresql_elephant.svg/1200px-Postgresql_elephant.svg.png" height="60" alt="PostgreSQL Logo"/></a>
 <a href="https://fastapi.tiangolo.com/"><img src="https://cdn.worldvectorlogo.com/logos/fastapi-1.svg" height="60" alt="FastAPI Logo"/></a>
-<a href="https://www.python.org/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1869px-Python-logo-notext.svg.png" height="60" alt="Python Logo"/></a>
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/2048px-Octicons-mark-github.svg.png" height="60" alt="WebSocket"/></a>
-<a href="https://groq.com/"><img src="https://cdn.worldvectorlogo.com/logos/groq.svg" height="60" alt="Groq Logo"/></a>
 <a href="https://cloudinary.com/"><img src="https://cdn.worldvectorlogo.com/logos/cloudinary-2.svg" height="60" alt="Cloudinary Logo"/></a>
-<a href="https://zod.dev/"><img src="https://zod.dev/logo.svg" height="60" alt="Zod Logo"/></a>
 
 ## 💽 Software & Programs
 <a href="https://code.visualstudio.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Visual_Studio_Code_1.35_icon.svg/2048px-Visual_Studio_Code_1.35_icon.svg.png" height="70" alt="Visual Studio Code logo"/></a>
@@ -202,15 +192,12 @@ The WebSocket server runs on **`ws://localhost:3001`**.
 
 <p align="center">
     <a href="#" style="display: inline-flex; align-items: center;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/2203px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png" height="40" alt="MS Word Logo">
-        <b style="margin-left: 5px;">&nbsp;Documentation</b>
+        <b>📄&nbsp;Documentation</b>
     </a>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <a href="#" style="display: inline-flex; align-items: center;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Microsoft_PowerPoint_Logo.png" height="40" alt="MS PowerPoint Logo">
-        <b style="margin-left: 5px;">Presentation</b>
+        <b>📊&nbsp;Presentation</b>
     </a>
-
 </p>
 
 ## 👥 Contributors
@@ -219,12 +206,12 @@ The WebSocket server runs on **`ws://localhost:3001`**.
 <div align="center">
   <table>
     <tr>
-       <td align="center"><b>Role / Title</b></td>
-       <td align="center"><b>Role / Title</b></td>
+       <td align="center"><b>Frontend</b></td>
+       <td align="center"><b>Backend</b></td>
     </tr>
     <tr>
-       <td align="center"><a href="https://github.com/contributor1"><b>Contributor Name</b></a></td>
-       <td align="center"><a href="https://github.com/contributor2"><b>Contributor Name</b></a></td>
+       <td align="center"><b>Asparuh Georgiev</b></td>
+       <td align="center"><b>Yuan Tomov</b></td>
     </tr>
   </table>
 </div>
