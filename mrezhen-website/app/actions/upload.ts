@@ -1,5 +1,6 @@
 'use server'
 
+import { auth } from "@/app/auth"
 import cloudinary from "@/lib/cloudinary"
 import Groq from "groq-sdk"
 
@@ -101,10 +102,31 @@ async function moderateImage(buffer: Uint8Array, mimeType: string): Promise<{ sa
 }
 
 export async function uploadImages(formData: FormData) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+
   const files = formData.getAll("file") as File[]
 
   if (!files || files.length === 0) {
     return { error: "No files provided" }
+  }
+
+  // Security: limit file count, size, and types
+  const MAX_FILES = 10
+  const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "video/mp4", "video/webm"]
+
+  if (files.length > MAX_FILES) {
+    return { error: `Maximum ${MAX_FILES} files allowed` }
+  }
+
+  for (const file of files) {
+    if (file.size > MAX_FILE_SIZE) {
+      return { error: "File too large. Maximum 10 MB per file." }
+    }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return { error: `File type '${file.type}' is not allowed. Only images and videos are accepted.` }
+    }
   }
 
   const uploadPromises = files.map(async (file) => {

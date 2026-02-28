@@ -27,16 +27,35 @@ export async function register(prevState: any, formData: FormData) {
         return { error: "Missing fields" }
     }
 
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email) || email.length > 254) {
+        return { error: "Invalid email format" }
+    }
+
+    // Password strength: min 8 chars, must contain uppercase, lowercase, and number
+    if (password.length < 8 || password.length > 128) {
+        return { error: "Password must be 8-128 characters" }
+    }
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+        return { error: "Password must contain uppercase, lowercase, and a number" }
+    }
+
+    // Name length validation
+    if (name.length > 100) {
+        return { error: "Name is too long" }
+    }
+
     try {
         const existingUser = await prisma.user.findUnique({
             where: { email }
         })
 
         if (existingUser) {
-            return { error: "Email already in use" }
+            return { error: "Unable to create account. Please try a different email." }
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 12)
 
         await prisma.user.create({
             data: {
@@ -154,7 +173,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
             return { error: "Invalid or expired reset link" }
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 12)
 
         await prisma.$transaction([
             prisma.user.update({

@@ -1,10 +1,25 @@
 'use server'
 
+import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 
 const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
 
 export async function analyzeAgentAction(userId: string, userInput: string) {
+  // Verify the caller is authenticated and requesting their own data
+  const session = await auth()
+  if (!session?.user?.email) {
+    return (async function* () {
+      yield `data: ${JSON.stringify({ error: "Unauthorized" })}\n\n[DONE]`;
+    })();
+  }
+  const currentUser = await prisma.user.findUnique({ where: { email: session.user.email }, select: { id: true } })
+  if (!currentUser || currentUser.id !== userId) {
+    return (async function* () {
+      yield `data: ${JSON.stringify({ error: "Unauthorized" })}\n\n[DONE]`;
+    })();
+  }
+
   try {
     // Fetch user data
     const user = await prisma.user.findUnique({

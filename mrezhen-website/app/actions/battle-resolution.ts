@@ -1,5 +1,6 @@
 'use server'
 
+import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 
 // Battle Resolution Service
@@ -28,6 +29,10 @@ export async function resolveBattle(battleId: string): Promise<{
   error?: string
   data?: BattleResolutionResult
 }> {
+  // Auth check: only participants or cron can resolve
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+
   const battle = await prisma.battle.findUnique({
     where: { id: battleId },
     include: {

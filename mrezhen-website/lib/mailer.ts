@@ -1,5 +1,15 @@
 import nodemailer from "nodemailer"
 
+/** Escape HTML special characters to prevent XSS in emails */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+}
+
 function getRequiredEnv(name: string) {
   const value = process.env[name]
   if (!value) throw new Error(`${name} is not configured`)
@@ -65,10 +75,10 @@ export async function sendContactEmail(
     html: `
       <div style="font-family:Arial,sans-serif;line-height:1.5;color:#111827;max-width:560px;margin:0 auto;padding:16px;">
         <h2 style="margin:0 0 12px 0;">New Contact Form Message</h2>
-        <p><strong>Name:</strong> ${senderName}</p>
-        <p><strong>Email:</strong> <a href="mailto:${senderEmail}">${senderEmail}</a></p>
+        <p><strong>Name:</strong> ${escapeHtml(senderName)}</p>
+        <p><strong>Email:</strong> <a href="mailto:${escapeHtml(senderEmail)}">${escapeHtml(senderEmail)}</a></p>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;" />
-        <p style="white-space:pre-wrap;">${message}</p>
+        <p style="white-space:pre-wrap;">${escapeHtml(message)}</p>
       </div>
     `,
   })

@@ -3,12 +3,13 @@
 
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "mrezhen-dev-secret-change-in-production";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error("FATAL: JWT_SECRET environment variable is not set. Server cannot start.");
 const JWT_ISSUER = process.env.JWT_ISSUER || "mrezhen";
 
 /** Verify a JWT and return the decoded payload. Throws on invalid/expired tokens. */
 export function verifyToken(token) {
-  return jwt.verify(token, JWT_SECRET, { issuer: JWT_ISSUER });
+  return jwt.verify(token, JWT_SECRET, { issuer: JWT_ISSUER, algorithms: ["HS256"] });
 }
 
 /** Sign a new JWT — used by the generate-token utility and tests. */

@@ -1,5 +1,6 @@
 'use server'
 
+import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { completeTaskAndAwardXP } from "./game"
@@ -11,6 +12,21 @@ export async function verifyTaskWithAI(
   imageUrls: string[], 
   userComment: string
 ) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+
+  // Validate image URLs — only allow HTTPS from trusted domains
+  const allowedHosts = ["res.cloudinary.com", "cloudinary.com"]
+  for (const url of imageUrls) {
+    try {
+      const parsed = new URL(url)
+      if (parsed.protocol !== "https:" || !allowedHosts.some(h => parsed.hostname.endsWith(h))) {
+        return { error: "Invalid image URL. Only Cloudinary URLs are accepted." }
+      }
+    } catch {
+      return { error: "Invalid image URL format." }
+    }
+  }
   // Fetch task details
   const task = await prisma.task.findUnique({
     where: { id: taskId },
