@@ -39,7 +39,7 @@ function scoreToLevel(score: number): number {
 }
 
 async function main() {
-  console.log("🌱 Seeding leaderboard data…")
+  console.log("Seeding leaderboard data…")
 
   const users = Array.from({ length: 200 }, (_, i) => {
     const first = randomItem(FIRST_NAMES)
@@ -82,13 +82,13 @@ async function main() {
     }
   }
 
-  console.log(`✅ Done! Created ${created} users, updated ${updated} users.`)
+  console.log(`Done! Created ${created} users, updated ${updated} users.`)
   console.log(`   Total users in DB: ${await prisma.user.count()}`)
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Seed failed:", e)
+    console.error("Seed failed:", e)
     process.exit(1)
   })
   .finally(() => prisma.$disconnect())

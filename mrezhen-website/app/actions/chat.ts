@@ -134,20 +134,60 @@ export async function getUsersToChatWith(specificUsername?: string) {
 
     if (!currentUser) return []
 
-    // Get all other users
-    const users = await prisma.user.findMany({
+    // Get users who have exchanged messages with the current user, sorted by latest message
+    const recentMessages = await prisma.message.findMany({
         where: {
-            id: { not: currentUser.id }
+            OR: [
+                { senderId: currentUser.id },
+                { receiverId: currentUser.id },
+            ],
         },
+        orderBy: { createdAt: "desc" },
         select: {
-            id: true,
-            name: true,
-            username: true,
-            image: true,
-            email: true
+            senderId: true,
+            receiverId: true,
+            createdAt: true,
         },
-        take: 50
     })
+
+    // Build ordered list of user IDs by most recent message
+    const seen = new Set<string>()
+    const orderedIds: string[] = []
+    for (const msg of recentMessages) {
+        const otherId = msg.senderId === currentUser.id ? msg.receiverId : msg.senderId
+        if (!seen.has(otherId)) {
+            seen.add(otherId)
+            orderedIds.push(otherId)
+        }
+    }
+
+    // Fetch all users we have chatted with + some others to fill up to 50
+    const chattedUsers = orderedIds.length > 0
+        ? await prisma.user.findMany({
+            where: { id: { in: orderedIds } },
+            select: { id: true, name: true, username: true, image: true, email: true },
+        })
+        : []
+
+    // Sort chatted users by the order from recent messages
+    const idToUser = new Map(chattedUsers.map(u => [u.id, u]))
+    const sortedChatted = orderedIds
+        .map(id => idToUser.get(id))
+        .filter(Boolean) as typeof chattedUsers
+
+    // Fill remaining slots with users who haven't chatted yet
+    const remaining = 50 - sortedChatted.length
+    const otherUsers = remaining > 0
+        ? await prisma.user.findMany({
+            where: {
+                id: { notIn: [currentUser.id, ...orderedIds] },
+            },
+            select: { id: true, name: true, username: true, image: true, email: true },
+            take: remaining,
+        })
+        : []
+
+    const users = [...sortedChatted, ...otherUsers]
 
     // Ensure requested user is in the list
     if (specificUsername) {

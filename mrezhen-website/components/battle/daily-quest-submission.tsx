@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { submitDailyQuest } from "@/app/actions/battle-quest"
+import { submitDailyQuest, generateAiBattleQuest } from "@/app/actions/battle-quest"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Loader2, Send, ImagePlus } from "lucide-react"
+import { CheckCircle2, Loader2, Send, ImagePlus, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface DailyQuestSubmissionProps {
@@ -16,6 +16,7 @@ interface DailyQuestSubmissionProps {
   existingQuests: {
     id: string
     day: number
+    description?: string
     submittedAt: string | null
     verification: string
   }[]
@@ -34,7 +35,9 @@ export function DailyQuestSubmission({
   const [proofText, setProofText] = useState("")
   const [proofImageUrl, setProofImageUrl] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState("")
+  const [aiGenerated, setAiGenerated] = useState(false)
 
   const todayQuest = existingQuests.find(q => q.day === currentDay)
   const alreadySubmitted = !!todayQuest?.submittedAt
@@ -53,6 +56,33 @@ export function DailyQuestSubmission({
         </Badge>
       </div>
     )
+  }
+
+  // If AI already generated a quest (saved to DB but not yet submitted with proof)
+  const aiQuest = todayQuest && !todayQuest.submittedAt ? todayQuest : null
+
+  const handleGenerateQuest = async () => {
+    setIsGenerating(true)
+    setError("")
+
+    try {
+      const result = await generateAiBattleQuest({
+        battleId,
+        day: currentDay,
+      })
+
+      if (result.error) {
+        setError(result.error)
+      } else if (result.data) {
+        setDescription(result.data.description)
+        setAiGenerated(true)
+        onSubmitted() // Refresh to pick up the new quest
+      }
+    } catch {
+      setError("Failed to generate quest")
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   const handleSubmit = async () => {
@@ -75,6 +105,7 @@ export function DailyQuestSubmission({
         setDescription("")
         setProofText("")
         setProofImageUrl("")
+        setAiGenerated(false)
         onSubmitted()
       }
     } catch {
@@ -84,6 +115,9 @@ export function DailyQuestSubmission({
     }
   }
 
+  // Pre-fill description from AI quest if it exists
+  const effectiveDescription = description || aiQuest?.description || ""
+
   return (
     <div className="rounded-lg border bg-amber-50/50 dark:bg-amber-950/10 p-3 space-y-3">
       <div className="flex items-center justify-between">
@@ -92,11 +126,42 @@ export function DailyQuestSubmission({
         </h4>
       </div>
 
+      {/* AI Generate Quest Button */}
+      {!aiGenerated && !aiQuest && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="w-full border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/30"
+          onClick={handleGenerateQuest}
+          disabled={isGenerating}
+        >
+          {isGenerating ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          ) : (
+            <Sparkles className="h-4 w-4 mr-2" />
+          )}
+          {isGenerating ? t("generatingQuest") : t("aiGenerateQuest")}
+        </Button>
+      )}
+
+      {/* Show AI-generated quest badge */}
+      {(aiGenerated || aiQuest) && (
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary" className="text-[10px] bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">
+            <Sparkles className="h-3 w-3 mr-1" />
+            {t("aiGeneratedQuest")}
+          </Badge>
+        </div>
+      )}
+
       <Textarea
-        value={description}
-        onChange={e => setDescription(e.target.value)}
+        value={effectiveDescription}
+        onChange={e => { setDescription(e.target.value); if (aiGenerated) setAiGenerated(true) }}
         placeholder={t("questDescriptionPlaceholder")}
-        className="min-h-[60px] text-sm resize-none bg-background"
+        className={cn(
+          "min-h-[60px] text-sm resize-none bg-background",
+          (aiGenerated || aiQuest) && "border-purple-200 dark:border-purple-800"
+        )}
         maxLength={500}
       />
 
@@ -120,19 +185,37 @@ export function DailyQuestSubmission({
 
       {error && <p className="text-xs text-destructive">{error}</p>}
 
-      <Button
-        size="sm"
-        className="w-full"
-        onClick={handleSubmit}
-        disabled={isSubmitting || !description.trim()}
-      >
-        {isSubmitting ? (
-          <Loader2 className="h-4 w-4 animate-spin mr-1" />
-        ) : (
-          <Send className="h-4 w-4 mr-1" />
+      <div className="flex gap-2">
+        {(aiGenerated || aiQuest) && !description && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/30"
+            onClick={handleGenerateQuest}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+            ) : (
+              <Sparkles className="h-4 w-4 mr-1" />
+            )}
+            {t("regenerate")}
+          </Button>
         )}
-        {t("submitQuest")}
-      </Button>
+        <Button
+          size="sm"
+          className="flex-1"
+          onClick={handleSubmit}
+          disabled={isSubmitting || !effectiveDescription.trim()}
+        >
+          {isSubmitting ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-1" />
+          ) : (
+            <Send className="h-4 w-4 mr-1" />
+          )}
+          {t("submitQuest")}
+        </Button>
+      </div>
     </div>
   )
 }

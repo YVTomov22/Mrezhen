@@ -248,3 +248,102 @@ export async function getBattleCurrentDay(battleId: string) {
 
   return { day: Math.min(daysSinceStart + 1, 7), isActive: true }
 }
+
+// 5. AI-generated battle quest (only for the requesting user)
+
+const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000'
+
+export async function generateAiBattleQuest(input: {
+  battleId: string
+  day: number
+}) {
+  const userId = await getCurrentUserId()
+  if (!userId) return { error: "Unauthorized" }
+
+  if (input.day < 1 || input.day > 7) {
+    return { error: "Day must be between 1 and 7" }
+  }
+
+  // Load battle with goal
+  const battle = await prisma.battle.findUnique({ where: { id: input.battleId } })
+  if (!battle) return { error: "Battle not found" }
+  if (battle.status !== "ACTIVE") return { error: "Battle is not active" }
+
+  // Must be a participant
+  if (battle.challengerId !== userId && battle.challengedId !== userId) {
+    return { error: "Not a participant" }
+  }
+
+  // Check if already submitted for this day
+  const existing = await prisma.battleDailyQuest.findUnique({
+    where: {
+      battleId_userId_day: {
+        battleId: input.battleId,
+        userId,
+        day: input.day,
+      },
+    },
+  })
+
+  if (existing && existing.submittedAt) {
+    return { error: "Quest already submitted for this day" }
+  }
+
+  // Fetch previous quests for this user in this battle (to avoid repeats)
+  const previousQuests = await prisma.battleDailyQuest.findMany({
+    where: {
+      battleId: input.battleId,
+      userId,
+      day: { lt: input.day },
+    },
+    select: { description: true },
+    orderBy: { day: "asc" },
+  })
+
+  try {
+    const response = await fetch(`${PYTHON_BACKEND_URL}/api/generate-battle-quest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        goalDescription: battle.goalDescription,
+        currentDay: input.day,
+        totalDays: 7,
+        previousQuests: previousQuests.map(q => q.description),
+      }),
+      cache: 'no-store',
+    })
+
+    if (!response.ok) {
+      return { error: "Failed to generate quest" }
+    }
+
+    const data = await response.json()
+    const questDescription = data.quest || `Work on: ${battle.goalDescription.slice(0, 100)}`
+
+    // Upsert the quest for THIS user only (not the opponent)
+    const quest = await prisma.battleDailyQuest.upsert({
+      where: {
+        battleId_userId_day: {
+          battleId: input.battleId,
+          userId,
+          day: input.day,
+        },
+      },
+      create: {
+        battleId: input.battleId,
+        userId,
+        day: input.day,
+        description: questDescription,
+      },
+      update: {
+        description: questDescription,
+      },
+    })
+
+    revalidatePath("/messages")
+    return { success: true, data: quest }
+  } catch (error) {
+    console.error("AI quest generation failed:", error)
+    return { error: "Failed to generate quest. Is the AI service running?" }
+  }
+}

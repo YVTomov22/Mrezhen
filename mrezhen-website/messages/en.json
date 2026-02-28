@@ -397,7 +397,15 @@
     "typePlaceholder": "Type your message...",
     "suggestedChanges": "Suggested Roadmap Changes",
     "synced": "Synced",
-    "acceptParentFirst": "Accept parent milestone first to enable quests."
+    "acceptParentFirst": "Accept parent milestone first to enable quests.",
+    "newChat": "New Chat",
+    "noChats": "No conversations yet",
+    "rename": "Rename",
+    "deleteChat": "Delete",
+    "chats": "Chats",
+    "hideSidebar": "Hide sidebar",
+    "showSidebar": "Show sidebar",
+    "selectOrCreate": "Select a chat or create a new one to get started."
   },
   "home": {
     "heroTitle1": "Connect.",
@@ -650,6 +658,10 @@
     "questSubmittedToday": "Quest submitted for today",
     "proofImagePlaceholder": "Paste image URL as proof...",
     "viewProof": "View proof image",
+    "aiGenerateQuest": "AI Generate Quest",
+    "generatingQuest": "Generating quest...",
+    "aiGeneratedQuest": "AI Generated",
+    "regenerate": "Regenerate",
     "challengeReceived": "Battle Challenge!",
     "challengedYou": "challenged you to a battle",
     "days": "days",
