@@ -20,11 +20,12 @@ export default async function SettingsPage() {
   if (!user) redirect('/auth/login')
 
   return (
-    <div className="min-h-screen bg-background py-10 px-4">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t('title')}</h1>
-          <p className="text-muted-foreground">{t('description')}</p>
+    <div className="h-screen overflow-hidden bg-background flex flex-col py-10 px-4">
+      {/* Use gap instead of space-y for flex containment */}
+      <div className="max-w-5xl w-full mx-auto flex flex-col flex-1 min-h-0 gap-6">
+        <div className="shrink-0">
+          <h1 className="editorial-headline text-4xl md:text-5xl text-foreground">{t('title')}</h1>
+          <p className="editorial-body text-muted-foreground mt-2">{t('description')}</p>
         </div>
         <SettingsView user={user} />
       </div>

@@ -17,6 +17,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  passwordResetTokens PasswordResetToken[]
 
   bio           String?
   phone         String?
@@ -80,6 +81,9 @@ model User {
   employmentStatus   String?
   incomePercentile   Int?
 
+  // ── Region (for leaderboard) ──
+  region             String  @default("global")  // global | na | eu | asia | sa | africa | oceania | mena
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -97,9 +101,32 @@ model User {
 
   activityLogs ActivityLog[]
 
-  posts        Post[]
-  postComments PostComment[]
-  postLikes    PostLike[]
+  posts         Post[]
+  postComments  PostComment[]
+  postLikes     PostLike[]
+  postBookmarks    PostBookmark[]
+  postCommentLikes PostCommentLike[]
+
+  // ── Story System ──
+  stories              Story[]
+  storyViews           StoryView[]        @relation("StoryViews")
+  storyLikes           StoryLike[]        @relation("StoryLikes")
+
+  // ── Battle System ──
+  battlesAsChallenger  Battle[]           @relation("BattlesAsChallenger")
+  battlesAsChallenged  Battle[]           @relation("BattlesAsChallenged")
+  battlesWon           Battle[]           @relation("BattleWinner")
+  battleDailyQuests    BattleDailyQuest[]
+
+  // ── AI Chat Sessions ──
+  aiChatSessions   AiChatSession[]
+
+  // ── Leaderboard indexes ──
+  // Composite indexes enable efficient ranking queries without full table scans.
+  // The desc sort lets Postgres walk the B-tree in rank order for pagination.
+  @@index([score(sort: Desc)])                       // global leaderboard
+  @@index([region, score(sort: Desc)])                // regional leaderboard
+  @@index([isDeactivated, score(sort: Desc)])          // filter deactivated
 }
 
 model Follows {
@@ -119,16 +146,25 @@ model Milestone {
   id          String   @id @default(cuid())
   title       String
   description String?
+  category    String?
   status      QuestStatus @default(IN_PROGRESS)
   progress    Float       @default(0)
-  
+  dueDate     DateTime?
+
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   quests      Quest[]
 
+  // Battle references (milestone selected for a battle)
+  battlesAsChallenger Battle[] @relation("BattleChallengerMilestone")
+  battlesAsChallenged Battle[] @relation("BattleChallengedMilestone")
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([userId, category])
 }
 
 model Quest {
@@ -145,7 +181,7 @@ model Quest {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   milestoneId String?
-  milestone   Milestone? @relation(fields: [milestoneId], references: [id])
+  milestone   Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
 
   tasks       Task[]
 
@@ -195,6 +231,20 @@ enum Difficulty {
   EPIC
 }
 
+enum BattleStatus {
+  PENDING     // Challenge sent, awaiting acceptance
+  ACTIVE      // Both agreed, battle in progress
+  COMPLETED   // 7-day period ended, winner resolved
+  CANCELLED   // Challenger withdrew before acceptance
+  DECLINED    // Challenged user declined
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Message {
   id        String   @id @default(cuid())
   content   String
@@ -202,10 +252,10 @@ model Message {
   attachments Attachment[]
 
   senderId    String
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
   receiverId  String
-  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 }
 
 model Attachment {
@@ -249,6 +299,19 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
 model Post {
   id        String   @id @default(cuid())
   content   String?
@@ -259,6 +322,7 @@ model Post {
   images    PostImage[]
   comments  PostComment[]
   likes     PostLike[]
+  bookmarks PostBookmark[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -289,11 +353,31 @@ model PostComment {
   authorId  String
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
+  parentId  String?
+  parent    PostComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   PostComment[] @relation("CommentReplies")
+
+  likes     PostCommentLike[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([postId])
   @@index([authorId])
+  @@index([parentId])
+}
+
+model PostCommentLike {
+  commentId String
+  comment   PostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([commentId, userId])
+  @@index([userId])
 }
 
 model PostLike {
@@ -307,4 +391,193 @@ model PostLike {
 
   @@id([postId, userId])
   @@index([userId])
+}
+
+model PostBookmark {
+  postId   String
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([postId, userId])
+  @@index([userId])
+}
+
+// ── 1v1 Battle System ──
+
+model Battle {
+  id              String       @id @default(cuid())
+
+  challengerId    String
+  challenger      User         @relation("BattlesAsChallenger", fields: [challengerId], references: [id], onDelete: Cascade)
+
+  challengedId    String
+  challenged      User         @relation("BattlesAsChallenged", fields: [challengedId], references: [id], onDelete: Cascade)
+
+  // Each user picks their own milestone to battle over
+  challengerMilestoneId String?
+  challengerMilestone   Milestone? @relation("BattleChallengerMilestone", fields: [challengerMilestoneId], references: [id], onDelete: SetNull)
+
+  challengedMilestoneId String?
+  challengedMilestone   Milestone? @relation("BattleChallengedMilestone", fields: [challengedMilestoneId], references: [id], onDelete: SetNull)
+
+  goalDescription String       // Shared goal both users agree on
+
+  status          BattleStatus @default(PENDING)
+
+  startDate       DateTime?    // Set when status -> ACTIVE
+  endDate         DateTime?    // startDate + 7 days
+
+  challengerXP    Int          @default(0)
+  challengedXP    Int          @default(0)
+
+  winnerId        String?      // Set on resolution (null = tie)
+  winner          User?        @relation("BattleWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+
+  dailyQuests     BattleDailyQuest[]
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([challengerId])
+  @@index([challengedId])
+  @@index([status])
+  @@index([endDate])
+  @@index([challengerId, challengedId])
+}
+
+model BattleDailyQuest {
+  id              String             @id @default(cuid())
+
+  battleId        String
+  battle          Battle             @relation(fields: [battleId], references: [id], onDelete: Cascade)
+
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  day             Int                // 1-7
+  description     String             // What the user must do today
+
+  proofText       String?            // Explanation of what was done
+  proofImageUrl   String?            // Optional image proof
+
+  verification    VerificationStatus @default(PENDING)
+  xpAwarded       Int                @default(0)
+
+  submittedAt     DateTime?
+  verifiedAt      DateTime?
+  verifiedById    String?            // The opponent who verified
+
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@unique([battleId, userId, day])  // One quest per user per day per battle
+  @@index([battleId])
+  @@index([userId])
+  @@index([battleId, userId])
+  @@index([verification])
+}
+
+// ── Contact Messages ──
+// Stores messages from the /contact page form.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// ── Story System ──
+// Stories auto-expire after 24 hours.
+model Story {
+  id              String   @id @default(cuid())
+
+  // Content
+  mediaUrl        String?          // Cloudinary URL (image or video)
+  mediaType       String   @default("image") // image | video | text
+  caption         String?
+
+  // Text-only story styling
+  backgroundColor String?          // hex color for background
+  textColor       String?          // hex color for text
+
+  // Privacy
+  audience        String   @default("everyone") // everyone | close_friends
+
+  // Expiration (createdAt + 24 h)
+  expiresAt       DateTime
+
+  creatorId       String
+  creator         User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  views           StoryView[]
+  likes           StoryLike[]
+
+  createdAt       DateTime @default(now())
+
+  @@index([creatorId])
+  @@index([expiresAt])
+  @@index([creatorId, expiresAt])
+}
+
+model StoryView {
+  storyId  String
+  story    Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  viewerId String
+  viewer   User   @relation("StoryViews", fields: [viewerId], references: [id], onDelete: Cascade)
+
+  viewedAt DateTime @default(now())
+
+  @@id([storyId, viewerId])
+  @@index([viewerId])
+}
+
+model StoryLike {
+  storyId String
+  story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  userId  String
+  user    User   @relation("StoryLikes", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([storyId, userId])
+  @@index([userId])
+}
+
+// ── AI Chat Sessions ──
+model AiChatSession {
+  id        String   @id @default(cuid())
+  title     String   @default("New Chat")
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  messages  AiChatMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, updatedAt(sort: Desc)])
+}
+
+model AiChatMessage {
+  id        String   @id @default(cuid())
+  role      String   // "user" | "ai" | "system"
+  content   String
+  metadata  String?  // JSON string for proposal data etc.
+
+  sessionId String
+  session   AiChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([sessionId, createdAt])
 }

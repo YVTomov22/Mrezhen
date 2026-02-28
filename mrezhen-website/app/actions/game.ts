@@ -4,35 +4,88 @@ import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { Difficulty } from "@/lib/generated/prisma/enums"
+import { resolveQuestDeadline } from "@/lib/deadline"
 
-// --- MILESTONES ---
-export async function createMilestone(title: string, description: string) {
+// Milestones
+export async function createMilestone(title: string, description: string, category?: string, dueDate?: Date | null) {
   const session = await auth()
   if (!session?.user?.email) return { error: "Unauthorized" }
   const milestone = await prisma.milestone.create({
-    data: { title, description, user: { connect: { email: session.user.email } } }
+    data: {
+      title,
+      description,
+      category: category?.toLowerCase().trim() || null,
+      dueDate: dueDate ?? null,
+      user: { connect: { email: session.user.email } },
+    }
   })
   revalidatePath("/dashboard")
+  revalidatePath("/goals")
   return { success: true, data: milestone }
 }
 
-export async function updateMilestone(id: string, title: string, description: string) {
-  await prisma.milestone.update({ where: { id }, data: { title, description } })
+export async function updateMilestone(id: string, title: string, description: string, category?: string, dueDate?: Date | null) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+  const milestone = await prisma.milestone.findUnique({ where: { id }, select: { userId: true, user: { select: { email: true } } } })
+  if (!milestone || milestone.user.email !== session.user.email) return { error: "Not found" }
+  await prisma.milestone.update({
+    where: { id },
+    data: { title, description, category: category?.toLowerCase().trim() || null, dueDate: dueDate ?? null },
+  })
   revalidatePath("/dashboard")
+  revalidatePath("/goals")
+}
+
+/** Filter milestones by category (case-insensitive). */
+export async function getFilteredMilestones(categories?: string[]) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized", data: [] }
+
+  const where: Record<string, unknown> = {
+    user: { email: session.user.email },
+  }
+
+  if (categories && categories.length > 0) {
+    const cleaned = categories.map(c => c.toLowerCase().trim()).filter(Boolean)
+    if (cleaned.length === 1) {
+      where.category = { equals: cleaned[0], mode: "insensitive" }
+    } else if (cleaned.length > 1) {
+      where.category = { in: cleaned, mode: "insensitive" }
+    }
+  }
+
+  const milestones = await prisma.milestone.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    include: {
+      quests: {
+        orderBy: { createdAt: "desc" },
+        include: { tasks: { orderBy: { createdAt: "asc" } } },
+      },
+    },
+  })
+
+  return { data: milestones }
 }
 
 export async function deleteMilestone(id: string) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+  const milestone = await prisma.milestone.findUnique({ where: { id }, select: { user: { select: { email: true } } } })
+  if (!milestone || milestone.user.email !== session.user.email) return { error: "Not found" }
   await prisma.milestone.delete({ where: { id } })
   revalidatePath("/dashboard")
 }
 
-// --- QUESTS ---
+// Quests
 export async function createQuest(
   milestoneId: string, 
   title: string, 
   description: string,
   difficulty: Difficulty, 
-  tasks: string[] = []
+  tasks: string[] = [],
+  deadline?: Date | null,
 ) {
   const session = await auth()
   if (!session?.user?.email) return { error: "Unauthorized" }
@@ -42,13 +95,27 @@ export async function createQuest(
   if (difficulty === 'HARD') completionPoints = 100
   if (difficulty === 'EPIC') completionPoints = 500
 
+  // Fetch milestone dueDate for deadline resolution
+  const milestone = await prisma.milestone.findUnique({
+    where: { id: milestoneId },
+    select: { dueDate: true },
+  })
+
+  const createdAt = new Date()
+  const resolvedDeadline = resolveQuestDeadline({
+    explicit: deadline,
+    milestoneDueDate: milestone?.dueDate ?? null,
+    createdAt,
+  })
+
   const quest = await prisma.quest.create({
     data: {
       title,
-      description, // <--- ADDED
+      description,
       difficulty,
       completionPoints,
       status: "IN_PROGRESS",
+      deadline: resolvedDeadline,
       milestone: { connect: { id: milestoneId } },
       user: { connect: { email: session.user.email } },
       tasks: {
@@ -63,23 +130,35 @@ export async function createQuest(
 export async function updateQuest(
   id: string, 
   title: string, 
-  description: string, // <--- ADDED
+  description: string,
   difficulty: Difficulty
 ) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+  const quest = await prisma.quest.findUnique({ where: { id }, select: { user: { select: { email: true } } } })
+  if (!quest || quest.user.email !== session.user.email) return { error: "Not found" }
   await prisma.quest.update({ 
     where: { id }, 
-    data: { title, description, difficulty } // <--- ADDED description
+    data: { title, description, difficulty }
   })
   revalidatePath("/dashboard")
 }
 
 export async function deleteQuest(id: string) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+  const quest = await prisma.quest.findUnique({ where: { id }, select: { user: { select: { email: true } } } })
+  if (!quest || quest.user.email !== session.user.email) return { error: "Not found" }
   await prisma.quest.delete({ where: { id } })
   revalidatePath("/dashboard")
 }
 
-// --- TASKS ---
+// Tasks
 export async function createTask(questId: string, content: string) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+  const quest = await prisma.quest.findUnique({ where: { id: questId }, select: { user: { select: { email: true } } } })
+  if (!quest || quest.user.email !== session.user.email) return { error: "Not found" }
   await prisma.task.create({
     data: { content, points: 10, quest: { connect: { id: questId } } }
   })
@@ -87,16 +166,28 @@ export async function createTask(questId: string, content: string) {
 }
 
 export async function updateTask(id: string, content: string) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+  const task = await prisma.task.findUnique({ where: { id }, select: { quest: { select: { user: { select: { email: true } } } } } })
+  if (!task || task.quest.user.email !== session.user.email) return { error: "Not found" }
   await prisma.task.update({ where: { id }, data: { content } })
   revalidatePath("/dashboard")
 }
 
 export async function deleteTask(id: string) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+  const task = await prisma.task.findUnique({ where: { id }, select: { quest: { select: { user: { select: { email: true } } } } } })
+  if (!task || task.quest.user.email !== session.user.email) return { error: "Not found" }
   await prisma.task.delete({ where: { id } })
   revalidatePath("/dashboard")
 }
 
 export async function toggleTask(taskId: string, isCompleted: boolean) {
+  const session = await auth()
+  if (!session?.user?.email) return { error: "Unauthorized" }
+  const task = await prisma.task.findUnique({ where: { id: taskId }, select: { quest: { select: { user: { select: { email: true } } } } } })
+  if (!task || task.quest.user.email !== session.user.email) return { error: "Not found" }
   await prisma.task.update({ where: { id: taskId }, data: { isCompleted } })
   revalidatePath("/dashboard")
 }
@@ -107,23 +198,24 @@ export async function completeTaskAndAwardXP(taskId: string) {
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
-    include: { quest: true } // Include quest to check permissions if needed
+    include: { quest: { include: { user: { select: { email: true } } } } }
   })
 
   if (!task) return { error: "Task not found" }
+  if (task.quest.user.email !== session.user.email) return { error: "Not found" }
   if (task.isCompleted) return { success: true, message: "Already completed" }
 
-  const pointsToAward = task.points || 10 // Default to 10 if null
+  const pointsToAward = task.points || 10
 
   try {
     await prisma.$transaction(async (tx) => {
-      // 1. Mark task as completed
+      // Mark task as completed
       await tx.task.update({
         where: { id: taskId },
         data: { isCompleted: true }
       })
 
-      // 2. Update User Score immediately
+      // Update user score
       const user = await tx.user.findUnique({
         where: { email: session.user!.email! }
       })
@@ -162,17 +254,17 @@ export async function completeQuest(questId: string) {
 
   const quest = await prisma.quest.findUnique({
     where: { id: questId },
-    include: { tasks: true }
+    include: { tasks: true, user: { select: { email: true } } }
   })
 
   if (!quest) return { error: "Quest not found" }
+  if (quest.user.email !== session.user.email) return { error: "Not found" }
   if (quest.status === "COMPLETED") return { error: "Already completed" }
 
   const allTasksDone = quest.tasks.every(t => t.isCompleted)
   if (!allTasksDone) return { error: "Complete all tasks first" }
 
-  // CHANGE: We now only award the 'completionPoints' (the bonus),
-  // because the task points were already awarded in completeTaskAndAwardXP
+  // Only award completionPoints bonus (task points already awarded)
   const totalPoints = quest.completionPoints 
 
   try {

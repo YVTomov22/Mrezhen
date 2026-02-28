@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useLayoutEffect } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { sendMessage, deleteMessage, editMessage } from "@/app/actions/chat"
 import { uploadImages } from "@/app/actions/upload"
+import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,11 +13,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { 
   Send, User, Loader2, X, Paperclip, 
-  MoreVertical, Pencil, Trash2, Check 
+  MoreVertical, Pencil, Trash2, Check, Swords 
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
+import { ChallengeModal } from "@/components/battle/challenge-modal"
+import { BattleSidePanel } from "@/components/battle/battle-side-panel"
+import { BattleNotification } from "@/components/battle/battle-notification"
 
 // Types
 type ChatUser = {
@@ -61,6 +65,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
   const [zoomImage, setZoomImage] = useState<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState("")
+  const [challengeModalOpen, setChallengeModalOpen] = useState(false)
   
   const scrollViewportRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -69,7 +74,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
   const isUserSwitch = useRef(false)
   const isAtBottomRef = useRef(true)
 
-  // --- URL Query Param Logic ---
+  // URL query param logic
   useEffect(() => {
     const usernameParam = searchParams.get('username')
     
@@ -141,7 +146,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
     return () => clearInterval(interval)
   }, [selectedUser])
 
-  // --- Handlers ---
+  // Handlers
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -171,6 +176,11 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
         const formData = new FormData()
         selectedFiles.forEach(file => formData.append("file", file))
         const uploadRes = await uploadImages(formData)
+        if ('error' in uploadRes && uploadRes.error) {
+          toast.error(uploadRes.error)
+          setIsSending(false)
+          return
+        }
         if (uploadRes.urls) uploadedUrls = uploadRes.urls
       }
 
@@ -199,8 +209,17 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
   }
 
   const handleDelete = async (msgId: string) => {
+    const confirmation = window.prompt(t("confirmDeletePrompt"), "")
+    if (!confirmation) return
+
+    const previous = messages
     setMessages(prev => prev.filter(m => m.id !== msgId))
-    await deleteMessage(msgId)
+
+    const result = await deleteMessage(msgId, confirmation)
+    if (result?.error) {
+      setMessages(previous)
+      window.alert(result.error)
+    }
   }
 
   const startEditing = (msg: Message) => {
@@ -280,6 +299,14 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
                   </Avatar>
                   <span className="font-bold text-foreground">{selectedUser.name}</span>
               </div>
+
+              {/* Battle Notification (accept/decline incoming challenge) */}
+              {currentUserId && (
+                <BattleNotification
+                  otherUserId={selectedUser.id}
+                  currentUserId={currentUserId}
+                />
+              )}
 
               {/* Messages */}
               <div ref={scrollViewportRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-6 bg-muted/30 scroll-smooth">
@@ -366,6 +393,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
                 <div className="flex items-end gap-2 bg-muted p-2 rounded-xl border focus-within:ring-1 focus-within:ring-blue-500">
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" multiple onChange={handleFileSelect} />
                   <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()}><Paperclip className="h-5 w-5 text-muted-foreground" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => setChallengeModalOpen(true)} title="Battle"><Swords className="h-5 w-5 text-amber-500" /></Button>
                   <Input value={inputText} onChange={(e) => setInputText(e.target.value)} placeholder={t("typePlaceholder")} onKeyDown={(e) => e.key === "Enter" && !isSending && handleSend()} className="flex-1 border-0 bg-transparent focus-visible:ring-0" disabled={isSending} />
                   <Button onClick={handleSend} size="icon" className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg" disabled={isSending || (!inputText.trim() && selectedFiles.length === 0)}>
                     {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
@@ -380,7 +408,25 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
             </div>
           )}
         </div>
+
+        {/* Battle Side Panel */}
+        {selectedUser && currentUserId && (
+          <BattleSidePanel
+            otherUserId={selectedUser.id}
+            currentUserId={currentUserId}
+          />
+        )}
       </div>
+
+      {/* Challenge Modal */}
+      {selectedUser && (
+        <ChallengeModal
+          open={challengeModalOpen}
+          onOpenChange={setChallengeModalOpen}
+          opponentId={selectedUser.id}
+          opponentName={selectedUser.name || selectedUser.username || "User"}
+        />
+      )}
     </>
   )
 }

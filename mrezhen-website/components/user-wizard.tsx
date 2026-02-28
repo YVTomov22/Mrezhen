@@ -40,7 +40,6 @@ export function UserInfoWizard({ initialData }: { initialData?: any }) {
   const form = useForm<UserInfoValues>({
     resolver: zodResolver(userInfoSchema),
     defaultValues: {
-      // ADDED: Identity fields
       username: initialData?.username || "",
       name: initialData?.name || "",
       
@@ -189,7 +188,7 @@ function renderStepContent(step: number, form: any, t: any, tCommon: any) {
     case 0: // Demographics + Bio + Interests + Identity
       return (
         <div className="space-y-6">
-          {/* Identity Section - Crucial for new OAuth users */}
+          {/* Identity Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-muted rounded-lg border border-border">
             <FormField control={form.control} name="username" render={({ field }) => (
               <FormItem>
@@ -303,7 +302,6 @@ function renderStepContent(step: number, form: any, t: any, tCommon: any) {
         </div>
       )
 
-    // ... (Cases 1, 2, 3, 4 remain exactly the same as previous implementation)
     case 1: // Household
       return (
         <div className="space-y-6">
@@ -439,9 +437,9 @@ function renderStepContent(step: number, form: any, t: any, tCommon: any) {
             <FormItem className="pt-4 border-t">
               <FormLabel className="text-lg">{t("recentMood")}</FormLabel>
               <div className="flex items-center gap-4">
-                <span className="text-2xl">😊</span>
+                <span className="text-2xl" role="img" aria-label="happy">&#x1F60A;</span>
                 <Slider min={0} max={10} step={1} defaultValue={[field.value]} onValueChange={(val) => field.onChange(val[0])} className="flex-1" />
-                <span className="text-2xl">😔</span>
+                <span className="text-2xl" role="img" aria-label="sad">&#x1F614;</span>
               </div>
               <p className="text-center font-bold text-xl mt-2">{field.value}</p>
               <FormMessage />

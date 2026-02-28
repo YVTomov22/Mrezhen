@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { analyzeAgentAction } from '@/app/actions/ai-chat'; 
 import { RoadmapProposal } from '@/components/roadmap-proposal';
 import { useTranslations } from "next-intl";
+import { getAiChatMessages, saveAiChatMessage } from "@/app/actions/ai-chat-sessions";
 
 type ChatMessage = {
     sender: 'user' | 'ai' | 'system';
@@ -16,14 +17,16 @@ type ChatMessage = {
     proposalData?: any; 
 };
 
-export default function ChatUI({ userId }: { userId: string }) {
+export default function ChatUI({ userId, sessionId, onTitleUpdate }: { userId: string; sessionId: string | null; onTitleUpdate?: (sessionId: string, title: string) => void }) {
     const t = useTranslations("aiChat")
     const tCommon = useTranslations("common")
     const [message, setMessage] = useState<string>('');
     const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoadingHistory, setIsLoadingHistory] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const rawAiResponseRef = useRef<string>("");
+    const currentSessionRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -31,9 +34,39 @@ export default function ChatUI({ userId }: { userId: string }) {
         }
     }, [chatLog]);
 
+    // Load history when session changes
+    useEffect(() => {
+        if (!sessionId) {
+            setChatLog([]);
+            currentSessionRef.current = null;
+            return;
+        }
+        if (sessionId === currentSessionRef.current) return;
+        currentSessionRef.current = sessionId;
+        
+        let cancelled = false;
+        setIsLoadingHistory(true);
+        setChatLog([]);
+        
+        getAiChatMessages(sessionId).then((msgs) => {
+            if (cancelled) return;
+            const loaded: ChatMessage[] = msgs.map((m) => ({
+                sender: m.role as 'user' | 'ai' | 'system',
+                text: m.content,
+                proposalData: m.metadata ? (() => { try { return JSON.parse(m.metadata) } catch { return undefined } })() : undefined,
+            }));
+            setChatLog(loaded);
+            setIsLoadingHistory(false);
+        }).catch(() => {
+            if (!cancelled) setIsLoadingHistory(false);
+        });
+        
+        return () => { cancelled = true };
+    }, [sessionId]);
+
     const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!message.trim() || isLoading) return;
+        if (!message.trim() || isLoading || !sessionId) return;
 
         const userMessage: ChatMessage = { sender: 'user', text: message };
         const aiMessagePlaceholder: ChatMessage = { sender: 'ai', text: '', isStreaming: true };
@@ -43,6 +76,24 @@ export default function ChatUI({ userId }: { userId: string }) {
         setMessage('');
         setIsLoading(true);
         rawAiResponseRef.current = "";
+
+        // Save user message to DB
+        if (sessionId) {
+            saveAiChatMessage(sessionId, "user", currentInput).then((res) => {
+                // If title was auto-generated, notify parent to refresh sidebar
+                if (res && 'data' in res && onTitleUpdate) {
+                    // Fetch updated session title
+                    import("@/app/actions/ai-chat-sessions").then(({ getAiChatSessions }) => {
+                        getAiChatSessions().then((sessions) => {
+                            const updated = sessions.find((s) => s.id === sessionId);
+                            if (updated && updated.title !== "New Chat") {
+                                onTitleUpdate(sessionId, updated.title);
+                            }
+                        });
+                    });
+                }
+            }).catch(() => {});
+        }
 
         try {
             const streamIterator = await analyzeAgentAction(userId, currentInput);
@@ -60,6 +111,13 @@ export default function ChatUI({ userId }: { userId: string }) {
                                 const newLog = [...prev];
                                 const lastMsg = newLog[newLog.length - 1];
                                 if (lastMsg) lastMsg.isStreaming = false;
+                                
+                                // Save final AI message to DB
+                                if (sessionId && lastMsg?.text) {
+                                    const metadata = lastMsg.proposalData ? JSON.stringify(lastMsg.proposalData) : undefined;
+                                    saveAiChatMessage(sessionId, "ai", lastMsg.text, metadata).catch(() => {});
+                                }
+                                
                                 return newLog;
                             });
                             break;
@@ -107,7 +165,7 @@ export default function ChatUI({ userId }: { userId: string }) {
             });
             setIsLoading(false);
         }
-    }, [message, isLoading, userId]);
+    }, [message, isLoading, userId, sessionId]);
 
     return (
         <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto border border-border rounded-xl bg-card shadow-sm overflow-hidden">
@@ -122,7 +180,20 @@ export default function ChatUI({ userId }: { userId: string }) {
             </div>
 
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 bg-muted/50">
-                {chatLog.length === 0 && (
+                {!sessionId && (
+                    <div className="h-full flex flex-col items-center justify-center text-center p-8 text-muted-foreground">
+                        <Bot className="w-12 h-12 mb-4 opacity-20" />
+                        <p>{t("selectOrCreate")}</p>
+                    </div>
+                )}
+
+                {sessionId && isLoadingHistory && (
+                    <div className="h-full flex items-center justify-center">
+                        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                    </div>
+                )}
+
+                {sessionId && !isLoadingHistory && chatLog.length === 0 && (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 text-muted-foreground">
                         <Bot className="w-12 h-12 mb-4 opacity-20" />
                         <p>{t("emptyState")}</p>
@@ -147,7 +218,6 @@ export default function ChatUI({ userId }: { userId: string }) {
                                 msg.sender === 'system' ? "bg-red-50 text-red-800 border border-red-100" :
                                 "bg-card border border-border text-foreground rounded-tl-none"
                             )}>
-                                {/* --- CHANGED SECTION START --- */}
                                 <div className="leading-relaxed">
                                     <ReactMarkdown
                                         components={{
@@ -162,7 +232,6 @@ export default function ChatUI({ userId }: { userId: string }) {
                                         {msg.text}
                                     </ReactMarkdown>
                                 </div>
-                                {/* --- CHANGED SECTION END --- */}
 
                                 {msg.isStreaming && (
                                     <div className="mt-2 flex items-center gap-1 text-muted-foreground">
@@ -196,7 +265,7 @@ export default function ChatUI({ userId }: { userId: string }) {
                     <button 
                         type="submit" 
                         className="px-4 py-2 bg-foreground text-background rounded-lg hover:bg-foreground/90 disabled:opacity-50 transition-colors flex items-center gap-2"
-                        disabled={isLoading || !message.trim()}
+                        disabled={isLoading || !message.trim() || !sessionId}
                     >
                         {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                         <span className="hidden sm:inline">{tCommon("send")}</span>

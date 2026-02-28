@@ -7,6 +7,7 @@ import {
   createQuest, updateQuest, deleteQuest,
   createTask, updateTask, deleteTask
 } from "@/app/actions/game"
+import { GOAL_CATEGORIES } from "@/lib/constants"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,10 +23,10 @@ import {
 import { TaskVerifier } from "@/components/game/task-verifier"
 import { useTranslations } from "next-intl"
 
-// --- TYPES ---
+// Types
 type Task = { id: string; content: string; isCompleted: boolean } 
 type Quest = { id: string; title: string; description: string | null; difficulty: string; tasks: Task[] }
-type Milestone = { id: string; title: string; description: string | null; quests: Quest[] }
+type Milestone = { id: string; title: string; description: string | null; category: string | null; quests: Quest[] }
 
 interface GoalManagerProps {
   milestones: Milestone[]
@@ -110,7 +111,7 @@ export function GoalManager({ milestones, children }: { milestones: Milestone[],
             </Button>
         )}
       </DialogTrigger>
-      {/* Increased max-width to 600px to accommodate the AI Verifier button better */}
+      {/* Wider for AI Verifier button */}
       <DialogContent className="sm:max-w-[600px]">
         {renderContent()}
       </DialogContent>
@@ -118,7 +119,7 @@ export function GoalManager({ milestones, children }: { milestones: Milestone[],
   )
 }
 
-// ================= SUB-COMPONENTS =================
+// Sub-components
 
 function ChoiceView({ onSelectManual }: { onSelectManual: () => void }) {
   const t = useTranslations("goals")
@@ -129,13 +130,13 @@ function ChoiceView({ onSelectManual }: { onSelectManual: () => void }) {
         <DialogTitle className="text-center text-xl">{t("goalManagement")}</DialogTitle>
       </DialogHeader>
       <div className="grid grid-cols-2 gap-4">
-        <button onClick={onSelectManual} className="flex flex-col items-center justify-center p-6 border-2 border-border rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group">
-          <div className="p-3 bg-muted rounded-full mb-3 group-hover:bg-blue-200 transition-colors"><PenTool className="w-6 h-6 text-muted-foreground group-hover:text-blue-700" /></div>
+        <button onClick={onSelectManual} className="flex flex-col items-center justify-center p-6 border border-border hover:border-foreground hover:bg-muted transition-all group">
+          <div className="p-3 bg-muted mb-3 group-hover:bg-foreground group-hover:text-background transition-colors"><PenTool className="w-6 h-6" /></div>
           <span className="font-bold text-foreground">{t("manual")}</span>
           <span className="text-xs text-muted-foreground text-center mt-1">{t("fullControl")}</span>
         </button>
-        <button onClick={() => router.push('/ai-chat')} className="flex flex-col items-center justify-center p-6 border-2 border-border rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all group">
-          <div className="p-3 bg-muted rounded-full mb-3 group-hover:bg-purple-200 transition-colors"><Sparkles className="w-6 h-6 text-muted-foreground group-hover:text-purple-700" /></div>
+        <button onClick={() => router.push('/ai-chat')} className="flex flex-col items-center justify-center p-6 border border-border hover:border-foreground hover:bg-muted transition-all group">
+          <div className="p-3 bg-muted mb-3 group-hover:bg-foreground group-hover:text-background transition-colors"><Sparkles className="w-6 h-6" /></div>
           <span className="font-bold text-foreground">{t("aiAssistant")}</span>
           <span className="text-xs text-muted-foreground text-center mt-1">{t("autoGenerate")}</span>
         </button>
@@ -144,7 +145,7 @@ function ChoiceView({ onSelectManual }: { onSelectManual: () => void }) {
   )
 }
 
-// --- MILESTONE COMPONENTS ---
+// Milestone components
 
 interface MilestoneListProps {
   milestones: Milestone[]
@@ -227,8 +228,11 @@ function MilestoneForm({ editData, onCancel }: { editData?: Milestone, onCancel:
    
   const action = (formData: FormData) => {
     startTransition(async () => {
-      if (editData) await updateMilestone(editData.id, formData.get('title') as string, formData.get('description') as string)
-      else await createMilestone(formData.get('title') as string, formData.get('description') as string)
+      const title = formData.get('title') as string
+      const description = formData.get('description') as string
+      const category = (formData.get('category') as string) || undefined
+      if (editData) await updateMilestone(editData.id, title, description, category)
+      else await createMilestone(title, description, category)
       onCancel()
     })
   }
@@ -238,6 +242,19 @@ function MilestoneForm({ editData, onCancel }: { editData?: Milestone, onCancel:
       <DialogHeader><DialogTitle>{editData ? t('editMilestone') : t('createMilestone')}</DialogTitle></DialogHeader>
       <div className="space-y-2"><Label>{tCommon("title")}</Label><Input name="title" defaultValue={editData?.title} required /></div>
       <div className="space-y-2"><Label>{tCommon("description")}</Label><Textarea name="description" defaultValue={editData?.description || ""} /></div>
+      <div className="space-y-2">
+        <Label>{t("category")}</Label>
+        <Select name="category" defaultValue={editData?.category || undefined}>
+          <SelectTrigger><SelectValue placeholder={t("selectCategory")} /></SelectTrigger>
+          <SelectContent>
+            {GOAL_CATEGORIES.map(cat => (
+              <SelectItem key={cat} value={cat}>
+                {t(`categories.${cat}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <div className="flex justify-between pt-2">
         <Button variant="ghost" type="button" onClick={onCancel}>{tCommon("cancel")}</Button>
         <Button type="submit" disabled={isPending}>{isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : tCommon('save')}</Button>
@@ -246,7 +263,7 @@ function MilestoneForm({ editData, onCancel }: { editData?: Milestone, onCancel:
   )
 }
 
-// --- QUEST COMPONENTS ---
+// Quest components
 
 interface QuestListProps {
   quests: Quest[]
@@ -352,7 +369,7 @@ function QuestForm({ milestoneId, editData, onCancel }: { milestoneId: string, e
   )
 }
 
-// --- TASK COMPONENTS ---
+// Task components
 
 interface TaskListProps {
   tasks: Task[]

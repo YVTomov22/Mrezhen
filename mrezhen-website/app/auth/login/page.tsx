@@ -22,7 +22,7 @@ export default function LoginPage() {
       {/* Subtle Grid Background */}
       <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:6rem_4rem]"></div>
 
-      <Card className="w-full max-w-md shadow-2xl border-border bg-card/80 backdrop-blur-xl">
+      <Card className="w-full max-w-md border-border bg-card">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-3xl font-extrabold tracking-tight">{t("welcomeBack")}</CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -51,7 +51,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">{t("password")}</Label>
-                <Link href="#" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+                <Link href="/auth/forgot-password" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
                   {t("forgotPassword")}
                 </Link>
               </div>

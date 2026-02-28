@@ -26,7 +26,6 @@ import {
 } from "@/app/actions/appearance"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -67,19 +66,36 @@ import {
   Accessibility,
   Type,
   Palette,
+  Newspaper,
+  Bookmark,
+  LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
+import { signOut } from "next-auth/react"
 
-/* ── Sidebar menu items ────────────────────────────────────── */
-type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "verification" | "accounttype" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility"
+/* Sidebar menu items */
+type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "logout" | "verification" | "accounttype" | "region" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility" | "myposts" | "likedposts" | "savedposts"
 
-/* ── Root component ────────────────────────────────────────── */
+/* Root component */
 
 export function SettingsView({ user }: { user: any }) {
   const [active, setActive] = useState<SectionId>("username")
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
+
+  // Ref to the scrollable right panel — used for manual scrolling so
+  // we never call window-level scrollIntoView which scrolls the page.
+  const scrollPaneRef = useRef<HTMLElement>(null)
+
+  // Prevent the window from ever scrolling while on the settings page.
+  // Without this, a broken height chain (e.g. margin instead of gap)
+  // or a browser auto-scroll-to-focus event would scroll the page body.
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => { document.body.style.overflow = prev }
+  }, [])
 
   const sections = [
     {
@@ -95,6 +111,7 @@ export function SettingsView({ user }: { user: any }) {
         { id: "password" as SectionId,    label: t("menuChangePassword"),    icon: Lock },
         { id: "deactivate" as SectionId,  label: t("menuDeactivateAccount"), icon: PowerOff },
         { id: "delete" as SectionId,      label: t("menuDeleteAccount"),     icon: Trash2 },
+        { id: "logout" as SectionId,      label: "Log Out",                  icon: LogOut },
       ],
     },
     {
@@ -103,6 +120,7 @@ export function SettingsView({ user }: { user: any }) {
       items: [
         { id: "verification" as SectionId, label: t("menuVerificationStatus"), icon: ShieldCheck },
         { id: "accounttype" as SectionId,  label: t("menuAccountType"),        icon: Briefcase },
+        { id: "region" as SectionId,       label: t("menuRegion") ?? "Region",  icon: Globe },
       ],
     },
     {
@@ -136,68 +154,116 @@ export function SettingsView({ user }: { user: any }) {
         { id: "interests" as SectionId,    label: t("menuInterests"),       icon: Heart },
       ],
     },
+    {
+      group: t("groupPosts"),
+      description: t("groupPostsDesc"),
+      items: [
+        { id: "myposts" as SectionId,    label: t("menuMyPosts"),    icon: Newspaper },
+        { id: "likedposts" as SectionId, label: t("menuLikedPosts"), icon: Heart },
+        { id: "savedposts" as SectionId, label: t("menuSavedPosts"), icon: Bookmark },
+      ],
+    },
   ]
 
-  return (
-    <div className="flex flex-col md:flex-row gap-6">
-      {/* ---- Sidebar ---- */}
-      <aside className="w-full md:w-64 shrink-0 space-y-6">
-        {/* Header card */}
-        <div className="flex items-center gap-4 p-4 bg-card rounded-xl border shadow-sm">
-          <AvatarUpload user={user} size="sm" />
-          <div className="min-w-0">
-            <h2 className="font-bold truncate">{user.name}</h2>
-            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-            <div className="flex gap-1.5 mt-1.5">
-              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full">{tCommon("level")} {user.level}</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded-full">{user.score} {tCommon("xp")}</span>
-            </div>
-          </div>
-        </div>
+  const [activeCategory, setActiveCategory] = useState<number>(0)
 
-        {/* Nav groups */}
-        {sections.map((section) => (
-          <div key={section.group}>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 px-1">{section.group}</p>
-            <nav className="flex flex-col gap-0.5">
-              {section.items.map((item) => {
-                const Icon = item.icon
-                const isActive = active === item.id
-                const isDanger = item.id === "delete" || item.id === "deactivate"
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActive(item.id)}
-                    className={cn(
-                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
-                      isActive
-                        ? isDanger
-                          ? "bg-red-50 text-red-700"
-                          : "bg-foreground text-background"
-                        : isDanger
-                        ? "text-red-500 hover:bg-red-50"
-                        : "text-muted-foreground hover:bg-accent"
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {item.label}
-                  </button>
-                )
-              })}
-            </nav>
-          </div>
-        ))}
+  const categoryIcons = [AtSign, ShieldCheck, Eye, Palette, User, Newspaper]
+
+  return (
+    <div className="flex gap-2 flex-1 min-h-0">
+      {/* Category nav */}
+      <aside className="flex flex-col gap-1 w-52 shrink-0">
+        {sections.map((section, idx) => {
+          const CatIcon = categoryIcons[idx]
+          const isActive = activeCategory === idx
+          return (
+            <button
+              key={section.group}
+              onClick={() => { setActiveCategory(idx); setActive(section.items[0].id) }}
+              className={cn(
+                "group flex items-center gap-3 px-3 py-2.5 rounded-full border text-left transition-all duration-150 relative overflow-hidden",
+                isActive
+                  ? "bg-primary/10 text-primary border-transparent dark:bg-white/5 dark:text-white"
+                  : "bg-transparent border-transparent hover:bg-accent text-foreground"
+              )}
+            >
+              {isActive && (
+                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary dark:bg-[#00A3FF]" />
+              )}
+              <span className={cn(
+                "flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors duration-150",
+                isActive ? "bg-primary/20 dark:bg-white/10" : "bg-muted"
+              )}>
+                <CatIcon className="h-3.5 w-3.5" />
+              </span>
+              <span className="flex flex-col min-w-0">
+                <span className="text-xs font-semibold leading-tight truncate">{section.group}</span>
+                <span className={cn(
+                  "text-[10px] leading-tight truncate mt-0.5 transition-colors",
+                  isActive ? "text-primary/70 dark:text-white/60" : "text-muted-foreground"
+                )}>
+                  {section.description}
+                </span>
+              </span>
+            </button>
+          )
+        })}
       </aside>
 
-      {/* ---- Content ---- */}
-      <main className="flex-1 min-w-0">
-        <SectionPanel id={active} user={user} />
+      {/* Sub-nav */}
+      <aside className="flex flex-col gap-0.5 w-44 shrink-0 border-l border-border pl-2">
+        {sections[activeCategory].items.map((item) => {
+          const Icon = item.icon
+          const isActive = active === item.id
+          const isDanger = item.id === "delete" || item.id === "deactivate" || item.id === "logout"
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                setActive(item.id)
+                // Scroll within the right panel only — never the window.
+                // scrollIntoView() without a contained scroll ancestor targets
+                // the window, which moves the entire page.
+                const pane = scrollPaneRef.current
+                const target = document.getElementById(`section-${item.id}`)
+                if (pane && target) {
+                  pane.scrollTo({ top: target.offsetTop - pane.offsetTop, behavior: 'smooth' })
+                }
+              }}
+              className={cn(
+                "flex items-center gap-2.5 px-3 py-2 rounded-full text-sm font-medium transition-colors text-left relative overflow-hidden",
+                isActive
+                  ? isDanger
+                    ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400"
+                    : "bg-primary/10 text-primary dark:bg-white/5 dark:text-white"
+                  : isDanger
+                  ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              {isActive && !isDanger && (
+                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary dark:bg-[#00A3FF]" />
+              )}
+              <Icon className="h-4 w-4 shrink-0" />
+              <span className="truncate">{item.label}</span>
+            </button>
+          )
+        })}
+      </aside>
+
+      {/* Panels */}
+      <main ref={scrollPaneRef} className="flex-1 min-w-0 border-l border-border pl-6 overflow-y-auto pr-1 no-scrollbar divide-y divide-border/40">
+        {sections[activeCategory].items.map((item) => (
+          <div key={item.id} id={`section-${item.id}`} className="scroll-mt-4 py-8 first:pt-0 last:pb-0">
+            <SectionPanel id={item.id} user={user} />
+          </div>
+        ))}
       </main>
     </div>
   )
 }
 
-/* ── Panel Router ──────────────────────────────────────────── */
+/* Panel Router */
 
 function SectionPanel({ id, user }: { id: SectionId; user: any }) {
   switch (id) {
@@ -219,10 +285,14 @@ function SectionPanel({ id, user }: { id: SectionId; user: any }) {
       return <DeactivateSection />
     case "delete":
       return <DeleteSection />
+    case "logout":
+      return <LogoutSection />
     case "verification":
       return <VerificationSection user={user} />
     case "accounttype":
       return <AccountTypeSection user={user} />
+    case "region":
+      return <RegionSection user={user} />
     case "demographics":
       return <DemographicsSection user={user} />
     case "household":
@@ -249,16 +319,20 @@ function SectionPanel({ id, user }: { id: SectionId; user: any }) {
       return <DataSaverSection user={user} />
     case "accessibility":
       return <AccessibilitySection user={user} />
+    case "myposts":
+      return <MyPostsSection user={user} />
+    case "likedposts":
+      return <LikedPostsSection user={user} />
+    case "savedposts":
+      return <SavedPostsSection user={user} />
     default:
       return null
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ACCOUNT SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* ACCOUNT SECTIONS */
 
-/* ── Username ──────────────────────────────────────────────── */
+/* Username */
 function UsernameSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -271,9 +345,9 @@ function UsernameSection({ user }: { user: any }) {
     <SettingsCard title={t("usernameTitle")} description={t("usernameDescription")}>
       <form action={action}>
         <div className="flex gap-4 items-end">
-          <div className="grid w-full gap-2">
-            <Label htmlFor="name">{t("usernameLabel")}</Label>
-            <Input id="name" name="name" defaultValue={user.name || ""} placeholder={t("usernamePlaceholder")} />
+          <div className="grid w-full gap-3">
+            <Label htmlFor="name" className="text-muted-foreground">{t("usernameLabel")}</Label>
+            <Input id="name" name="name" defaultValue={user.name || ""} placeholder={t("usernamePlaceholder")} className="settings-input" />
           </div>
           <SubmitBtn />
         </div>
@@ -283,7 +357,7 @@ function UsernameSection({ user }: { user: any }) {
   )
 }
 
-/* ── Display Name ──────────────────────────────────────────── */
+/* Display Name */
 function DisplayNameSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -296,9 +370,9 @@ function DisplayNameSection({ user }: { user: any }) {
     <SettingsCard title={t("displayNameTitle")} description={t("displayNameDescription")}>
       <form action={action}>
         <div className="flex gap-4 items-end">
-          <div className="grid w-full gap-2">
-            <Label htmlFor="displayName">{t("displayNameLabel")}</Label>
-            <Input id="displayName" name="name" defaultValue={user.name || ""} placeholder={t("displayNamePlaceholder")} />
+          <div className="grid w-full gap-3">
+            <Label htmlFor="displayName" className="text-muted-foreground">{t("displayNameLabel")}</Label>
+            <Input id="displayName" name="name" defaultValue={user.name || ""} placeholder={t("displayNamePlaceholder")} className="settings-input" />
           </div>
           <SubmitBtn />
         </div>
@@ -308,7 +382,7 @@ function DisplayNameSection({ user }: { user: any }) {
   )
 }
 
-/* ── Bio ───────────────────────────────────────────────────── */
+/* Bio */
 function BioSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -320,7 +394,7 @@ function BioSection({ user }: { user: any }) {
   return (
     <SettingsCard title={t("bioTitle")} description={t("bioDescription")}>
       <form action={action} className="space-y-4">
-        <Textarea name="bio" placeholder={t("bioPlaceholder")} defaultValue={user.bio || ""} className="resize-none h-28" />
+        <Textarea name="bio" placeholder={t("bioPlaceholder")} defaultValue={user.bio || ""} className="settings-input resize-none h-28" />
         {/* hidden fields so updateDetails doesn't clear other values */}
         <input type="hidden" name="interests" defaultValue={user.interests?.join(", ") || ""} />
         <HiddenDetailsFields user={user} />
@@ -333,7 +407,7 @@ function BioSection({ user }: { user: any }) {
   )
 }
 
-/* ── Profile Photo ─────────────────────────────────────────── */
+/* Profile Photo */
 function PhotoSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
@@ -349,7 +423,7 @@ function PhotoSection({ user }: { user: any }) {
   )
 }
 
-/* ── Email ─────────────────────────────────────────────────── */
+/* Email */
 function EmailSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -361,9 +435,9 @@ function EmailSection({ user }: { user: any }) {
     <SettingsCard title={t("emailTitle")} description={t("emailDescription")}>
       <form action={action}>
         <div className="flex gap-4 items-end">
-          <div className="grid w-full gap-2">
-            <Label htmlFor="email">{t("emailLabel")}</Label>
-            <Input id="email" name="email" type="email" defaultValue={user.email || ""} />
+          <div className="grid w-full gap-3">
+            <Label htmlFor="email" className="text-muted-foreground">{t("emailLabel")}</Label>
+            <Input id="email" name="email" type="email" defaultValue={user.email || ""} className="settings-input" />
           </div>
           <SubmitBtn />
         </div>
@@ -373,7 +447,7 @@ function EmailSection({ user }: { user: any }) {
   )
 }
 
-/* ── Phone Number ──────────────────────────────────────────── */
+/* Phone Number */
 function PhoneSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -385,9 +459,9 @@ function PhoneSection({ user }: { user: any }) {
     <SettingsCard title={t("phoneTitle")} description={t("phoneDescription")}>
       <form action={action}>
         <div className="flex gap-4 items-end">
-          <div className="grid w-full gap-2">
-            <Label htmlFor="phone">{t("phoneLabel")}</Label>
-            <Input id="phone" name="phone" type="tel" placeholder={t("phonePlaceholder")} defaultValue={user.phone || ""} />
+          <div className="grid w-full gap-3">
+            <Label htmlFor="phone" className="text-muted-foreground">{t("phoneLabel")}</Label>
+            <Input id="phone" name="phone" type="tel" placeholder={t("phonePlaceholder")} defaultValue={user.phone || ""} className="settings-input" />
           </div>
           <SubmitBtn />
         </div>
@@ -397,7 +471,7 @@ function PhoneSection({ user }: { user: any }) {
   )
 }
 
-/* ── Change Password ───────────────────────────────────────── */
+/* Change Password */
 function PasswordSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -427,13 +501,13 @@ function PasswordSection({ user }: { user: any }) {
   return (
     <SettingsCard title={t("passwordTitle")} description={t("passwordDescription")}>
       <form ref={ref} action={action} className="space-y-4">
-        <div className="grid gap-2">
-          <Label htmlFor="current">{t("currentPassword")}</Label>
-          <Input id="current" name="currentPassword" type="password" required />
+        <div className="grid gap-3">
+          <Label htmlFor="current" className="text-muted-foreground">{t("currentPassword")}</Label>
+          <Input id="current" name="currentPassword" type="password" required className="settings-input" />
         </div>
-        <div className="grid gap-2">
-          <Label htmlFor="new">{t("newPassword")}</Label>
-          <Input id="new" name="password" type="password" required />
+        <div className="grid gap-3">
+          <Label htmlFor="new" className="text-muted-foreground">{t("newPassword")}</Label>
+          <Input id="new" name="password" type="password" required className="settings-input" />
         </div>
         <div className="flex justify-between items-center pt-2">
           <Feedback msg={msg} />
@@ -444,7 +518,7 @@ function PasswordSection({ user }: { user: any }) {
   )
 }
 
-/* ── Deactivate Account ────────────────────────────────────── */
+/* Deactivate Account */
 function DeactivateSection() {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -474,7 +548,7 @@ function DeactivateSection() {
   )
 }
 
-/* ── Delete Account ────────────────────────────────────────── */
+/* Delete Account */
 function DeleteSection() {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -491,11 +565,11 @@ function DeleteSection() {
           {t("deleteWarning")}
         </p>
         <form action={action} className="space-y-3">
-          <div className="grid gap-2">
+          <div className="grid gap-3">
             <Label htmlFor="confirm" className="text-red-600 font-medium">
               {t("deleteTypeToConfirm")}
             </Label>
-            <Input id="confirm" name="confirmation" placeholder={t("deletePlaceholder")} className="border-red-200 focus-visible:ring-red-400" />
+            <Input id="confirm" name="confirmation" placeholder={t("deletePlaceholder")} className="settings-input border-red-200 focus-visible:ring-red-400" />
           </div>
           <div className="flex justify-between items-center">
             <Feedback msg={msg} />
@@ -507,7 +581,28 @@ function DeleteSection() {
   )
 }
 
-/* ── Verification Status ───────────────────────────────────── */
+/* Log Out */
+function LogoutSection() {
+  return (
+    <SettingsCard title="Log Out" description="Sign out of your account on this device.">
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          You will be redirected to the login page after signing out.
+        </p>
+        <Button
+          variant="outline"
+          className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30"
+          onClick={() => signOut({ callbackUrl: "/auth/login" })}
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Log Out
+        </Button>
+      </div>
+    </SettingsCard>
+  )
+}
+
+/* Verification Status */
 function VerificationSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const isVerified = !!user.emailVerified
@@ -535,7 +630,7 @@ function VerificationSection({ user }: { user: any }) {
   )
 }
 
-/* ── Account Type ──────────────────────────────────────────── */
+/* Account Type */
 function AccountTypeSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -580,9 +675,67 @@ function AccountTypeSection({ user }: { user: any }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PROFILE DETAIL SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* Profile Detail Sections */
+
+/* Region */
+function RegionSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const [msg, setMsg] = useState("")
+  const [isPending, startTransition] = useTransition()
+
+  const regions = [
+    { value: "global",  label: "🌍 Global" },
+    { value: "na",      label: "🇺🇸 North America" },
+    { value: "eu",      label: "🇪🇺 Europe" },
+    { value: "asia",    label: "🌏 Asia" },
+    { value: "sa",      label: "🌎 South America" },
+    { value: "africa",  label: "🌍 Africa" },
+    { value: "oceania", label: "🌊 Oceania" },
+    { value: "mena",    label: "🏜️ Middle East & North Africa" },
+  ]
+
+  async function handleChange(value: string) {
+    startTransition(async () => {
+      const { updateUserRegion } = await import("@/app/actions/leaderboard")
+      const res = await updateUserRegion(value)
+      setMsg(res?.error || res?.success || "")
+    })
+  }
+
+  return (
+    <SettingsCard title={t("regionTitle") ?? "Region"} description={t("regionDescription") ?? "Choose your region for regional leaderboard rankings."}>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {regions.map((r) => {
+            const isCurrent = (user.region || "global") === r.value
+            return (
+              <button
+                key={r.value}
+                type="button"
+                disabled={isPending}
+                onClick={() => handleChange(r.value)}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors text-left",
+                  isCurrent
+                    ? "border-foreground bg-accent"
+                    : "border-border hover:border-muted-foreground",
+                  isPending && "opacity-50 pointer-events-none"
+                )}
+              >
+                <span className="text-lg">{r.label.split(" ")[0]}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium">{r.label.slice(r.label.indexOf(" ") + 1)}</span>
+                  {isCurrent && <Badge className="ml-2 text-[10px]">Current</Badge>}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+        <Feedback msg={msg} />
+      </div>
+    </SettingsCard>
+  )
+}
 
 function formatDate(date: string | Date | null) {
   if (!date) return ""
@@ -612,7 +765,7 @@ function HiddenDetailsFields({ user }: { user: any }) {
   )
 }
 
-/* ── Demographics ──────────────────────────────────────────── */
+/* Demographics */
 function DemographicsSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -627,14 +780,17 @@ function DemographicsSection({ user }: { user: any }) {
         <input type="hidden" name="bio" defaultValue={user.bio || ""} />
         <input type="hidden" name="interests" defaultValue={user.interests?.join(", ") || ""} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>{t("dateOfBirth")}</Label>
-            <Input name="dateOfBirth" type="date" defaultValue={formatDate(user.dateOfBirth)} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("dateOfBirth")}</Label>
+            {/* tabIndex={-1} stops Chromium auto-scrolling to this input
+                 on render, which was the unique reason Profile Details
+                 caused page scroll while other categories did not. */}
+            <Input name="dateOfBirth" type="date" defaultValue={formatDate(user.dateOfBirth)} tabIndex={-1} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("gender")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("gender")}</Label>
             <Select name="gender" defaultValue={user.gender || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="male">{t("male")}</SelectItem>
                 <SelectItem value="female">{t("female")}</SelectItem>
@@ -643,10 +799,10 @@ function DemographicsSection({ user }: { user: any }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>{t("maritalStatus")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("maritalStatus")}</Label>
             <Select name="maritalStatus" defaultValue={user.maritalStatus || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="single">{t("single")}</SelectItem>
                 <SelectItem value="married">{t("married")}</SelectItem>
@@ -678,7 +834,7 @@ function DemographicsSection({ user }: { user: any }) {
   )
 }
 
-/* ── Household ─────────────────────────────────────────────── */
+/* Household */
 function HouseholdSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -696,18 +852,18 @@ function HouseholdSection({ user }: { user: any }) {
         <input type="hidden" name="gender" defaultValue={user.gender || ""} />
         <input type="hidden" name="maritalStatus" defaultValue={user.maritalStatus || ""} />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label>{t("householdSize")}</Label>
-            <Input name="householdSize" type="number" min="1" defaultValue={user.householdSize} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("householdSize")}</Label>
+            <Input name="householdSize" type="number" min="1" defaultValue={user.householdSize} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("children")}</Label>
-            <Input name="childrenCount" type="number" min="0" defaultValue={user.childrenCount} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("children")}</Label>
+            <Input name="childrenCount" type="number" min="0" defaultValue={user.childrenCount} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("socialSupport")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("socialSupport")}</Label>
             <Select name="socialSupportLevel" defaultValue={user.socialSupportLevel || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="low">{t("supportLow")}</SelectItem>
                 <SelectItem value="medium">{t("supportMedium")}</SelectItem>
@@ -734,7 +890,7 @@ function HouseholdSection({ user }: { user: any }) {
   )
 }
 
-/* ── Health & Stats ────────────────────────────────────────── */
+/* Health & Stats */
 function HealthSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -757,18 +913,18 @@ function HealthSection({ user }: { user: any }) {
         <input type="hidden" name="childhoodMathSkill" defaultValue={user.childhoodMathSkill ?? ""} />
         <input type="hidden" name="booksInHome" defaultValue={user.booksInHome || ""} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>{t("bmi")}</Label>
-            <Input name="bmi" type="number" step="0.1" placeholder="24.5" defaultValue={user.bmi} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("bmi")}</Label>
+            <Input name="bmi" type="number" step="0.1" placeholder="24.5" defaultValue={user.bmi} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("mentalHealth")}</Label>
-            <Input name="mentalHealthScore" type="number" min="0" max="10" defaultValue={user.mentalHealthScore} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("mentalHealth")}</Label>
+            <Input name="mentalHealthScore" type="number" min="0" max="10" defaultValue={user.mentalHealthScore} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("smoking")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("smoking")}</Label>
             <Select name="smoking" defaultValue={user.smoking || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="never">{t("never")}</SelectItem>
                 <SelectItem value="former">{t("former")}</SelectItem>
@@ -800,7 +956,7 @@ function HealthSection({ user }: { user: any }) {
   )
 }
 
-/* ── Work & Background ─────────────────────────────────────── */
+/* Work & Background */
 function EducationSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -825,10 +981,10 @@ function EducationSection({ user }: { user: any }) {
         <input type="hidden" name="alcoholConsumption" defaultValue={user.alcoholConsumption || ""} />
         <input type="hidden" name="mentalHealthScore" defaultValue={user.mentalHealthScore ?? ""} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>{t("education")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("education")}</Label>
             <Select name="education" defaultValue={user.education || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="high_school">{t("highSchool")}</SelectItem>
                 <SelectItem value="bachelors">{t("bachelors")}</SelectItem>
@@ -837,10 +993,10 @@ function EducationSection({ user }: { user: any }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>{t("employment")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("employment")}</Label>
             <Select name="employmentStatus" defaultValue={user.employmentStatus || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="employed">{t("employed")}</SelectItem>
                 <SelectItem value="part_time">{t("partTime")}</SelectItem>
@@ -850,14 +1006,14 @@ function EducationSection({ user }: { user: any }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>{t("incomePercentile")}</Label>
-            <Input name="incomePercentile" type="number" min="0" max="100" defaultValue={user.incomePercentile} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("incomePercentile")}</Label>
+            <Input name="incomePercentile" type="number" min="0" max="100" defaultValue={user.incomePercentile} className="settings-input" />
           </div>
-          <div className="space-y-2">
-            <Label>{t("booksInHome")}</Label>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("booksInHome")}</Label>
             <Select name="booksInHome" defaultValue={user.booksInHome || undefined}>
-              <SelectTrigger><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
+              <SelectTrigger className="settings-input"><SelectValue placeholder={tCommon("select")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="0-10">0-10</SelectItem>
                 <SelectItem value="11-25">11-25</SelectItem>
@@ -866,9 +1022,9 @@ function EducationSection({ user }: { user: any }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>{t("mathSkill")}</Label>
-            <Input name="childhoodMathSkill" type="number" min="1" max="10" defaultValue={user.childhoodMathSkill} />
+          <div className="space-y-3">
+            <Label className="text-muted-foreground">{t("mathSkill")}</Label>
+            <Input name="childhoodMathSkill" type="number" min="1" max="10" defaultValue={user.childhoodMathSkill} className="settings-input" />
           </div>
         </div>
         <div className="flex justify-end items-center gap-3 pt-2">
@@ -880,7 +1036,7 @@ function EducationSection({ user }: { user: any }) {
   )
 }
 
-/* ── Interests ─────────────────────────────────────────────── */
+/* Interests */
 function InterestsSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -893,9 +1049,9 @@ function InterestsSection({ user }: { user: any }) {
       <form action={action} className="space-y-4">
         <input type="hidden" name="bio" defaultValue={user.bio || ""} />
         <HiddenDetailsFields user={user} />
-        <div className="space-y-2">
-          <Label>{t("interestsLabel")}</Label>
-          <Input name="interests" placeholder={t("interestsPlaceholder")} defaultValue={user.interests?.join(", ") || ""} />
+        <div className="space-y-3">
+          <Label className="text-muted-foreground">{t("interestsLabel")}</Label>
+          <Input name="interests" placeholder={t("interestsPlaceholder")} defaultValue={user.interests?.join(", ") || ""} className="settings-input" />
           <p className="text-[10px] text-muted-foreground">{t("interestsHint")}</p>
         </div>
         {user.interests?.length > 0 && (
@@ -914,11 +1070,9 @@ function InterestsSection({ user }: { user: any }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PRIVACY SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* Privacy Sections */
 
-/* ── Reusable toggle row ───────────────────────────────────── */
+/* Reusable toggle row */
 function PrivacyToggleRow({
   label,
   description,
@@ -955,7 +1109,7 @@ function PrivacyToggleRow({
   )
 }
 
-/* ── Reusable "who can" select row ─────────────────────────── */
+/* Reusable "who can" select row */
 function PrivacySelectRow({
   label,
   description,
@@ -1000,12 +1154,12 @@ function PrivacySelectRow({
   )
 }
 
-/* ── Profile Privacy ───────────────────────────────────────── */
+/* Profile Privacy */
 function ProfilePrivacySection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
     <SettingsCard title={t("profilePrivacyTitle")} description={t("profilePrivacyDescription")}>
-      <div className="divide-y divide-zinc-100">
+      <div className="divide-y divide-border">
         <PrivacyToggleRow
           label={t("privateAccount")}
           description={t("privateAccountDesc")}
@@ -1029,12 +1183,12 @@ function ProfilePrivacySection({ user }: { user: any }) {
   )
 }
 
-/* ── Interactions ───────────────────────────────────────────── */
+/* Interactions */
 function InteractionsPrivacySection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
     <SettingsCard title={t("interactionsTitle")} description={t("interactionsDescription")}>
-      <div className="divide-y divide-zinc-100">
+      <div className="divide-y divide-border">
         <PrivacySelectRow
           label={t("whoCanComment")}
           description={t("whoCanCommentDesc")}
@@ -1064,7 +1218,7 @@ function InteractionsPrivacySection({ user }: { user: any }) {
   )
 }
 
-/* ── Story / Content Controls ──────────────────────────────── */
+/* Story / Content Controls */
 function ContentControlsSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -1094,17 +1248,17 @@ function ContentControlsSection({ user }: { user: any }) {
           defaultValue={user.allowResharing ?? true}
         />
 
-        <div className="space-y-2 pt-2">
-          <Label className="text-sm font-medium">{t("hideStoryLabel")}</Label>
+        <div className="space-y-3 pt-2">
+          <Label className="text-sm font-medium text-muted-foreground">{t("hideStoryLabel")}</Label>
           <p className="text-xs text-muted-foreground">{t("hideStoryDesc")}</p>
           <div className="flex gap-2">
             <Input
               value={hiddenInput}
               onChange={(e) => setHiddenInput(e.target.value)}
               placeholder={t("hideStoryPlaceholder")}
-              className="flex-1"
+              className="flex-1 settings-input"
             />
-            <Button size="sm" onClick={saveHidden}>{tCommon("save")}</Button>
+            <Button size="sm" onClick={saveHidden} className="settings-btn">{tCommon("save")}</Button>
           </div>
           {(user.hiddenFromStory ?? []).length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1">
@@ -1117,17 +1271,17 @@ function ContentControlsSection({ user }: { user: any }) {
           )}
         </div>
 
-        <div className="space-y-2 pt-2">
-          <Label className="text-sm font-medium">{t("closeFriendsLabel")}</Label>
+        <div className="space-y-3 pt-2">
+          <Label className="text-sm font-medium text-muted-foreground">{t("closeFriendsLabel")}</Label>
           <p className="text-xs text-muted-foreground">{t("closeFriendsDesc")}</p>
           <div className="flex gap-2">
             <Input
               value={closeFriendsInput}
               onChange={(e) => setCloseFriendsInput(e.target.value)}
               placeholder={t("closeFriendsPlaceholder")}
-              className="flex-1"
+              className="flex-1 settings-input"
             />
-            <Button size="sm" onClick={saveCloseFriends}>{tCommon("save")}</Button>
+            <Button size="sm" onClick={saveCloseFriends} className="settings-btn">{tCommon("save")}</Button>
           </div>
           {(user.closeFriends ?? []).length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1">
@@ -1146,12 +1300,12 @@ function ContentControlsSection({ user }: { user: any }) {
   )
 }
 
-/* ── Discovery ─────────────────────────────────────────────── */
+/* Discovery */
 function DiscoverySection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
     <SettingsCard title={t("discoveryTitle")} description={t("discoveryDescription")}>
-      <div className="divide-y divide-zinc-100">
+      <div className="divide-y divide-border">
         <PrivacyToggleRow
           label={t("findByEmail")}
           description={t("findByEmailDesc")}
@@ -1175,11 +1329,17 @@ function DiscoverySection({ user }: { user: any }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   APPEARANCE SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* Appearance Sections */
 
-/* ── Reusable appearance toggle row ─────────────────── */
+/* Reusable appearance toggle row */
+
+/** Map toggle field names to their HTML data-attribute on <html> */
+const TOGGLE_ATTR_MAP: Record<string, string> = {
+  highContrast: "data-high-contrast",
+  screenReader: "data-screen-reader",
+  reduceMotion: "data-reduce-motion",
+}
+
 function AppearanceToggleRow({
   label,
   description,
@@ -1206,6 +1366,12 @@ function AppearanceToggleRow({
           checked={value}
           onCheckedChange={(checked: boolean) => {
             setValue(checked)
+            // Apply immediately to the DOM so user sees the effect
+            const attr = TOGGLE_ATTR_MAP[field]
+            if (attr) {
+              if (checked) document.documentElement.setAttribute(attr, "")
+              else document.documentElement.removeAttribute(attr)
+            }
             startTransition(async () => {
               await updateAppearanceToggle(field, checked)
             })
@@ -1216,7 +1382,7 @@ function AppearanceToggleRow({
   )
 }
 
-/* ── Dark / Light Mode ───────────────────────────────── */
+/* Theme */
 function ThemeSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -1270,7 +1436,7 @@ function ThemeSection({ user }: { user: any }) {
   )
 }
 
-/* ── Language ────────────────────────────────────────── */
+/* Language */
 function LanguageSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [isPending, startTransition] = useTransition()
@@ -1313,7 +1479,7 @@ function LanguageSection({ user }: { user: any }) {
             })
           }}
         >
-          <SelectTrigger className="w-full max-w-xs">
+          <SelectTrigger className="w-full max-w-xs settings-input">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -1330,7 +1496,7 @@ function LanguageSection({ user }: { user: any }) {
   )
 }
 
-/* ── Data Saver & Autoplay ───────────────────────────── */
+/* Data Saver & Autoplay */
 function DataSaverSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
@@ -1353,7 +1519,7 @@ function DataSaverSection({ user }: { user: any }) {
   )
 }
 
-/* ── Accessibility ───────────────────────────────────── */
+/* Accessibility */
 function AccessibilitySection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [isPending, startTransition] = useTransition()
@@ -1364,6 +1530,8 @@ function AccessibilitySection({ user }: { user: any }) {
     { value: "large",  label: t("fontLarge"),   sample: "text-base" },
     { value: "xlarge", label: t("fontXlarge"), sample: "text-lg" },
   ]
+
+  const [activeFont, setActiveFont] = useState(user.fontSize ?? "medium")
 
   return (
     <SettingsCard title={t("accessibilityTitle")} description={t("accessibilityDescription")}>
@@ -1395,11 +1563,14 @@ function AccessibilitySection({ user }: { user: any }) {
             {isPending && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
             <div className="grid grid-cols-4 gap-2 w-full max-w-sm">
               {fontSizes.map((fs) => {
-                const isActive = (user.fontSize ?? "medium") === fs.value
+                const isActive = activeFont === fs.value
                 return (
                   <button
                     key={fs.value}
                     onClick={() => {
+                      setActiveFont(fs.value)
+                      // Apply immediately so user sees the change
+                      document.documentElement.setAttribute("data-font-size", fs.value)
                       startTransition(async () => {
                         await updateAppearanceSelect("fontSize", fs.value)
                       })
@@ -1424,9 +1595,7 @@ function AccessibilitySection({ user }: { user: any }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SHARED PRIMITIVES
-   ══════════════════════════════════════════════════════════════ */
+/* Shared Primitives */
 
 function SettingsCard({
   title,
@@ -1440,13 +1609,13 @@ function SettingsCard({
   danger?: boolean
 }) {
   return (
-    <Card className={cn(danger && "border-red-200")}>
-      <CardHeader>
-        <CardTitle className={cn(danger && "text-red-600")}>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
+    <div className={cn("space-y-5", danger && "text-red-600")}>
+      <div className="space-y-1.5">
+        <h3 className={cn("editorial-subhead text-2xl", danger && "text-red-600")}>{title}</h3>
+        <p className="editorial-body text-muted-foreground">{description}</p>
+      </div>
+      <div>{children}</div>
+    </div>
   )
 }
 
@@ -1496,8 +1665,127 @@ function SubmitBtn({ label }: { label?: string }) {
   const { pending } = useFormStatus()
   const tCommon = useTranslations("common")
   return (
-    <Button disabled={pending} type="submit" className="min-w-[100px] shrink-0">
+    <Button disabled={pending} type="submit" className="settings-btn min-w-[100px] shrink-0">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : (label || tCommon("save"))}
     </Button>
+  )
+}
+
+/* Posts Sections */
+
+function PostMiniCard({ post }: { post: { id: string; content: string | null; createdAt: string; images: { url: string }[]; _count: { likes: number; comments: number } } }) {
+  const t = useTranslations("settings")
+  return (
+    <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+      {post.content && <p className="text-sm leading-relaxed line-clamp-3">{post.content}</p>}
+      {post.images.length > 0 && (
+        <div className="flex gap-1 overflow-hidden rounded-lg">
+          {post.images.slice(0, 3).map((img, i) => (
+            <img key={i} src={img.url} alt="" className="h-20 w-20 object-cover rounded-md bg-muted" />
+          ))}
+          {post.images.length > 3 && (
+            <span className="flex h-20 w-20 items-center justify-center rounded-md bg-muted text-xs text-muted-foreground font-medium">+{post.images.length - 3}</span>
+          )}
+        </div>
+      )}
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <span suppressHydrationWarning>{new Date(post.createdAt).toLocaleDateString()}</span>
+        <span className="flex items-center gap-1"><Heart className="h-3 w-3" />{post._count.likes}</span>
+        <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" />{post._count.comments}</span>
+      </div>
+    </div>
+  )
+}
+
+function MyPostsSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch(`/api/posts/mine`)
+      .then(r => r.json())
+      .then(data => { setPosts(data.posts ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  return (
+    <div className="space-y-5">
+      <div className="space-y-1.5">
+        <h3 className="editorial-subhead text-2xl flex items-center gap-2"><Newspaper className="h-5 w-5" /> {t("myPostsTitle")}</h3>
+        <p className="editorial-body text-muted-foreground">{t("myPostsDescription")}</p>
+      </div>
+      <div className="space-y-3">
+        {loading ? (
+          <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+        ) : posts.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">{t("myPostsEmpty")}</p>
+        ) : (
+          posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
+        )}
+      </div>
+    </div>
+  )
+}
+
+function LikedPostsSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch(`/api/posts/liked`)
+      .then(r => r.json())
+      .then(data => { setPosts(data.posts ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  return (
+    <div className="space-y-5">
+      <div className="space-y-1.5">
+        <h3 className="editorial-subhead text-2xl flex items-center gap-2"><Heart className="h-5 w-5 text-rose-500" /> {t("likedPostsTitle")}</h3>
+        <p className="editorial-body text-muted-foreground">{t("likedPostsDescription")}</p>
+      </div>
+      <div className="space-y-3">
+        {loading ? (
+          <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+        ) : posts.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">{t("likedPostsEmpty")}</p>
+        ) : (
+          posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
+        )}
+      </div>
+    </div>
+  )
+}
+
+function SavedPostsSection({ user }: { user: any }) {
+  const t = useTranslations("settings")
+  const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch(`/api/posts/saved`)
+      .then(r => r.json())
+      .then(data => { setPosts(data.posts ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  return (
+    <div className="space-y-5">
+      <div className="space-y-1.5">
+        <h3 className="editorial-subhead text-2xl flex items-center gap-2"><Bookmark className="h-5 w-5 text-amber-500 dark:text-sky-400" /> {t("savedPostsTitle")}</h3>
+        <p className="editorial-body text-muted-foreground">{t("savedPostsDescription")}</p>
+      </div>
+      <div className="space-y-3">
+        {loading ? (
+          <div className="flex items-center justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+        ) : posts.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">{t("savedPostsEmpty")}</p>
+        ) : (
+          posts.map((p: any) => <PostMiniCard key={p.id} post={p} />)
+        )}
+      </div>
+    </div>
   )
 }

@@ -3,10 +3,20 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/sidebar-shell";
+import { MainShell } from "@/components/main-shell";
+import { Toaster } from "sonner";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { auth } from "@/app/auth";
+import { prisma } from "@/lib/prisma";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
+
 
 export const metadata: Metadata = {
   title: "Mrezhen",
@@ -20,10 +30,45 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const session = await auth();
+  const isLoggedIn = !!session?.user;
+
+  // Read accessibility preferences from DB
+  let fontSize = "medium";
+  let highContrast = false;
+  let screenReader = false;
+  let reduceMotion = false;
+
+  if (session?.user?.email) {
+    const prefs = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { fontSize: true, highContrast: true, screenReader: true, reduceMotion: true },
+    });
+    if (prefs) {
+      fontSize = prefs.fontSize ?? "medium";
+      highContrast = prefs.highContrast ?? false;
+      screenReader = prefs.screenReader ?? false;
+      reduceMotion = prefs.reduceMotion ?? false;
+    }
+  }
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className={inter.className}>
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      data-font-size={fontSize}
+      {...(highContrast ? { "data-high-contrast": "" } : {})}
+      {...(screenReader ? { "data-screen-reader": "" } : {})}
+      {...(reduceMotion ? { "data-reduce-motion": "" } : {})}
+    >
+      <body className={`${inter.variable} ${inter.className}`}>
+        {/* Skip-to-content link */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:bg-background focus:text-foreground focus:px-4 focus:py-2 focus:border focus:border-ring"
+        >
+          Skip to content
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -31,10 +76,13 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider messages={messages}>
-            <Navbar />
-            <main>
-                {children}
-            </main>
+            <SidebarProvider>
+              <Navbar />
+              <MainShell isLoggedIn={isLoggedIn}>
+                  {children}
+              </MainShell>
+            </SidebarProvider>
+            <Toaster position="bottom-right" richColors closeButton />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

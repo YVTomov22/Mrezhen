@@ -10,8 +10,27 @@ import { authConfig } from "./auth.config"
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
   ...authConfig,
+  callbacks: {
+    ...authConfig.callbacks,
+    jwt({ token, user }) {
+      // Only store minimal data in the JWT to avoid oversized cookies (HTTP 431)
+      if (user) {
+        token.id = user.id
+        token.email = user.email
+        token.name = user.name
+        token.picture = user.image
+      }
+      return token
+    },
+    session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id as string
+      }
+      return session
+    },
+  },
   providers: [
     GitHub({
       allowDangerousEmailAccountLinking: true,
@@ -29,18 +48,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
+          select: { id: true, email: true, name: true, image: true, password: true },
         })
 
         if (!user || !user.password) return null
 
         const passwordsMatch = await bcrypt.compare(
-          credentials.password as string, 
+          credentials.password as string,
           user.password
         )
 
-        user.password = null // Remove password before returning user object
+        if (!passwordsMatch) return null
 
-        return passwordsMatch ? user : null
+        // Return only minimal fields for the JWT
+        return { id: user.id, email: user.email, name: user.name, image: user.image }
       },
     }),
   ],

@@ -16,9 +16,10 @@ export default async function GoalsPage() {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
+    select: { username: true, id: true },
   })
 
-    redirect(`/profile/${user?.username}`);
+  if (!user) redirect("/auth/login")
 
-    return <p>{t("redirecting")}</p>
+  redirect(`/profile/${user.username ?? user.id}`)
 }

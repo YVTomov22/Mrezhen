@@ -13,7 +13,7 @@ export default async function MessagesPage({ searchParams }: PageProps) {
   const params = await searchParams
   const targetUsername = typeof params.username === 'string' ? params.username : undefined
 
-  // 2. Pass the specific username to the action to ensure they are fetched
+  // 2. Pass username to ensure target user is fetched
   const users = await getUsersToChatWith(targetUsername)
 
   return (

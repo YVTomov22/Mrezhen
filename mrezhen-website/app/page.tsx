@@ -1,296 +1,200 @@
 'use client'
 
 import Link from "next/link"
-import { motion } from "motion/react"
-import { ArrowRight, Bot, CheckCircle2, MessageCircle, Sparkles, Star, Target, Trophy, Users } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import { useEffect, useRef } from "react"
 import { useTranslations } from "next-intl"
 
-
-// --- COMPONENTS ---
+// Components
 
 function Hero({ t }: { t: any }) {
   return (
-    <section className="relative overflow-hidden">
-      {/* Teal gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 -z-10" />
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 opacity-10 -z-[5]">
-        <div className="absolute top-10 right-10 w-20 h-20 border-2 border-white/30 rounded-lg rotate-12" />
-        <div className="absolute top-32 right-40 w-14 h-14 border-2 border-white/20 rounded-full" />
-        <div className="absolute bottom-20 right-20 w-16 h-16 border-2 border-white/25 rounded-lg -rotate-6" />
-        <div className="absolute top-20 right-72 w-10 h-10 border-2 border-white/20 rounded-md rotate-45" />
-        <div className="absolute bottom-32 right-56 w-12 h-12 border-2 border-white/15 rounded-full" />
-      </div>
-
-      <div className="container px-4 mx-auto py-20 md:py-32">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Left: text */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight tracking-tight">
-              {t("heroTitle1")}<br />
-              {t("heroTitle2")}<br />
-              {t("heroTitle3")}
-            </h1>
-            <p className="mt-6 text-lg text-teal-100/90 max-w-lg leading-relaxed">
-              {t("heroDescription")}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link href="/auth/register">
-                <Button size="lg" className="h-12 px-8 text-base rounded-lg bg-white text-teal-800 hover:bg-teal-50 font-semibold shadow-lg transition-all hover:scale-105">
-                  {t("learnMore")}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Right: decorative floating icons */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden md:flex items-center justify-center relative h-80"
-          >
-            {/* AI Bot icon */}
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-4 right-12 bg-white/15 backdrop-blur-md p-5 rounded-2xl border border-white/20"
-            >
-              <Bot className="w-10 h-10 text-white" />
-            </motion.div>
-            {/* Chat icon */}
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute bottom-8 left-8 bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/20"
-            >
-              <MessageCircle className="w-8 h-8 text-white" />
-            </motion.div>
-            {/* Target icon */}
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute top-20 left-16 bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/20"
-            >
-              <Target className="w-8 h-8 text-white" />
-            </motion.div>
-            {/* Users icon */}
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-              className="absolute bottom-4 right-24 bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/20"
-            >
-              <Users className="w-8 h-8 text-white" />
-            </motion.div>
-            {/* Center star */}
-            <div className="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20">
-              <Sparkles className="w-12 h-12 text-white" />
-            </div>
-          </motion.div>
-        </div>
+    <section id="hero" className="relative z-10 min-h-screen flex flex-col justify-center px-[10vw]">
+      <div className="max-w-4xl">
+        <span className="fade-in block text-sm uppercase tracking-widest opacity-70 mb-4 text-white">Signal from Noise</span>
+        <h1 className="fade-in text-[clamp(3rem,8vw,8rem)] font-bold tracking-[-0.04em] leading-[0.95] mb-6 text-white" style={{ transitionDelay: '0.1s' }}>
+          {t("heroTitle1")}<br />
+          {t("heroTitle2")}<br />
+          {t("heroTitle3")}
+        </h1>
+        <p className="fade-in text-[#888888] text-lg md:text-xl max-w-[50ch] leading-relaxed" style={{ transitionDelay: '0.2s' }}>
+          {t("heroDescription")}
+        </p>
       </div>
     </section>
   )
 }
 
-function Features({ t }: { t: any }) {
-  const features = [
-    {
-      icon: <MessageCircle className="w-6 h-6 text-teal-600" />,
-      title: t("featureChats"),
-      desc: t("featureChatsDesc"),
-    },
-    {
-      icon: <Bot className="w-6 h-6 text-teal-600" />,
-      title: t("featureAi"),
-      desc: t("featureAiDesc"),
-    },
-    {
-      icon: <CheckCircle2 className="w-6 h-6 text-teal-600" />,
-      title: t("featureProof"),
-      desc: t("featureProofDesc"),
-    },
-    {
-      icon: <Star className="w-6 h-6 text-teal-600" />,
-      title: t("featurePoints"),
-      desc: t("featurePointsDesc"),
-    },
-  ]
-
+function Synthesis({ t }: { t: any }) {
   return (
-    <section className="py-20 bg-background">
-      <div className="container px-4 mx-auto max-w-5xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-14"
-        >
-          <h2 className="text-3xl font-bold tracking-tight mb-3">{t("featuresTitle")}</h2>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {features.map((f, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-              className="group bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all"
-            >
-              <div className="flex items-start gap-4">
-                <div className="shrink-0 w-11 h-11 bg-teal-100 dark:bg-teal-900/40 rounded-xl flex items-center justify-center">
-                  {f.icon}
-                </div>
-                <div>
-                  <h3 className="font-bold text-base mb-1">{f.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Mission({ t }: { t: any }) {
-  return (
-    <section className="py-16 bg-muted">
-      <div className="container px-4 mx-auto max-w-4xl text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-            {t("missionPre")}
-            <span className="text-teal-600 dark:text-teal-400 font-semibold">{t("missionHighlight1")}</span>
-            {t("missionMid")}
-            <span className="text-teal-600 dark:text-teal-400 font-semibold">{t("missionHighlight2")}</span>
-            {t("missionPost")}
-          </p>
-        </motion.div>
-      </div>
-    </section>
-  )
-}
-
-function Stats({ t }: { t: any }) {
-  return (
-    <section className="py-16 bg-background border-y border-border">
-      <div className="container px-4 mx-auto max-w-4xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            { label: t("activeUsers"), value: "10k+" },
-            { label: t("questsCompleted"), value: "1.2M" },
-            { label: t("goalsSmashed"), value: "50k+" },
-            { label: t("aiInteractions"), value: "500k+" },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-            >
-              <div className="text-3xl md:text-4xl font-extrabold text-teal-600 dark:text-teal-400 mb-1">
-                {stat.value}
-              </div>
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function CTA({ t }: { t: any }) {
-  return (
-    <section className="py-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-teal-700 via-teal-800 to-emerald-900 z-0" />
-
-      <div className="container px-4 mx-auto relative z-10 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            {t("ctaTitle")}
+    <section id="synthesis" className="relative z-10 min-h-screen flex flex-col justify-center px-[10vw]">
+      <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div>
+          <span className="fade-in block text-sm uppercase tracking-widest opacity-70 mb-4 text-white">Real-time processing</span>
+          <h2 className="fade-in text-[clamp(2rem,4vw,4rem)] font-bold tracking-[-0.04em] leading-[0.95] mb-4 text-white">
+            {t("featureChats")}<br />Instantly.
           </h2>
-          <p className="text-teal-100/80 text-lg max-w-xl mx-auto mb-8">
-            {t("ctaDescription")}
+          <p className="fade-in text-[#888888] text-lg leading-relaxed">
+            {t("featureChatsDesc")}
           </p>
-          <Link href="/auth/register">
-            <Button size="lg" className="h-13 px-8 text-base rounded-lg bg-white text-teal-800 hover:bg-teal-50 font-semibold shadow-lg transition-all hover:scale-105">
-              {t("getStarted")}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
-          <p className="mt-5 text-xs text-teal-200/60">{t("disclaimer")}</p>
-        </motion.div>
+        </div>
+        <div className="fade-in h-[50vh] bg-white/5 rounded-3xl backdrop-blur-md border border-white/10 flex items-center justify-center gap-1.5 overflow-hidden">
+          <div className="bar-anim w-1.5 rounded-full bg-white" style={{ animationDelay: '0.1s' }}></div>
+          <div className="bar-anim w-1.5 rounded-full bg-[#888888]" style={{ animationDelay: '0.3s' }}></div>
+          <div className="bar-anim w-1.5 rounded-full bg-white/50" style={{ animationDelay: '0.5s' }}></div>
+          <div className="bar-anim w-1.5 rounded-full bg-white" style={{ animationDelay: '0.2s' }}></div>
+          <div className="bar-anim w-1.5 rounded-full bg-[#888888]" style={{ animationDelay: '0.4s' }}></div>
+          <div className="bar-anim w-1.5 rounded-full bg-white" style={{ animationDelay: '0.1s' }}></div>
+          <div className="bar-anim w-1.5 rounded-full bg-white/50" style={{ animationDelay: '0.3s' }}></div>
+        </div>
       </div>
     </section>
   )
 }
 
-function Footer({ t }: { t: any }) {
+function Context({ t }: { t: any }) {
   return (
-    <footer className="py-10 bg-card border-t border-border">
-      <div className="container px-4 mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="bg-teal-600 text-white p-1.5 rounded-lg">
-              <Image src="/favicon.ico" alt="Mrezhen Logo" height={20} width={20} />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Mrezhen</span>
-          </div>
-
-          {/* Links */}
-          <div className="flex gap-6 text-sm font-medium text-muted-foreground">
-            <Link href="#" className="hover:text-foreground transition-colors">{t("aboutUs")}</Link>
-            <Link href="#" className="hover:text-foreground transition-colors">{t("terms")}</Link>
-            <Link href="#" className="hover:text-foreground transition-colors">{t("privacy")}</Link>
-          </div>
-
-          {/* Copyright */}
-          <p className="text-xs text-muted-foreground">
-            {t("allRights", { year: new Date().getFullYear() })}
+    <section id="context" className="relative z-10 min-h-screen flex flex-col justify-center px-[10vw]">
+      <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="fade-in h-[50vh] bg-white/5 rounded-3xl backdrop-blur-md border border-white/10 relative flex items-center justify-center order-2 md:order-1">
+          <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center after:content-[''] after:w-5 after:h-5 after:bg-[#FFCC00] after:rounded-full after:shadow-[0_0_20px_#FFCC00]"></div>
+          <div className="satellite-anim absolute w-3 h-3 bg-[#888888] rounded-full" style={{ animationDelay: '0s' }}></div>
+          <div className="satellite-anim absolute w-2 h-2 bg-[#888888]/70 rounded-full" style={{ animationDelay: '-1.3s' }}></div>
+          <div className="satellite-anim absolute w-1.5 h-1.5 bg-[#888888]/50 rounded-full" style={{ animationDelay: '-2.7s' }}></div>
+        </div>
+        <div className="order-1 md:order-2">
+          <span className="fade-in block text-sm uppercase tracking-widest opacity-70 mb-4 text-white">Adaptive Learning</span>
+          <h2 className="fade-in text-[clamp(2rem,4vw,4rem)] font-bold tracking-[-0.04em] leading-[0.95] mb-4 text-white">
+            {t("featureAi")}<br />Awareness.
+          </h2>
+          <p className="fade-in text-[#888888] text-lg leading-relaxed">
+            {t("featureAiDesc")}
           </p>
         </div>
       </div>
-    </footer>
+    </section>
+  )
+}
+
+function Download({ t }: { t: any }) {
+  return (
+    <section id="download" className="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-[10vw]">
+      <h2 className="fade-in text-[clamp(2rem,4vw,4rem)] font-bold tracking-[-0.04em] leading-[0.95] mb-8 text-white">
+        {t("ctaTitle")}
+      </h2>
+      <Link href="/auth/register" className="fade-in px-16 h-20 inline-flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl text-2xl font-semibold text-white hover:bg-white/20 hover:scale-[1.02] transition-all duration-300">
+        {t("getStarted")}
+      </Link>
+      <div className="fade-in mt-8 opacity-50 text-sm text-white" style={{ transitionDelay: '0.2s' }}>
+        {t("disclaimer")}
+      </div>
+    </section>
   )
 }
 
 export default function LandingPage() {
   const t = useTranslations("home")
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!rootRef.current) return
+
+    const root = rootRef.current
+    const sections = root.querySelectorAll('section')
+    const timeline = root.querySelector('#timeline')
+    const orbs = {
+      1: root.querySelector('#orb-1') as HTMLElement,
+      2: root.querySelector('#orb-2') as HTMLElement,
+      3: root.querySelector('#orb-3') as HTMLElement
+    }
+
+    if (timeline) {
+      timeline.innerHTML = ''
+      for (let i = 0; i < 50; i++) {
+        const tick = document.createElement('div')
+        tick.className = 'flex-1 h-2 bg-white/20 transition-all duration-300'
+        timeline.appendChild(tick)
+      }
+    }
+    const ticks = timeline?.querySelectorAll('div')
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id
+          const index = Array.from(sections).indexOf(entry.target as HTMLElement)
+          
+          entry.target.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'))
+
+          if (id === 'hero') {
+            if (orbs[1]) { orbs[1].style.transform = 'translate(0,0) scale(1)'; orbs[1].style.background = '#FF3B30'; }
+            if (orbs[2]) { orbs[2].style.transform = 'translate(0,0) scale(1)'; orbs[2].style.background = '#FFCC00'; }
+            if (orbs[3]) { orbs[3].style.opacity = '0'; }
+          } else if (id === 'synthesis') {
+            if (orbs[1]) { orbs[1].style.transform = 'translate(-20%, 30%) scale(0.8)'; orbs[1].style.background = '#34C759'; }
+            if (orbs[2]) { orbs[2].style.transform = 'translate(-30%, -20%) scale(1.2)'; orbs[2].style.background = '#007AFF'; orbs[2].style.opacity = '0.5'; }
+            if (orbs[3]) { orbs[3].style.transform = 'translate(10%, -10%) scale(1)'; orbs[3].style.opacity = '0.8'; orbs[3].style.background = '#34C759'; }
+          } else if (id === 'context') {
+            if (orbs[1]) { orbs[1].style.transform = 'translate(40%, -10%) scale(1.5)'; orbs[1].style.background = '#FFCC00'; orbs[1].style.opacity = '0.3'; }
+            if (orbs[2]) { orbs[2].style.transform = 'translate(-20%, 20%) scale(0.5)'; orbs[2].style.background = '#FFFFFF'; orbs[2].style.opacity = '0.2'; }
+            if (orbs[3]) { orbs[3].style.transform = 'translate(0,0) scale(1.1)'; orbs[3].style.background = '#FFCC00'; orbs[3].style.opacity = '0.6'; }
+          }
+
+          if (ticks && ticks.length > 0) {
+            const ticksPerSection = Math.floor(ticks.length / sections.length)
+            const start = index * ticksPerSection
+            ticks.forEach((t, i) => {
+              if (i >= start && i < start + ticksPerSection) {
+                t.style.height = '30px'
+                t.style.backgroundColor = '#F0F0F0'
+              } else {
+                t.style.height = '8px'
+                t.style.backgroundColor = 'rgba(255,255,255,0.2)'
+              }
+            })
+          }
+        }
+      })
+    }, { threshold: 0.5 })
+
+    sections.forEach(s => observer.observe(s))
+
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <main className="min-h-screen bg-background">
+    <div ref={rootRef} className="relative min-h-screen overflow-x-hidden bg-[#050505] text-[#F0F0F0] font-sans selection:bg-white selection:text-black">
+      <style dangerouslySetInnerHTML={{__html: `
+        :root { --ease-out: cubic-bezier(0.16, 1, 0.3, 1); }
+        .orb { filter: blur(80px); transition: transform 2s var(--ease-out), background 2s ease, opacity 2s ease; mix-blend-mode: screen; }
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s var(--ease-out); }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        @keyframes equalize { 0%, 100% { height: 20px; } 50% { height: 120px; } }
+        .bar-anim { animation: equalize 1s infinite ease-in-out; }
+        @keyframes orbit { from { transform: rotate(0deg) translateX(80px) rotate(0deg); } to { transform: rotate(360deg) translateX(80px) rotate(-360deg); } }
+        .satellite-anim { animation: orbit 4s infinite linear; }
+      `}} />
+
+      {/* Orb System */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div id="orb-1" className="orb absolute w-[60vh] h-[60vh] top-[20%] left-[20%] rounded-full bg-[#FF3B30] opacity-60"></div>
+        <div id="orb-2" className="orb absolute w-[50vh] h-[50vh] top-[30%] right-[20%] rounded-full bg-[#FFCC00] opacity-60"></div>
+        <div id="orb-3" className="orb absolute w-[40vh] h-[40vh] bottom-[10%] left-[40%] rounded-full bg-[#34C759] opacity-0"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 w-full p-8 flex justify-between items-start z-[100] mix-blend-difference">
+        <div className="font-bold tracking-tight text-xl text-white">MREZHEN</div>
+        <div className="font-bold tracking-tight text-xl text-white">v1.0</div>
+      </nav>
+
       <Hero t={t} />
-      <Features t={t} />
-      <Mission t={t} />
-      <Stats t={t} />
-      <CTA t={t} />
-      <Footer t={t} />
-    </main>
+      <Synthesis t={t} />
+      <Context t={t} />
+      <Download t={t} />
+
+      {/* Timeline UI */}
+      <div id="timeline" className="fixed bottom-12 left-12 right-12 h-16 flex items-end gap-1 z-50 pointer-events-none overflow-hidden" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+      </div>
+    </div>
   )
 }

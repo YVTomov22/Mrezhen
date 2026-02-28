@@ -24,7 +24,7 @@ except ImportError:
     genai = None
     print("google-generativeai not installed. AI features disabled.")
 
-# --- 1. SERVICE CONFIGURATION ---
+# Service Configuration
 # Trigger reload
 app = FastAPI(title="AI Microservice - Quest & Match Engine")
 
@@ -34,15 +34,17 @@ else:
     print("python-dotenv not installed. .env file will not be loaded.")
 
 
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- 2. DATASET LOADING & STATS ---
+# Dataset Loading & Stats
 EASYSHARE_DF = None
 DATASET_STATS = "Dataset not loaded."
 
@@ -65,7 +67,7 @@ def load_dataset():
         if not EASYSHARE_DF.empty:
             EASYSHARE_DF.columns = [c.lower() for c in EASYSHARE_DF.columns]
 
-            # --- Label mappings (basic) ---
+            # Label mappings
             label_map_sphus = {
                 1: 'Excellent', 2: 'Very good', 3: 'Good', 4: 'Fair', 5: 'Poor'
             }
@@ -114,7 +116,7 @@ def load_dataset():
             except Exception:
                 pass
 
-            # --- Core stats ---
+            # Core stats
             total = len(EASYSHARE_DF)
 
             # Age metrics
@@ -199,7 +201,7 @@ def load_dataset():
                 except Exception:
                     pass
 
-            # --- Insights ---
+            # Insights
             insights = []
             # Health & Activity Insight
             if 'sphus_l' in EASYSHARE_DF.columns and 'br015_l' in EASYSHARE_DF.columns:
@@ -257,9 +259,9 @@ def load_dataset():
 async def startup_event():
     load_dataset()
 
-# --- 3. GOOGLE GEMINI CONFIGURATION ---
+# Google Gemini Configuration
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 MODEL = None
 if genai and GEMINI_API_KEY:
     try:
@@ -280,7 +282,7 @@ if genai and GEMINI_API_KEY:
 else:
     print("GEMINI_API_KEY not set or library missing. AI feedback will fallback.")
 
-# --- 4. DATA MODELS ---
+# Data Models
 class TaskModel(BaseModel):
     taskId: str
     title: str
@@ -366,11 +368,9 @@ def build_fallback_response(agent: dict, reason: str) -> dict:
         "milestones": []
     }
 
-# --- 5. MATCHING LOGIC REMOVED ---
-# User requested removal of candidate matching functionality.
-# Only global dataset stats and insights are used now.
+# Matching logic removed; only global dataset stats/insights used.
 
-# --- 6. AI FEEDBACK GENERATION ---
+# AI Feedback Generation
 async def generate_feedback_stream(agent: dict, relevant_matches: list):
     if not MODEL:
         fallback = build_fallback_response(agent, "Model not initialized")
@@ -426,6 +426,12 @@ async def generate_feedback_stream(agent: dict, relevant_matches: list):
          - If modifying existing items, keep their IDs.
          - For NEW items, use temporary IDs (e.g., "new-m-1", "new-q-1").
          - Operations: "create", "update", "delete".
+      4. CATEGORY/TAG: Every milestone MUST include a "category" string. Pick a short, lowercase tag that best describes the goal area (e.g. "fitness", "career", "education", "finance", "health", "social", "creativity", "productivity"). Use the user's existing categories when possible.
+      5. DIFFICULTY: Every quest MUST include a "difficulty" field. Assign based on achievability:
+         - "EASY" — can be done in a day with minimal effort.
+         - "MEDIUM" — takes a few days of focused work.
+         - "HARD" — requires a week or more of sustained effort.
+         - "EPIC" — a major long-term challenge spanning weeks/months.
 
     OUTPUT FORMAT:
     Return a SINGLE valid JSON object.
@@ -439,6 +445,7 @@ async def generate_feedback_stream(agent: dict, relevant_matches: list):
                 "operation": "create | update | delete",
                 "title": "String",
                 "desc": "String",
+                "category": "String (lowercase tag, e.g. fitness, career, education)",
                 "quests": [
                     {{
                         "questId": "String (Real ID or 'new-q-X')",
@@ -483,6 +490,82 @@ async def generate_feedback_stream(agent: dict, relevant_matches: list):
             yield format_sse(json.dumps({"error": error_text}))
         yield format_sse("[DONE]")
 
+
+class BattleQuestRequest(BaseModel):
+    goalDescription: str
+    currentDay: int
+    totalDays: int = 7
+    previousQuests: List[str] = []
+
+@app.post("/api/generate-battle-quest")
+async def generate_battle_quest(payload: BattleQuestRequest):
+    """Generate an AI-powered daily quest for a battle participant."""
+    if not MODEL:
+        return {"quest": f"Work on: {payload.goalDescription[:100]}"}
+    try:
+        prev_context = ""
+        if payload.previousQuests:
+            prev_context = (
+                "\n\nPrevious quests already completed/assigned (DO NOT repeat these):\n"
+                + "\n".join(f"- {q}" for q in payload.previousQuests)
+            )
+
+        prompt = (
+            f"You are a personal improvement quest generator for a 7-day 1v1 battle challenge.\n"
+            f"The shared battle goal is: \"{payload.goalDescription}\"\n"
+            f"Today is Day {payload.currentDay} of {payload.totalDays}.\n"
+            f"{prev_context}\n\n"
+            f"Generate ONE specific, actionable daily quest that helps the user make progress "
+            f"toward this goal TODAY. The quest should be:\n"
+            f"- Completable in a single day\n"
+            f"- Concrete and measurable (not vague)\n"
+            f"- Progressively challenging (Day 1 = easier, Day 7 = harder)\n"
+            f"- Different from any previous quests listed above\n\n"
+            f"Return ONLY a JSON object with exactly this format:\n"
+            f'{{"quest": "description of the quest (max 200 chars)"}}'
+        )
+
+        response = await MODEL.generate_content_async(prompt)
+        text = (response.text or "").strip()
+
+        # Parse JSON response
+        try:
+            data = json.loads(text)
+            quest = data.get("quest", "").strip()[:200]
+            if quest:
+                return {"quest": quest}
+        except json.JSONDecodeError:
+            # If model returned plain text, use it directly
+            quest = text.strip().strip('"').strip("'")[:200]
+            if quest:
+                return {"quest": quest}
+
+        return {"quest": f"Work on: {payload.goalDescription[:100]}"}
+    except Exception as e:
+        print(f"Battle quest generation error: {e}")
+        return {"quest": f"Work on: {payload.goalDescription[:100]}"}
+
+
+class TitleRequest(BaseModel):
+    message: str
+
+@app.post("/api/generate-title")
+async def generate_title(payload: TitleRequest):
+    """Generate a short chat title from the user's first message."""
+    if not MODEL:
+        # Fallback: first 50 chars
+        fallback = payload.message.strip()[:50]
+        return {"title": fallback if fallback else "New Chat"}
+    try:
+        response = await MODEL.generate_content_async(
+            f"Generate a very short title (max 6 words) that summarizes this user message. "
+            f"Return ONLY the title text, no quotes, no explanation.\n\nMessage: \"{payload.message}\""
+        )
+        title = (response.text or "").strip().strip('"').strip("'")[:60]
+        return {"title": title if title else payload.message.strip()[:50]}
+    except Exception as e:
+        print(f"Title generation error: {e}")
+        return {"title": payload.message.strip()[:50] or "New Chat"}
 
 @app.post("/api/analyze-agent")
 async def analyze_agent(payload: AgentProfile):

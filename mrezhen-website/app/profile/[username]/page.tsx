@@ -1,13 +1,14 @@
 import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
-import Link from "next/link" // <--- Import Link
+import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { FollowButton } from "@/components/follow-button"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Calendar, Map, Users, MessageSquare } from "lucide-react" // <--- Import MessageSquare
+import { Calendar, Users, MessageSquare } from "lucide-react"
 import { getTranslations } from "next-intl/server"
+import { checkUserHasActiveStory } from "@/app/actions/story"
+import { StoryAvatarRing } from "@/components/story/story-avatar-ring"
 
 // Next.js 15: params is a Promise
 export default async function PublicProfilePage(props: { params: Promise<{ username: string }> }) {
@@ -16,8 +17,8 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
   const { username } = params;
   const session = await auth()
 
-  // Fetch target user public info
-  const user = await prisma.user.findUnique({
+  // Fetch target user (supports username or ID lookup)
+  let user = await prisma.user.findUnique({
     where: { username },
     include: {
       _count: {
@@ -36,6 +37,28 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
     }
   })
 
+  // Fallback: look up by user ID
+  if (!user) {
+    user = await prisma.user.findUnique({
+      where: { id: username },
+      include: {
+        _count: {
+          select: {
+            followedBy: true,
+            following: true,
+            milestones: true,
+            quests: true 
+          }
+        },
+        quests: {
+          where: { status: "COMPLETED" },
+          take: 5,
+          orderBy: { updatedAt: 'desc' }
+        }
+      }
+    })
+  }
+
   if (!user) return notFound()
 
   // Check if viewing own profile
@@ -51,99 +74,94 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
     isFollowing = currentUser?.following.some(f => f.followingId === user.id) ?? false
   }
 
+  // Check for active stories
+  const hasActiveStory = await checkUserHasActiveStory(user.id)
+
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-3xl mx-auto space-y-6">
-        
-        {/* Header Card */}
-        <Card className="overflow-hidden border-border shadow-md">
-          <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
-          <div className="px-8 pb-8">
-            <div className="relative flex justify-between items-end -mt-12 mb-6">
-              <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-                <AvatarImage src={user.image || ""} />
-                <AvatarFallback className="text-2xl font-bold bg-muted">{user.name?.[0]}</AvatarFallback>
-              </Avatar>
-              
-              {/* Actions Area: Message & Follow */}
-              {!isOwnProfile && session?.user && (
-                 <div className="mb-2 flex gap-2">
-                    {/* Message Button */}
-                    <Link 
-                        href={`/messages?username=${user.username}`}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-accent transition-colors shadow-sm"
-                    >
-                        <MessageSquare className="w-4 h-4" />
-                        {t("message")}
-                    </Link>
-
-                    {/* Follow Button */}
-                    <FollowButton targetUserId={user.id} initialIsFollowing={isFollowing} />
-                 </div>
-              )}
-            </div>
-
-            <div>
-                <h1 className="text-3xl font-bold text-foreground">{user.name}</h1>
-                <p className="text-muted-foreground font-medium">{t("levelExplorer", { level: user.level })}</p>
-                
-                <div className="flex gap-4 mt-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" /> {t("joined", { year: new Date(user.createdAt).getFullYear() })}
-                    </span>
-                    <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4" /> {user._count.followedBy} {t("followers")}
-                    </span>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b border-border">
+        <div className="max-w-3xl mx-auto px-6 py-10">
+          <div className="flex items-start gap-6">
+            <StoryAvatarRing
+              userId={user.id}
+              image={user.image}
+              name={user.name}
+              hasActiveStory={hasActiveStory}
+              size="lg"
+            />
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h1 className="editorial-headline text-3xl">{user.name}</h1>
+                  <p className="editorial-caption text-muted-foreground mt-1">{t("levelExplorer", { level: user.level })}</p>
                 </div>
+                
+                {!isOwnProfile && session?.user && (
+                  <div className="flex gap-2 shrink-0">
+                    <Link 
+                      href={`/messages?username=${user.username}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-[12px] tracking-wide uppercase text-foreground border border-border hover:bg-foreground hover:text-background transition-colors"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      {t("message")}
+                    </Link>
+                    <FollowButton targetUserId={user.id} initialIsFollowing={isFollowing} />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-4 mt-4 editorial-caption text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5" /> {t("joined", { year: new Date(user.createdAt).getFullYear() })}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5" /> {user._count.followedBy} {t("followers")}
+                </span>
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
+      </div>
 
+      <div className="max-w-3xl mx-auto px-6 py-10 space-y-8">
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard label={t("totalXp")} value={user.score} icon={<Trophy className="text-yellow-500" />} />
-            <StatCard label={t("questsDone")} value={user.quests.length} icon={<Trophy className="text-green-500" />} />
-            <StatCard label={t("activeGoals")} value={user._count.milestones} icon={<Map className="text-blue-500" />} />
-            <StatCard label={t("following")} value={user._count.following} icon={<Users className="text-purple-500" />} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px border border-border">
+          <StatCard label={t("totalXp")} value={user.score} />
+          <StatCard label={t("questsDone")} value={user.quests.length} />
+          <StatCard label={t("activeGoals")} value={user._count.milestones} />
+          <StatCard label={t("following")} value={user._count.following} />
         </div>
 
-        {/* Recent Achievements (Trophy Case) */}
-        <Card className="border-border shadow-sm">
-            <CardHeader>
-                <h3 className="text-lg font-bold flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-yellow-500" />
-                    {t("recentAchievements")}
-                </h3>
-            </CardHeader>
-            <CardContent>
-                {user.quests.length === 0 ? (
-                    <p className="text-muted-foreground text-sm italic">{t("noCompletedQuests")}</p>
-                ) : (
-                    <div className="space-y-3">
-                        {user.quests.map(quest => (
-                            <div key={quest.id} className="flex items-center justify-between p-3 bg-accent rounded-lg border border-border">
-                                <span className="font-medium text-foreground">{quest.title}</span>
-                                <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">
-                                    +{quest.completionPoints} XP
-                                </Badge>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-
+        {/* Recent Achievements */}
+        <div>
+          <h3 className="editorial-caption text-muted-foreground mb-4">{t("recentAchievements")}</h3>
+          {user.quests.length === 0 ? (
+            <p className="editorial-body text-muted-foreground text-sm">{t("noCompletedQuests")}</p>
+          ) : (
+            <div className="divide-y divide-border border border-border">
+              {user.quests.map(quest => (
+                <div key={quest.id} className="flex items-center justify-between p-4">
+                  <span className="text-[13px] font-semibold tracking-tight text-foreground">{quest.title}</span>
+                  <Badge variant="secondary" className="bg-muted text-foreground border border-border text-[11px]">
+                    +{quest.completionPoints} XP
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
 }
 
-function StatCard({ label, value, icon }: any) {
-    return (
-        <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-border">
-            <div className="mb-2 p-2 bg-accent rounded-full">{icon}</div>
-            <span className="text-2xl font-bold text-foreground">{value}</span>
-            <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
-        </Card>
-    )
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="p-5 bg-background border-r border-border last:border-r-0 text-center">
+      <p className="text-2xl font-black tracking-tighter text-foreground">{value}</p>
+      <p className="editorial-caption text-muted-foreground mt-1">{label}</p>
+    </div>
+  )
 }

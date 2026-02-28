@@ -3,113 +3,124 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { CreateMilestoneBtn } from "@/components/game/creation-forms"
 import { MilestoneItem } from "@/components/game/milestone-item"
-import { ArrowLeft, Target, CheckCircle2, Clock, Trophy } from "lucide-react"
+import { ArrowLeft, Target } from "lucide-react"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Progress } from "@/components/ui/progress"
+import { CategoryFilter } from "@/components/game/category-filter"
+import { GOAL_CATEGORIES } from "@/lib/constants"
 
 export const dynamic = 'force-dynamic'
 
-export default async function GoalsPage() {
+interface GoalsPageProps {
+  searchParams: Promise<{ category?: string }>
+}
+
+export default async function GoalsPage({ searchParams }: GoalsPageProps) {
   const session = await auth()
   if (!session?.user?.email) redirect("/auth/login")
   const t = await getTranslations("goals")
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  // Parse category filter from URL
+  const params = await searchParams
+  const categoryParam = params.category?.trim() || ""
+  const CATEGORY_REGEX = /^[a-zA-Z0-9\s\-_]+$/
+  const activeCategories = categoryParam
+    ? categoryParam.split(",").map(c => c.trim().toLowerCase()).filter(c => c.length > 0 && CATEGORY_REGEX.test(c))
+    : []
+
+  // Build Prisma where clause
+  const where: Record<string, unknown> = {
+    user: { email: session.user.email },
+  }
+
+  if (activeCategories.length === 1) {
+    where.category = { equals: activeCategories[0], mode: "insensitive" }
+  } else if (activeCategories.length > 1) {
+    where.category = { in: activeCategories, mode: "insensitive" }
+  }
+
+  const milestones = await prisma.milestone.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
     include: {
-      milestones: {
-        orderBy: { createdAt: 'desc' },
-        include: {
-          quests: {
-            orderBy: { createdAt: 'desc' },
-            include: { tasks: { orderBy: { createdAt: 'asc' } } }
-          }
-        }
-      }
-    }
+      quests: {
+        orderBy: { createdAt: "desc" },
+        include: { tasks: { orderBy: { createdAt: "asc" } } },
+      },
+    },
   })
 
-  if (!user) return null
-
-  const totalMilestones = user.milestones.length
-  const inProgress = user.milestones.filter(m => m.status === 'IN_PROGRESS').length
-  const completed = user.milestones.filter(m => m.status === 'COMPLETED').length
-  const totalQuests = user.milestones.reduce((sum, m) => sum + m.quests.length, 0)
-  const completedQuests = user.milestones.reduce((sum, m) => sum + m.quests.filter((q: any) => q.status === 'COMPLETED').length, 0)
+  const totalMilestones = milestones.length
+  const inProgress = milestones.filter(m => m.status === 'IN_PROGRESS').length
+  const completed = milestones.filter(m => m.status === 'COMPLETED').length
+  const totalQuests = milestones.reduce((sum, m) => sum + m.quests.length, 0)
+  const completedQuests = milestones.reduce((sum, m) => sum + m.quests.filter((q: any) => q.status === 'COMPLETED').length, 0)
   const overallProgress = totalQuests === 0 ? 0 : Math.round((completedQuests / totalQuests) * 100)
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ── Header Banner ───────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2" />
-        </div>
-        <div className="relative max-w-5xl mx-auto px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Header */}
+      <div className="border-b border-border">
+        <div className="max-w-5xl mx-auto px-6 py-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-              <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-teal-200 hover:text-white text-sm mb-2 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> {t("backToDashboard")}
+              <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-[12px] tracking-wide uppercase mb-3 transition-colors">
+                <ArrowLeft className="w-3.5 h-3.5" /> {t("backToDashboard")}
               </Link>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{t("title")}</h1>
-              <p className="text-teal-200 mt-1">{t("description")}</p>
+              <h1 className="editorial-headline text-4xl md:text-5xl">{t("title")}</h1>
+              <p className="editorial-body text-muted-foreground mt-2">{t("description")}</p>
             </div>
             <CreateMilestoneBtn />
           </div>
 
-          {/* ── Stats Row ────────────────────────────── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-1">
-                <Target className="w-4 h-4 text-teal-200" />
-                <span className="text-xs text-teal-100">{t("totalMilestones")}</span>
-              </div>
-              <p className="text-2xl font-bold">{totalMilestones}</p>
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
+            <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
+              <p className="editorial-caption text-muted-foreground mb-1">{t("totalMilestones")}</p>
+              <p className="text-3xl font-black tracking-tighter">{totalMilestones}</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-4 h-4 text-amber-300" />
-                <span className="text-xs text-teal-100">{t("inProgressLabel")}</span>
-              </div>
-              <p className="text-2xl font-bold">{inProgress}</p>
+            <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
+              <p className="editorial-caption text-muted-foreground mb-1">{t("inProgressLabel")}</p>
+              <p className="text-3xl font-black tracking-tighter">{inProgress}</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-1">
-                <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                <span className="text-xs text-teal-100">{t("completedLabel")}</span>
-              </div>
-              <p className="text-2xl font-bold">{completed}</p>
+            <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
+              <p className="editorial-caption text-muted-foreground mb-1">{t("completedLabel")}</p>
+              <p className="text-3xl font-black tracking-tighter">{completed}</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-1">
-                <Trophy className="w-4 h-4 text-yellow-300" />
-                <span className="text-xs text-teal-100">{t("overallProgress")}</span>
+            <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
+              <p className="editorial-caption text-muted-foreground mb-1">{t("overallProgress")}</p>
+              <p className="text-3xl font-black tracking-tighter">{overallProgress}%</p>
+              <div className="w-full h-1.5 mt-2 rounded-full bg-black/10 dark:bg-white/10 shadow-[inset_0_1px_3px_rgba(0,0,0,0.1)] overflow-hidden">
+                <div className="bg-foreground h-full transition-all" style={{ width: `${overallProgress}%` }} />
               </div>
-              <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold">{overallProgress}%</p>
-              </div>
-              <Progress value={overallProgress} className="h-1.5 mt-2 bg-white/20 [&>div]:bg-emerald-300" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Milestones List ──────────────────────────── */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      {/* Category Filter + Milestones List */}
+      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+        <CategoryFilter
+          categories={GOAL_CATEGORIES as unknown as string[]}
+          activeCategories={activeCategories}
+        />
+
         <div className="grid gap-6">
-          {user.milestones.length === 0 && (
-            <div className="text-center py-20 bg-card border-2 border-dashed border-border rounded-xl">
+          {milestones.length === 0 && (
+            <div className="text-center py-20 border-2 border-dashed rounded-xl bg-primary/5 border-primary/30 dark:bg-white/[0.02] dark:border-white/20">
               <div className="mx-auto w-16 h-16 bg-teal-50 dark:bg-teal-900/30 rounded-2xl flex items-center justify-center mb-4">
                 <Target className="w-8 h-8 text-teal-500" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground">{t("noMilestones")}</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                {activeCategories.length > 0 ? t("noFilteredMilestones") : t("noMilestones")}
+              </h3>
               <p className="text-muted-foreground mb-4 mt-1">{t("startByCreating")}</p>
               <CreateMilestoneBtn />
             </div>
           )}
 
-          {user.milestones.map((milestone) => (
+          {milestones.map((milestone) => (
             <MilestoneItem key={milestone.id} milestone={milestone} />
           ))}
         </div>

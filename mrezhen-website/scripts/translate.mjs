@@ -1,21 +1,7 @@
 #!/usr/bin/env node
-/**
- * Auto-translate script for Mrezhen i18n.
- *
- * Usage:
- *   node scripts/translate.mjs           # translate all languages
- *   node scripts/translate.mjs es fr de  # translate only specific languages
- *   node scripts/translate.mjs --force   # re-translate everything (ignore cache)
- *
- * How it works:
- *   1. Reads messages/en.json as the single source of truth.
- *   2. For each target language, only translates NEW or CHANGED keys
- *      (compares against existing translation file).
- *   3. Preserves {placeholder} variables (e.g. {name}, {year}).
- *   4. Writes the result to messages/<lang>.json
- *
- * To add a new language, just add its code to the LANGUAGES array below.
- */
+// Auto-translate script for Mrezhen i18n.
+// Usage: node scripts/translate.mjs [es fr de] [--force]
+// Reads en.json, translates new/changed keys, preserves {placeholders}.
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
@@ -38,7 +24,7 @@ const LANG_MAP = {
   no: "no",
 };
 
-// ── Helpers ──────────────────────────────────────────────
+// Helpers
 
 /** Flatten { nav: { dashboard: "x" } } → { "nav.dashboard": "x" } */
 function flatten(obj, prefix = "") {
@@ -69,11 +55,7 @@ function unflatten(obj) {
   return result;
 }
 
-/**
- * Protect {placeholders} from being mangled by Google Translate.
- * Replaces {name} → [[0]], {year} → [[1]], etc.
- * Returns the modified string and a restore function.
- */
+// Protect {placeholders} from Google Translate mangling
 function protectPlaceholders(text) {
   const placeholders = [];
   const protected_ = text.replace(/\{(\w+)\}/g, (match) => {
@@ -87,10 +69,10 @@ function protectPlaceholders(text) {
   };
 }
 
-/** Sleep helper to avoid rate-limiting */
+// Sleep helper for rate-limiting
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// ── Main ─────────────────────────────────────────────────
+// Main
 
 async function main() {
   const args = process.argv.slice(2);
@@ -130,13 +112,8 @@ async function main() {
       }
     }
 
-    // Find keys that need translation (new or changed in en.json)
+    // Translate keys missing from the target file
     const toTranslate = {};
-    // We also need to track the en.json values that existed when we last translated
-    // For simplicity: if the key exists in the target AND the source hasn't changed
-    // since the target was written, skip it.
-    // Since we can't know the original EN value, we translate any key that's
-    // missing from the target file.
     for (const [key, value] of Object.entries(enFlat)) {
       if (!existingFlat[key]) {
         toTranslate[key] = value;

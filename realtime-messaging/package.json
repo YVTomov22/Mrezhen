@@ -1,0 +1,21 @@
+{
+  "name": "mrezhen-realtime-messaging",
+  "version": "1.0.0",
+  "description": "Production-ready WebSocket real-time messaging service for Mrezhen",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "generate-token": "node generate-token.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^10.0.0",
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

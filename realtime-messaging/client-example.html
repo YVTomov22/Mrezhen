@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mrezhen Chat — WS Client Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #121212; color: #b2bebf; display: flex; height: 100vh; }
+    aside { width: 260px; border-right: 1px solid #363636; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    aside h2 { font-size: 14px; color: #0095f6; text-transform: uppercase; letter-spacing: .05em; }
+    aside input, aside button { width: 100%; padding: 8px 12px; border: 1px solid #363636; border-radius: 0; background: #262626; color: #b2bebf; font-size: 13px; }
+    aside button { cursor: pointer; background: #0095f6; color: #fff; border: none; font-weight: 600; }
+    aside button:hover { background: #1da1f2; }
+    #onlineList { flex: 1; overflow-y: auto; font-size: 13px; }
+    .user-item { padding: 6px 0; display: flex; align-items: center; gap: 8px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; }
+    main { flex: 1; display: flex; flex-direction: column; }
+    #log { flex: 1; overflow-y: auto; padding: 16px; font-size: 13px; font-family: monospace; line-height: 1.6; }
+    .msg-in { color: #4caf50; }
+    .msg-out { color: #0095f6; }
+    .msg-sys { color: #8e8e8e; font-style: italic; }
+    .msg-err { color: #ed4956; }
+    .msg-ack { color: #f9a825; }
+    #chatBar { display: flex; border-top: 1px solid #363636; }
+    #chatBar input { flex: 1; padding: 12px; background: #262626; border: none; color: #b2bebf; font-size: 14px; outline: none; }
+    #chatBar button { padding: 12px 20px; background: #0095f6; color: white; border: none; cursor: pointer; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<aside>
+  <h2>Mrezhen Chat</h2>
+
+  <label style="font-size:11px;color:#8e8e8e;">JWT Token</label>
+  <input id="tokenInput" placeholder="Paste your JWT here" />
+
+  <label style="font-size:11px;color:#8e8e8e;">Send To (userId)</label>
+  <input id="recipientInput" placeholder="e.g. user_bob" />
+
+  <button id="connectBtn">Connect</button>
+  <button id="disconnectBtn" style="background:#363636;" disabled>Disconnect</button>
+
+  <h2 style="margin-top:12px;">Online Users</h2>
+  <div id="onlineList"></div>
+</aside>
+
+<main>
+  <div id="log"></div>
+  <div id="chatBar">
+    <input id="messageInput" placeholder="Type a message…" disabled />
+    <button id="sendBtn" disabled>Send</button>
+  </div>
+</main>
+
+<script>
+/**
+ * Mrezhen WebSocket Client — Vanilla JS Example
+ * ================================================
+ *
+ * Demonstrates:
+ *   - JWT-authenticated connection via query param
+ *   - Sending direct messages
+ *   - Receiving messages (real-time and queued)
+ *   - Handling presence events
+ *   - Message acknowledgements
+ *   - Error handling
+ *   - Application-level keep-alive (ping/pong)
+ */
+
+const WS_URL = "ws://localhost:3001";
+
+let ws = null;
+let keepAliveTimer = null;
+
+const $ = (id) => document.getElementById(id);
+
+/* ── UI helpers ───────────────────────────────────────────── */
+
+function log(text, cls = "msg-sys") {
+  const el = $("log");
+  const line = document.createElement("div");
+  line.className = cls;
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+function setOnlineUsers(users) {
+  const list = $("onlineList");
+  list.innerHTML = "";
+  users.forEach((u) => {
+    const div = document.createElement("div");
+    div.className = "user-item";
+    div.innerHTML = `<span class="dot"></span> ${u}`;
+    // Click to set as recipient
+    div.style.cursor = "pointer";
+    div.addEventListener("click", () => {
+      $("recipientInput").value = u;
+    });
+    list.appendChild(div);
+  });
+}
+
+function setConnected(connected) {
+  $("connectBtn").disabled = connected;
+  $("disconnectBtn").disabled = !connected;
+  $("messageInput").disabled = !connected;
+  $("sendBtn").disabled = !connected;
+}
+
+/* ── Connect ──────────────────────────────────────────────── */
+
+$("connectBtn").addEventListener("click", () => {
+  const token = $("tokenInput").value.trim();
+  if (!token) { alert("Paste a JWT token first."); return; }
+
+  log("Connecting…");
+  ws = new WebSocket(`${WS_URL}?token=${encodeURIComponent(token)}`);
+
+  ws.addEventListener("open", () => {
+    log("✓ Connected");
+    setConnected(true);
+
+    // Application-level keep-alive every 25 s
+    keepAliveTimer = setInterval(() => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 25_000);
+  });
+
+  ws.addEventListener("message", (event) => {
+    let data;
+    try { data = JSON.parse(event.data); }
+    catch { log(`Raw: ${event.data}`); return; }
+
+    switch (data.type) {
+      /* ── Incoming message ──────────────────────────── */
+      case "direct_message": {
+        const q = data.queued ? " (queued)" : "";
+        log(`← ${data.message.from}: ${data.message.content}${q}`, "msg-in");
+        break;
+      }
+
+      /* ── Delivery acknowledgement ──────────────────── */
+      case "message_ack": {
+        log(`✓ ack [${data.status}] → ${data.to}  (id: ${data.messageId.slice(0, 8)}…)`, "msg-ack");
+        break;
+      }
+
+      /* ── Presence ──────────────────────────────────── */
+      case "presence": {
+        const emoji = data.status === "online" ? "🟢" : "🔴";
+        log(`${emoji} ${data.userId} is ${data.status}`);
+        setOnlineUsers(data.onlineUsers);
+        break;
+      }
+
+      /* ── Online users list ─────────────────────────── */
+      case "online_users": {
+        setOnlineUsers(data.users);
+        break;
+      }
+
+      /* ── Message history ───────────────────────────── */
+      case "message_history": {
+        log(`── History with ${data.with} (${data.messages.length} messages) ──`);
+        data.messages.forEach((m) => {
+          const cls = m.from === $("recipientInput").value.trim() ? "msg-in" : "msg-out";
+          log(`  ${m.from}: ${m.content}`, cls);
+        });
+        break;
+      }
+
+      /* ── Pong ──────────────────────────────────────── */
+      case "pong":
+        // Silent keep-alive response
+        break;
+
+      /* ── Error ─────────────────────────────────────── */
+      case "error": {
+        log(`✗ ${data.code}: ${data.message}`, "msg-err");
+        break;
+      }
+
+      default:
+        log(`Unknown: ${JSON.stringify(data)}`);
+    }
+  });
+
+  ws.addEventListener("close", (e) => {
+    log(`Connection closed (code: ${e.code}, reason: ${e.reason || "none"})`);
+    setConnected(false);
+    clearInterval(keepAliveTimer);
+    ws = null;
+  });
+
+  ws.addEventListener("error", () => {
+    log("Connection error", "msg-err");
+  });
+});
+
+/* ── Disconnect ───────────────────────────────────────────── */
+
+$("disconnectBtn").addEventListener("click", () => {
+  if (ws) ws.close();
+});
+
+/* ── Send message ─────────────────────────────────────────── */
+
+function sendMessage() {
+  const to = $("recipientInput").value.trim();
+  const content = $("messageInput").value.trim();
+  if (!to || !content || !ws) return;
+
+  ws.send(JSON.stringify({
+    type: "direct_message",
+    to,
+    content,
+  }));
+
+  log(`→ ${to}: ${content}`, "msg-out");
+  $("messageInput").value = "";
+}
+
+$("sendBtn").addEventListener("click", sendMessage);
+$("messageInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendMessage();
+});
+</script>
+</body>
+</html>

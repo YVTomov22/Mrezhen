@@ -1,12 +1,27 @@
 'use server'
 
+import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 
 const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
 
 export async function analyzeAgentAction(userId: string, userInput: string) {
+  // Verify the caller is authenticated and requesting their own data
+  const session = await auth()
+  if (!session?.user?.email) {
+    return (async function* () {
+      yield `data: ${JSON.stringify({ error: "Unauthorized" })}\n\n[DONE]`;
+    })();
+  }
+  const currentUser = await prisma.user.findUnique({ where: { email: session.user.email }, select: { id: true } })
+  if (!currentUser || currentUser.id !== userId) {
+    return (async function* () {
+      yield `data: ${JSON.stringify({ error: "Unauthorized" })}\n\n[DONE]`;
+    })();
+  }
+
   try {
-    // 1. Fetch User Data from DB
+    // Fetch user data
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -26,18 +41,15 @@ export async function analyzeAgentAction(userId: string, userInput: string) {
       throw new Error("User not found");
     }
 
-    // 2. Transform DB data to Python Backend format
-    // Python expects: { username, age, interests, location, bio, current_roadmap }
+    // Transform to backend payload format
     const payload = {
       username: user.username || user.name || "User",
-      dateOfBirth: user.dateOfBirth?.toISOString().split('T')[0] || "Unknown", // Default if not set
+      dateOfBirth: user.dateOfBirth?.toISOString().split('T')[0] || "Unknown",
       interests: user.interests ? user.interests.join(', ') : "",
-      location: "Digital Nomad", // Placeholder as schema lacks location
-      // Use the userInput as the immediate context/intent, fallback to DB bio
-      bio: user.bio || "I want to improve my life.", 
+      location: "Digital Nomad",
+      bio: user.bio || "I want to improve my life.",
       user_input: userInput,
       
-      // Transform Roadmap
       current_roadmap: user.milestones.map(m => ({
         milestoneId: m.id,
         title: m.title,
@@ -48,14 +60,14 @@ export async function analyzeAgentAction(userId: string, userInput: string) {
           desc: q.description || "",
           tasks: q.tasks.map(t => ({
             taskId: t.id,
-            title: t.content, // Python 'title' maps to Prisma 'content'
+            title: t.content,
             desc: ""
           }))
         }))
       }))
     };
 
-    // 3. Send to Python Backend
+    // Send to Python backend
     const response = await fetch(`${PYTHON_BACKEND_URL}/api/analyze-agent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
