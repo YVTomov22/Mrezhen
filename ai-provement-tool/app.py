@@ -11,7 +11,7 @@ from pydantic import BaseModel, ValidationError
 import PIL.Image
 from groq import Groq
 
-# --- Environment and API Key Setup ---
+# Environment and API Key Setup
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if not GROQ_API_KEY:
@@ -22,11 +22,11 @@ groq_client = Groq(api_key=GROQ_API_KEY)
 app = FastAPI()
 
 
-# --- Configuration ---
+# Configuration
 BASE_DIR = os.path.dirname(__file__)
 
 
-# --- Pydantic Models ---
+# Pydantic Models
 class Task(BaseModel):
     id: int
     title: str
@@ -42,13 +42,9 @@ CACHE_TTL_SECONDS = 20 * 60  # 20 minutes
 # key: (task_id, user_comment, tuple(image_urls)) -> (timestamp, AIResponse)
 _ai_cache: Dict[Tuple[int, str, Tuple[str, ...]], Tuple[float, "AIResponse"]] = {}
 
-# --- AI Evaluation Logic ---
+# AI Evaluation Logic
 async def evaluate_task_completion(task: Task, image_urls: List[str], user_text: Optional[str]) -> AIResponse:
-    """Use Groq vision model to decide if the task is completed based on task, one or more image URLs, and user text.
-
-    Uses a simple in-memory cache keyed by (task.id, user_text, image_urls) with a 20 minute TTL
-    to avoid repeated AI calls for identical inputs.
-    """
+    """Use Groq vision model to evaluate task completion from images and user text. Caches results for 20 min."""
 
     # Normalize inputs for cache key
     user_comment = user_text or ""
@@ -144,14 +140,14 @@ async def evaluate_task_completion(task: Task, image_urls: List[str], user_text:
             reason=f"AI API call failed. Error: {e}",
         )
 
-# --- API Endpoints ---
+# API Endpoints
 @app.post("/evaluate", response_model=AIResponse)
 async def evaluate(
     task: str = Form(..., description="Task object as JSON string"),
     image_urls: str = Form(..., description="JSON array of public URLs of the proof images"),
     user_text: Optional[str] = Form(None, description="Optional user explanation / notes"),
 ):
-    """Evaluates whether a task is completed based on one or more image URLs and optional user text."""
+    """Evaluate whether a task is completed based on image URLs and optional user text."""
 
     try:
         task_obj = Task(**json.loads(task))

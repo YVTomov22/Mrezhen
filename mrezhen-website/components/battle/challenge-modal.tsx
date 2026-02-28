@@ -13,9 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Swords, Clock, Trophy, Target, Loader2, AlertTriangle } from "lucide-react"
 
-// ─────────────────────────────────────────────────────────
 // Types
-// ─────────────────────────────────────────────────────────
 
 type Milestone = {
   id: string
@@ -31,9 +29,7 @@ interface ChallengeModalProps {
   opponentName: string | null
 }
 
-// ─────────────────────────────────────────────────────────
 // Component
-// ─────────────────────────────────────────────────────────
 
 export function ChallengeModal({ open, onOpenChange, opponentId, opponentName }: ChallengeModalProps) {
   const t = useTranslations("battle")
@@ -109,7 +105,7 @@ export function ChallengeModal({ open, onOpenChange, opponentId, opponentName }:
     setError(null)
   }
 
-  // ── Confirmation Dialog ──
+  // Confirmation Dialog
   if (showConfirmation) {
     const selectedMs = milestones.find(m => m.id === selectedMilestone)
     return (
@@ -169,7 +165,7 @@ export function ChallengeModal({ open, onOpenChange, opponentId, opponentName }:
     )
   }
 
-  // ── Main Challenge Setup ──
+  // Main Challenge Setup
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg">

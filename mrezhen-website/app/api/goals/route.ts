@@ -2,30 +2,15 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 
-/**
- * GET /api/goals
- *
- * Returns the authenticated user's milestones (goals) with optional
- * server-side category filtering.
- *
- * Query parameters:
- *   category  – comma-separated list of categories (case-insensitive)
- *   status    – optional status filter (IN_PROGRESS, COMPLETED, etc.)
- *
- * Examples:
- *   GET /api/goals                         → all goals
- *   GET /api/goals?category=health         → goals in "health"
- *   GET /api/goals?category=health,career  → goals in "health" OR "career"
- *   GET /api/goals?category=health&status=IN_PROGRESS
- */
+// Returns the authenticated user's milestones with optional category/status filtering.
 export async function GET(request: NextRequest) {
-  // ── Auth ──────────────────────────────────────────────
+  // Auth
   const session = await auth()
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  // ── Parse & validate query params ─────────────────────
+  // Parse & validate query params
   const { searchParams } = new URL(request.url)
   const categoryParam = searchParams.get("category")?.trim() || ""
   const statusParam   = searchParams.get("status")?.trim().toUpperCase() || ""
@@ -57,12 +42,12 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  // ── Build Prisma filter ───────────────────────────────
+  // Build Prisma filter
   const where: Record<string, unknown> = {
     user: { email: session.user.email },
   }
 
-  // Case-insensitive category filtering using Prisma mode: 'insensitive'
+  // Case-insensitive category filter
   if (categories.length === 1) {
     where.category = { equals: categories[0], mode: "insensitive" }
   } else if (categories.length > 1) {
@@ -73,7 +58,7 @@ export async function GET(request: NextRequest) {
     where.status = statusParam
   }
 
-  // ── Query ─────────────────────────────────────────────
+  // Query
   try {
     const milestones = await prisma.milestone.findMany({
       where,

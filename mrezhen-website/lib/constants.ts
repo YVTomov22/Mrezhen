@@ -1,7 +1,4 @@
-/**
- * Predefined goal/milestone categories.
- * Shared between server actions, API routes, and client components.
- */
+// Predefined goal/milestone categories
 export const GOAL_CATEGORIES = [
   "health", "career", "education", "finance",
   "fitness", "relationships", "creativity", "personal",
@@ -10,9 +7,7 @@ export const GOAL_CATEGORIES = [
 
 export type GoalCategory = (typeof GOAL_CATEGORIES)[number]
 
-/**
- * Battle system constants.
- */
+// Battle system constants
 export const BATTLE_DURATION_DAYS = 7
 export const BATTLE_DAILY_QUEST_XP = 50
 export const BATTLE_WINNER_MULTIPLIER = 2

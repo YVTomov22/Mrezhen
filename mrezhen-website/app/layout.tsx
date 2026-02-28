@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -17,12 +17,6 @@ const inter = Inter({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-editorial",
-  display: "swap",
-  weight: ["400", "700", "900"],
-});
 
 export const metadata: Metadata = {
   title: "Mrezhen",
@@ -39,7 +33,7 @@ export default async function RootLayout({
   const session = await auth();
   const isLoggedIn = !!session?.user;
 
-  /* ── Read accessibility preferences from DB ────────── */
+  // Read accessibility preferences from DB
   let fontSize = "medium";
   let highContrast = false;
   let screenReader = false;
@@ -67,8 +61,8 @@ export default async function RootLayout({
       {...(screenReader ? { "data-screen-reader": "" } : {})}
       {...(reduceMotion ? { "data-reduce-motion": "" } : {})}
     >
-      <body className={`${inter.variable} ${playfair.variable} ${inter.className}`}>
-        {/* Skip-to-content link — visible on focus for keyboard / screen reader users */}
+      <body className={`${inter.variable} ${inter.className}`}>
+        {/* Skip-to-content link */}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:bg-background focus:text-foreground focus:px-4 focus:py-2 focus:border focus:border-ring"

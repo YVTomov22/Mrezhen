@@ -20,7 +20,11 @@ export const authConfig = {
 
       // If on a public / static / api route, allow
       if (isPublicRoute || isApiRoute || isStaticAsset) {
-        // But if logged in and on login/register, redirect to /community
+        // If logged in and on landing page, redirect to /community
+        if (isLoggedIn && pathname === '/') {
+          return Response.redirect(new URL('/community', nextUrl))
+        }
+        // If logged in and on login/register, redirect to /community
         if (isLoggedIn && isAuthRoute) {
           return Response.redirect(new URL('/community', nextUrl))
         }

@@ -5,11 +5,7 @@ import Groq from "groq-sdk"
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
-/**
- * Explicit anatomical/sexual keywords that are unambiguously NSFW.
- * Kept narrow on purpose — common words like "breast", "naked", "skin"
- * appear in legitimate descriptions (beach, medical, art) and cause false positives.
- */
+/** Explicit NSFW keywords (kept narrow to avoid false positives). */
 const EXPLICIT_KEYWORDS = [
   // Male genitalia
   "penis", "penile", "phallus", "phallic", "testicle", "scrotum", "foreskin",
@@ -28,10 +24,8 @@ const EXPLICIT_KEYWORDS = [
 ]
 
 /**
- * Moderate an image using Groq vision BEFORE uploading to Cloudinary.
- * Asks the model to describe the image, then scans for explicit keywords.
- * Using description (not YES/NO) because the model is more likely to
- * name anatomical parts when describing than when asked a binary question.
+ * Moderate an image via Groq vision before uploading.
+ * Describes the image and scans for explicit keywords.
  */
 async function moderateImage(buffer: Uint8Array, mimeType: string): Promise<{ safe: boolean; reason: string }> {
   const base64 = Buffer.from(buffer).toString("base64")
@@ -73,7 +67,7 @@ async function moderateImage(buffer: Uint8Array, mimeType: string): Promise<{ sa
       return { safe: false, reason: "Inappropriate content detected" }
     }
 
-    // If the model explicitly says it cannot describe (strongly suggests explicit content)
+    // Model refused to describe (likely explicit)
     const hardRefusals = [
       "i cannot provide", "i can't provide", "i'm unable to",
       "i am unable to", "not able to describe", "cannot describe this",
@@ -89,7 +83,7 @@ async function moderateImage(buffer: Uint8Array, mimeType: string): Promise<{ sa
   } catch (err: any) {
     console.error("[moderation] Groq error:", err?.status, err?.message)
 
-    // Groq actively rejects the image via content policy → block it
+    // Groq content policy rejection — block
     const isContentRejection =
       err?.status === 400 ||
       err?.code === "failed_generation" ||
@@ -101,7 +95,7 @@ async function moderateImage(buffer: Uint8Array, mimeType: string): Promise<{ sa
       return { safe: false, reason: "Image rejected by content policy" }
     }
 
-    // Genuine infra failure (network, auth, etc.) → let image through
+    // Infra failure — let image through
     return { safe: true, reason: "" }
   }
 }
@@ -118,13 +112,13 @@ export async function uploadImages(formData: FormData) {
     const buffer = new Uint8Array(arrayBuffer)
     const mimeType = file.type || "image/jpeg"
 
-    // 1. Moderate with Groq FIRST (using base64 — no URL needed)
+    // Moderate with Groq first
     const { safe, reason } = await moderateImage(buffer, mimeType)
     if (!safe) {
       throw new Error(`Image rejected: ${reason}`)
     }
 
-    // 2. Only upload to Cloudinary if moderation passed
+    // Upload to Cloudinary if moderation passed
     const secureUrl = await new Promise<string>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         { folder: "hivemind-uploads", resource_type: "auto" },

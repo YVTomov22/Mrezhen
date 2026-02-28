@@ -134,7 +134,7 @@ export async function getUsersToChatWith(specificUsername?: string) {
 
     if (!currentUser) return []
 
-    // 1. Base Query: Get all other users (In a real app, this might be 'friends' or 'recent chats')
+    // Get all other users
     const users = await prisma.user.findMany({
         where: {
             id: { not: currentUser.id }
@@ -146,10 +146,10 @@ export async function getUsersToChatWith(specificUsername?: string) {
             image: true,
             email: true
         },
-        take: 50 // Optional limit
+        take: 50
     })
 
-    // 2. If a specific user is requested via URL, ensure they are in the list
+    // Ensure requested user is in the list
     if (specificUsername) {
         const targetUser = await prisma.user.findUnique({
             where: { username: specificUsername },
@@ -162,7 +162,7 @@ export async function getUsersToChatWith(specificUsername?: string) {
             }
         })
 
-        // If found and not already in the list (and not self), add to top
+        // Add to top if not already present
         if (targetUser && targetUser.id !== currentUser.id) {
             const alreadyExists = users.some(u => u.id === targetUser.id)
             if (!alreadyExists) {

@@ -2,15 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 
-/**
- * GET /api/battles
- *
- * Query params:
- *   ?status=ACTIVE|PENDING|COMPLETED|CANCELLED|DECLINED
- *   ?opponent=<userId>
- *
- * Returns all battles for the authenticated user, optionally filtered.
- */
+// Returns all battles for the authenticated user, optionally filtered by status/opponent.
 export async function GET(request: NextRequest) {
   const session = await auth()
   if (!session?.user?.email) {

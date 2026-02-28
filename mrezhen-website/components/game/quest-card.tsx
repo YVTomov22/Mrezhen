@@ -47,10 +47,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
         <div className="flex justify-between items-start">
           <div className="flex gap-3 w-full"> {/* Increased gap, added w-full */}
             
-            {/* FIX: 
-               1. shrink-0: prevents icon from being squished
-               2. w-6 h-6: reserves strict space so text doesn't jump
-            */}
+            {/* Fixed-size icon container */}
             <div className="shrink-0 w-6 h-6 flex items-center justify-center mt-0.5">
                 <div className={cn("text-muted-foreground transition-transform duration-200", isOpen && "rotate-180")}>
                     <ChevronDown className="w-5 h-5" />

@@ -1,9 +1,4 @@
-/**
- * Input validation for incoming WebSocket messages.
- *
- * Every message from the client is untrusted — we validate structure,
- * types, and lengths before touching any business logic.
- */
+// Input validation for incoming WebSocket messages.
 
 /** Maximum allowed message body length (UTF-16 code units). */
 const MAX_CONTENT_LENGTH = 5000;
@@ -11,15 +6,9 @@ const MAX_CONTENT_LENGTH = 5000;
 /** Maximum raw frame size we'll accept (prevents memory bomb). */
 export const MAX_PAYLOAD_BYTES = 64 * 1024; // 64 KB
 
-/**
- * Parse and validate a raw WebSocket frame.
- * Returns { ok, data?, error? }.
- *
- * @param {string | Buffer} raw
- * @returns {{ ok: true, data: object } | { ok: false, error: { code: string, message: string } }}
- */
+/** Parse and validate a raw WebSocket frame. Returns { ok, data?, error? }. */
 export function validateMessage(raw) {
-  // ── 1. Parse JSON ──────────────────────────────────────
+  // 1. Parse JSON
   let data;
   try {
     data = JSON.parse(typeof raw === "string" ? raw : raw.toString("utf8"));
@@ -27,17 +16,17 @@ export function validateMessage(raw) {
     return fail("INVALID_JSON", "Message is not valid JSON.");
   }
 
-  // ── 2. Must be a non-null object ───────────────────────
+  // 2. Must be a non-null object────
   if (!data || typeof data !== "object" || Array.isArray(data)) {
     return fail("INVALID_FORMAT", "Message must be a JSON object.");
   }
 
-  // ── 3. Require a 'type' field ──────────────────────────
+  // 3. Require a 'type' field────
   if (typeof data.type !== "string" || data.type.length === 0) {
     return fail("MISSING_TYPE", "Message must include a 'type' field.");
   }
 
-  // ── 4. Type-specific validation ────────────────────────
+  // 4. Type-specific validation────
   switch (data.type) {
     case "direct_message":
       return validateDirectMessage(data);
@@ -56,7 +45,7 @@ export function validateMessage(raw) {
   }
 }
 
-/* ── Type-specific validators ─────────────────────────────── */
+// Type-specific validators
 
 function validateDirectMessage(data) {
   if (typeof data.to !== "string" || data.to.trim().length === 0) {
@@ -90,7 +79,7 @@ function validateGetHistory(data) {
   return ok(data);
 }
 
-/* ── Helpers ──────────────────────────────────────────────── */
+// Helpers
 
 function ok(data) {
   return { ok: true, data };

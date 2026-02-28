@@ -12,9 +12,7 @@ import {
 } from "lucide-react"
 import { BATTLE_DURATION_DAYS, BATTLE_DAILY_QUEST_XP } from "@/lib/constants"
 
-// ─────────────────────────────────────────────────────────
 // Types
-// ─────────────────────────────────────────────────────────
 
 type PendingBattle = {
   id: string
@@ -36,9 +34,7 @@ interface BattleNotificationProps {
   currentUserId: string
 }
 
-// ─────────────────────────────────────────────────────────
 // Component
-// ─────────────────────────────────────────────────────────
 
 export function BattleNotification({ otherUserId, currentUserId }: BattleNotificationProps) {
   const t = useTranslations("battle")

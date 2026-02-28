@@ -6,7 +6,7 @@ export const dynamic = "force-static"
 export default function ContactPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
-      {/* ─── Header ──────────────────────────────────────── */}
+      {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
           <Mail className="h-7 w-7 text-muted-foreground" />
@@ -18,12 +18,12 @@ export default function ContactPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-[1fr_280px]">
-        {/* ─── Form ────────────────────────────────────────── */}
+        {/* Form */}
         <div className="rounded-xl border border-border bg-card p-6">
           <ContactForm />
         </div>
 
-        {/* ─── Sidebar info ────────────────────────────────── */}
+        {/* Sidebar info */}
         <aside className="space-y-6 text-sm">
           <div className="space-y-3">
             <h2 className="font-semibold text-base">Get in Touch</h2>

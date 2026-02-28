@@ -80,7 +80,7 @@ export function RoadmapProposal({ data }: RoadmapProposalProps) {
   );
 }
 
-// --- MILESTONE CARD ---
+// Milestone Card
 function MilestoneCard({ milestone, onChange }: { milestone: ProposalMilestone, onChange: (m: ProposalMilestone) => void }) {
   const t = useTranslations("aiChat")
   const tCommon = useTranslations("common")
@@ -204,7 +204,7 @@ function MilestoneCard({ milestone, onChange }: { milestone: ProposalMilestone, 
   );
 }
 
-// --- QUEST CARD ---
+// Quest Card
 function QuestCard({ quest, parentRealId, isDisabled, onChange }: { 
     quest: ProposalQuest, 
     parentRealId: string | null, 
@@ -299,7 +299,7 @@ function QuestCard({ quest, parentRealId, isDisabled, onChange }: {
   );
 }
 
-// --- TASK CARD ---
+// Task Card
 function TaskCard({ task, parentRealId, isDisabled, onChange }: {
     task: ProposalTask,
     parentRealId: string | null,

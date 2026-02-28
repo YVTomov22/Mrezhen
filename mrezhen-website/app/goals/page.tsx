@@ -21,7 +21,7 @@ export default async function GoalsPage({ searchParams }: GoalsPageProps) {
   if (!session?.user?.email) redirect("/auth/login")
   const t = await getTranslations("goals")
 
-  // ── Parse category filter from URL ──
+  // Parse category filter from URL
   const params = await searchParams
   const categoryParam = params.category?.trim() || ""
   const CATEGORY_REGEX = /^[a-zA-Z0-9\s\-_]+$/
@@ -29,7 +29,7 @@ export default async function GoalsPage({ searchParams }: GoalsPageProps) {
     ? categoryParam.split(",").map(c => c.trim().toLowerCase()).filter(c => c.length > 0 && CATEGORY_REGEX.test(c))
     : []
 
-  // ── Build Prisma where clause ──
+  // Build Prisma where clause
   const where: Record<string, unknown> = {
     user: { email: session.user.email },
   }
@@ -60,7 +60,7 @@ export default async function GoalsPage({ searchParams }: GoalsPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ── Header ───────────────────────────────────── */}
+      {/* Header */}
       <div className="border-b border-border">
         <div className="max-w-5xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
@@ -74,7 +74,7 @@ export default async function GoalsPage({ searchParams }: GoalsPageProps) {
             <CreateMilestoneBtn />
           </div>
 
-          {/* ── Stats Row ────────────────────────────── */}
+          {/* Stats Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
             <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] dark:backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-white/5">
               <p className="editorial-caption text-muted-foreground mb-1">{t("totalMilestones")}</p>
@@ -99,7 +99,7 @@ export default async function GoalsPage({ searchParams }: GoalsPageProps) {
         </div>
       </div>
 
-      {/* ── Category Filter + Milestones List ────────── */}
+      {/* Category Filter + Milestones List */}
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
         <CategoryFilter
           categories={GOAL_CATEGORIES as unknown as string[]}

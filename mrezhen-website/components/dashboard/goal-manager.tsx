@@ -23,7 +23,7 @@ import {
 import { TaskVerifier } from "@/components/game/task-verifier"
 import { useTranslations } from "next-intl"
 
-// --- TYPES ---
+// Types
 type Task = { id: string; content: string; isCompleted: boolean } 
 type Quest = { id: string; title: string; description: string | null; difficulty: string; tasks: Task[] }
 type Milestone = { id: string; title: string; description: string | null; category: string | null; quests: Quest[] }
@@ -111,7 +111,7 @@ export function GoalManager({ milestones, children }: { milestones: Milestone[],
             </Button>
         )}
       </DialogTrigger>
-      {/* Increased max-width to 600px to accommodate the AI Verifier button better */}
+      {/* Wider for AI Verifier button */}
       <DialogContent className="sm:max-w-[600px]">
         {renderContent()}
       </DialogContent>
@@ -119,7 +119,7 @@ export function GoalManager({ milestones, children }: { milestones: Milestone[],
   )
 }
 
-// ================= SUB-COMPONENTS =================
+// Sub-components
 
 function ChoiceView({ onSelectManual }: { onSelectManual: () => void }) {
   const t = useTranslations("goals")
@@ -145,7 +145,7 @@ function ChoiceView({ onSelectManual }: { onSelectManual: () => void }) {
   )
 }
 
-// --- MILESTONE COMPONENTS ---
+// Milestone components
 
 interface MilestoneListProps {
   milestones: Milestone[]
@@ -263,7 +263,7 @@ function MilestoneForm({ editData, onCancel }: { editData?: Milestone, onCancel:
   )
 }
 
-// --- QUEST COMPONENTS ---
+// Quest components
 
 interface QuestListProps {
   quests: Quest[]
@@ -369,7 +369,7 @@ function QuestForm({ milestoneId, editData, onCancel }: { milestoneId: string, e
   )
 }
 
-// --- TASK COMPONENTS ---
+// Task components
 
 interface TaskListProps {
   tasks: Task[]

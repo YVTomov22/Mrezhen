@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState, useTransition } from 'react'
 import type { ChangeEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { uploadImages } from '@/app/actions/upload'
@@ -26,7 +27,11 @@ export function PostComposer({ onSuccess, initialContent }: { onSuccess?: () => 
 
   function onFileChange(e: ChangeEvent<HTMLInputElement>) {
     const selected = Array.from(e.target.files ?? [])
-    setFiles(selected)
+    setFiles((prev) => [...prev, ...selected])
+  }
+
+  function removeFile(index: number) {
+    setFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
   async function onSubmit() {
@@ -73,7 +78,7 @@ export function PostComposer({ onSuccess, initialContent }: { onSuccess?: () => 
   function onDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault()
     setIsDragOver(false)
-    const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))
+    const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'))
     if (dropped.length > 0) setFiles(dropped)
   }
 
@@ -115,12 +120,12 @@ export function PostComposer({ onSuccess, initialContent }: { onSuccess?: () => 
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
           </svg>
           <span className="text-xs text-muted-foreground">
-            {files.length > 0 ? `${files.length} file(s) selected` : 'Drop images here or click to browse'}
+            {files.length > 0 ? `${files.length} file(s) selected` : 'Drop images/videos or browse'}
           </span>
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             multiple
             onChange={onFileChange}
             disabled={isPending}
@@ -140,14 +145,36 @@ export function PostComposer({ onSuccess, initialContent }: { onSuccess?: () => 
 
         {previews.length > 0 && (
           <div className="grid grid-cols-3 gap-2">
-            {previews.map((p: { name: string; url: string }) => (
-              <img
-                key={p.url}
-                src={p.url}
-                alt={p.name}
-                className="h-24 w-full object-cover border border-border"
-              />
-            ))}
+            {files.map((file, i) => {
+              const p = previews[i]
+              if (!p) return null
+              return (
+                <div key={p.url} className="relative group">
+                  {file.type.startsWith('video/') ? (
+                    <video
+                      src={p.url}
+                      className="h-24 w-full object-cover border border-border rounded"
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={p.url}
+                      alt={p.name}
+                      className="h-24 w-full object-cover border border-border rounded"
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); removeFile(i) }}
+                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>

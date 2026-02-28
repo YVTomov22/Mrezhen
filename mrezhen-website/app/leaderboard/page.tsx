@@ -9,8 +9,7 @@ export default async function LeaderboardPage() {
   const session = await auth()
   if (!session?.user?.email) redirect("/auth/login")
 
-  // Pre-fetch first page of global leaderboard and user ranks on the server
-  // for instant rendering without a client-side loading state.
+  // Pre-fetch global leaderboard and user ranks for instant rendering
   const [initialGlobal, userRanks] = await Promise.all([
     getGlobalLeaderboard(1),
     getUserRanks(),

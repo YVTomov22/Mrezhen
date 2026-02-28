@@ -46,10 +46,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   })
 }
 
-/**
- * Send a notification email when someone submits the /contact form.
- * Goes to the platform admin address (SMTP_USER by default).
- */
+// Send a contact-form notification email to the admin
 export async function sendContactEmail(
   senderName: string,
   senderEmail: string,

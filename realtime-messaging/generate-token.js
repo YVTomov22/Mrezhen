@@ -1,17 +1,5 @@
-/**
- * JWT Token Generator — development utility.
- *
- * Usage:
- *   node generate-token.js <userId> [name]
- *
- * Examples:
- *   node generate-token.js user_alice Alice
- *   node generate-token.js user_bob   Bob
- *
- * The generated token is valid for 24 hours and can be passed
- * as a query parameter when connecting:
- *   ws://localhost:3001?token=<JWT>
- */
+// JWT Token Generator — development utility.
+// Usage: node generate-token.js <userId> [name]
 
 import { signToken } from "./lib/auth.js";
 

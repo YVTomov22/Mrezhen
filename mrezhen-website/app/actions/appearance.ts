@@ -4,7 +4,7 @@ import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
-/* ── Update a boolean appearance preference ────────────────── */
+/* Update a boolean appearance preference */
 export async function updateAppearanceToggle(
   field: string,
   value: boolean
@@ -36,7 +36,7 @@ export async function updateAppearanceToggle(
   }
 }
 
-/* ── Update a string appearance preference ─────────────────── */
+/* Update a string appearance preference */
 export async function updateAppearanceSelect(
   field: string,
   value: string

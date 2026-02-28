@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache"
 import { Difficulty } from "@/lib/generated/prisma/enums"
 import { resolveQuestDeadline } from "@/lib/deadline"
 
-// --- MILESTONES ---
+// Milestones
 export async function createMilestone(title: string, description: string, category?: string, dueDate?: Date | null) {
   const session = await auth()
   if (!session?.user?.email) return { error: "Unauthorized" }
@@ -33,10 +33,7 @@ export async function updateMilestone(id: string, title: string, description: st
   revalidatePath("/goals")
 }
 
-/**
- * Server-side milestone filtering by category.
- * Supports case-insensitive, single or multiple categories.
- */
+/** Filter milestones by category (case-insensitive). */
 export async function getFilteredMilestones(categories?: string[]) {
   const session = await auth()
   if (!session?.user?.email) return { error: "Unauthorized", data: [] }
@@ -73,7 +70,7 @@ export async function deleteMilestone(id: string) {
   revalidatePath("/dashboard")
 }
 
-// --- QUESTS ---
+// Quests
 export async function createQuest(
   milestoneId: string, 
   title: string, 
@@ -90,7 +87,7 @@ export async function createQuest(
   if (difficulty === 'HARD') completionPoints = 100
   if (difficulty === 'EPIC') completionPoints = 500
 
-  // Fetch the parent milestone's dueDate for deadline resolution
+  // Fetch milestone dueDate for deadline resolution
   const milestone = await prisma.milestone.findUnique({
     where: { id: milestoneId },
     select: { dueDate: true },
@@ -125,12 +122,12 @@ export async function createQuest(
 export async function updateQuest(
   id: string, 
   title: string, 
-  description: string, // <--- ADDED
+  description: string,
   difficulty: Difficulty
 ) {
   await prisma.quest.update({ 
     where: { id }, 
-    data: { title, description, difficulty } // <--- ADDED description
+    data: { title, description, difficulty }
   })
   revalidatePath("/dashboard")
 }
@@ -140,7 +137,7 @@ export async function deleteQuest(id: string) {
   revalidatePath("/dashboard")
 }
 
-// --- TASKS ---
+// Tasks
 export async function createTask(questId: string, content: string) {
   await prisma.task.create({
     data: { content, points: 10, quest: { connect: { id: questId } } }
@@ -169,23 +166,23 @@ export async function completeTaskAndAwardXP(taskId: string) {
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
-    include: { quest: true } // Include quest to check permissions if needed
+    include: { quest: true }
   })
 
   if (!task) return { error: "Task not found" }
   if (task.isCompleted) return { success: true, message: "Already completed" }
 
-  const pointsToAward = task.points || 10 // Default to 10 if null
+  const pointsToAward = task.points || 10
 
   try {
     await prisma.$transaction(async (tx) => {
-      // 1. Mark task as completed
+      // Mark task as completed
       await tx.task.update({
         where: { id: taskId },
         data: { isCompleted: true }
       })
 
-      // 2. Update User Score immediately
+      // Update user score
       const user = await tx.user.findUnique({
         where: { email: session.user!.email! }
       })
@@ -233,8 +230,7 @@ export async function completeQuest(questId: string) {
   const allTasksDone = quest.tasks.every(t => t.isCompleted)
   if (!allTasksDone) return { error: "Complete all tasks first" }
 
-  // CHANGE: We now only award the 'completionPoints' (the bonus),
-  // because the task points were already awarded in completeTaskAndAwardXP
+  // Only award completionPoints bonus (task points already awarded)
   const totalPoints = quest.completionPoints 
 
   try {

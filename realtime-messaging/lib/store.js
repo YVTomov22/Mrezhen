@@ -1,34 +1,5 @@
-/**
- * In-memory message store with a Redis-compatible interface.
- *
- * ╔══════════════════════════════════════════════════════════════════╗
- * ║  SCALING NOTE — Redis replacement                              ║
- * ║                                                                ║
- * ║  Every public method in this class mirrors a Redis operation:  ║
- * ║    queueMessage()    → RPUSH  offline:<userId>  <json>         ║
- * ║    drainQueue()      → LRANGE + DEL  offline:<userId>          ║
- * ║    storeMessage()    → RPUSH  history:<recipientId>  <json>    ║
- * ║    getHistory()      → LRANGE history:<recipientId> -N -1      ║
- * ║                                                                ║
- * ║  To swap in Redis:                                             ║
- * ║    1. npm install ioredis                                      ║
- * ║    2. Create a RedisStore class implementing the same methods  ║
- * ║    3. Pass it to the Messaging constructor instead of this one ║
- * ║                                                                ║
- * ║  The rest of the app code stays identical.                     ║
- * ╚══════════════════════════════════════════════════════════════════╝
- */
-
-/**
- * @typedef {Object} StoredMessage
- * @property {string}  id         UUID
- * @property {string}  from       Sender userId
- * @property {string}  to         Recipient userId
- * @property {string}  content    Message body
- * @property {number}  timestamp  Unix ms
- * @property {boolean} delivered  Has the recipient received it?
- */
-
+﻿// In-memory message store with a Redis-compatible interface.
+// Swap to Redis: implement the same public methods with RPUSH/LRANGE/DEL.
 export class MemoryStore {
   constructor() {
     /** @type {Map<string, StoredMessage[]>}  userId → queued messages */
@@ -37,23 +8,16 @@ export class MemoryStore {
     /** @type {Map<string, StoredMessage[]>}  recipientId → message history */
     this._history = new Map();
 
-    /**
-     * Cap offline queue per user to prevent memory abuse.
-     * In Redis you would use LTRIM after RPUSH.
-     */
+    /** Cap offline queue per user. */
     this.MAX_OFFLINE_QUEUE = 500;
 
-    /** Cap history per conversation (most recent N messages kept). */
+    /** Cap history per conversation. */
     this.MAX_HISTORY = 1000;
   }
 
-  /* ── Offline queue ─────────────────────────────────────── */
+  // Offline queue
 
-  /**
-   * Queue a message for an offline user.
-   * @param {string} userId
-   * @param {StoredMessage} message
-   */
+  /** Queue a message for an offline user. */
   async queueMessage(userId, message) {
     if (!this._offlineQueues.has(userId)) {
       this._offlineQueues.set(userId, []);
@@ -66,29 +30,16 @@ export class MemoryStore {
     }
   }
 
-  /**
-   * Drain (pop all) queued messages for a user.
-   * Returns the array and clears the queue atomically.
-   * In Redis: LRANGE + DEL in a MULTI/EXEC pipeline.
-   *
-   * @param {string} userId
-   * @returns {Promise<StoredMessage[]>}
-   */
+  /** Drain all queued messages for a user. */
   async drainQueue(userId) {
     const queue = this._offlineQueues.get(userId) || [];
     this._offlineQueues.delete(userId);
     return queue;
   }
 
-  /* ── Message history ───────────────────────────────────── */
+  // Message history
 
-  /**
-   * Persist a message to the conversation history.
-   * Key is the recipient userId.  In a real system you'd key by
-   * a sorted pair `min(from,to):max(from,to)` for bidirectional history.
-   *
-   * @param {StoredMessage} message
-   */
+  /** Persist a message to the conversation history. */
   async storeMessage(message) {
     const key = this._conversationKey(message.from, message.to);
     if (!this._history.has(key)) {
@@ -101,28 +52,16 @@ export class MemoryStore {
     }
   }
 
-  /**
-   * Retrieve recent conversation history between two users.
-   *
-   * @param {string} userA
-   * @param {string} userB
-   * @param {number} [limit=50]
-   * @returns {Promise<StoredMessage[]>}
-   */
+  /** Retrieve recent conversation history between two users. */
   async getHistory(userA, userB, limit = 50) {
     const key = this._conversationKey(userA, userB);
     const list = this._history.get(key) || [];
     return list.slice(-limit);
   }
 
-  /* ── Internal helpers ──────────────────────────────────── */
+  // Internal helpers
 
-  /**
-   * Deterministic conversation key so A→B and B→A share one list.
-   * @param {string} a
-   * @param {string} b
-   * @returns {string}
-   */
+  /** Deterministic conversation key so A->B and B->A share one list. */
   _conversationKey(a, b) {
     return a < b ? `${a}:${b}` : `${b}:${a}`;
   }

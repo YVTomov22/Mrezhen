@@ -4,9 +4,7 @@ import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
-// ─────────────────────────────────────────────────────────
 // Helpers
-// ─────────────────────────────────────────────────────────
 
 async function getCurrentUserId(): Promise<string | null> {
   const session = await auth()
@@ -28,9 +26,7 @@ function getOpponentId(battle: { challengerId: string; challengedId: string }, u
   return battle.challengerId === userId ? battle.challengedId : battle.challengerId
 }
 
-// ─────────────────────────────────────────────────────────
 // 1. Challenge — initiate a battle inside a DM
-// ─────────────────────────────────────────────────────────
 
 export async function initiateBattle(input: {
   challengedUserId: string
@@ -101,9 +97,7 @@ export async function initiateBattle(input: {
   return { success: true, data: battle }
 }
 
-// ─────────────────────────────────────────────────────────
 // 2. Accept / Decline / Cancel a battle
-// ─────────────────────────────────────────────────────────
 
 export async function acceptBattle(battleId: string, challengedMilestoneId?: string) {
   const userId = await getCurrentUserId()
@@ -176,9 +170,7 @@ export async function cancelBattle(battleId: string) {
   return { success: true }
 }
 
-// ─────────────────────────────────────────────────────────
-// 3. Get battles  (for a user)
-// ─────────────────────────────────────────────────────────
+// 3. Get battles (for a user)
 
 export async function getUserBattles(statusFilter?: string) {
   const userId = await getCurrentUserId()

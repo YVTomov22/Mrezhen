@@ -21,7 +21,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="h-screen overflow-hidden bg-background flex flex-col py-10 px-4">
-      {/* gap-6 instead of space-y-6: margins break min-h-0 flex containment, gap does not */}
+      {/* Use gap instead of space-y for flex containment */}
       <div className="max-w-5xl w-full mx-auto flex flex-col flex-1 min-h-0 gap-6">
         <div className="shrink-0">
           <h1 className="editorial-headline text-4xl md:text-5xl text-foreground">{t('title')}</h1>

@@ -44,7 +44,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* ── Beehive Color System ───────────────────────────── */
+/* Beehive Color System */
 :root {
   --radius: 0.75rem;
   /* Warm light backgrounds */
@@ -90,7 +90,7 @@
   --honey-pale: #FFF3E0;
 }
 .dark {
-  /* ── Dashboard-inspired dark palette: #0A0A0A / #121212 / #1A1A1A / #FF5722 ── */
+  /* Dashboard-inspired dark palette */
   --background: #0A0A0A;
   --foreground: #F5F5F5;
   --card: #121212;
@@ -137,20 +137,20 @@
   }
 }
 
-/* ── Editorial Typography ───────────────────────────── */
+/* Editorial Typography */
 .font-editorial {
-  font-family: var(--font-editorial), 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-family: var(--font-body), sans-serif;
 }
 
 .editorial-headline {
-  font-family: var(--font-editorial), 'Playfair Display', Georgia, serif;
+  font-family: var(--font-body), sans-serif;
   font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 0.92;
 }
 
 .editorial-subhead {
-  font-family: var(--font-editorial), 'Playfair Display', Georgia, serif;
+  font-family: var(--font-body), sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -170,11 +170,11 @@
   line-height: 1.4;
 }
 
-/* ── Scrollbar ── */
+/* Scrollbar */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Comment section slide-down / fade-in animation ── */
+/* Comment section slide-down / fade-in animation */
 .comment-collapse {
   display: grid;
   grid-template-rows: 0fr;
@@ -189,7 +189,7 @@
   overflow: hidden;
 }
 
-/* ── Editorial hover interactions ── */
+/* Editorial hover interactions */
 .editorial-lift {
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
@@ -201,7 +201,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-/* ── Like heart pop animation ── */
+/* Like heart pop animation */
 @keyframes heart-pop {
   0% { transform: scale(1); }
   25% { transform: scale(1.3); }
@@ -212,7 +212,7 @@
   animation: heart-pop 350ms cubic-bezier(0.17, 0.89, 0.32, 1.28);
 }
 
-/* ── Bookmark bounce animation ── */
+/* Bookmark bounce animation */
 @keyframes bookmark-bounce {
   0% { transform: translateY(0); }
   30% { transform: translateY(-4px); }
@@ -223,7 +223,7 @@
   animation: bookmark-bounce 350ms ease-out;
 }
 
-/* ── Tab slide underline ── */
+/* Tab slide underline */
 .tab-underline {
   position: relative;
 }
@@ -243,7 +243,7 @@
   transform: scaleX(1);
 }
 
-/* ── Smooth card hover ── */
+/* Smooth card hover */
 .card-hover {
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
@@ -255,11 +255,9 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   HOMEPAGE STYLING OVERHAUL
-   ══════════════════════════════════════════════════════════════ */
+/* Homepage Styling */
 
-/* ── 1. Theme-Aware Card Depth ── */
+/* Theme-Aware Card Depth */
 .homepage-card {
   transition: box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
 }
@@ -288,7 +286,7 @@
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
-/* ── 2. Gamified XP Progress Bar ── */
+/* Gamified XP Progress Bar */
 .xp-bar-fill {
   background: linear-gradient(90deg, #8B5CF6, #06B6D4);
 }
@@ -307,7 +305,7 @@
   position: relative;
 }
 
-/* ── 3. Interactive Trending Pills ── */
+/* Interactive Trending Pills */
 .trending-pill {
   cursor: pointer;
 }
@@ -325,7 +323,7 @@
   box-shadow: 0 2px 8px rgba(255, 87, 34, 0.15);
 }
 
-/* ── 4. Custom Drop Zone ── */
+/* Custom Drop Zone */
 .drop-zone {
   min-height: 64px;
 }
@@ -337,7 +335,7 @@
   color: var(--primary);
 }
 
-/* ── 5. Feed Entrance Animation ── */
+/* Feed Entrance Animation */
 @keyframes feed-slide-in {
   from {
     opacity: 0;
@@ -360,11 +358,9 @@ html[data-reduce-motion] .feed-entrance {
   transform: none;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SETTINGS PAGE STYLING OVERHAUL
-   ══════════════════════════════════════════════════════════════ */
+/* Settings Page Styling */
 
-/* ── Premium Input Fields ── */
+/* Premium Input Fields */
 .settings-input {
   background-color: rgba(0, 0, 0, 0.02);
   border-color: transparent;
@@ -383,7 +379,7 @@ html[data-reduce-motion] .feed-entrance {
   box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
 }
 
-/* ── Button Consistency ── */
+/* Button Consistency */
 .settings-btn {
   border-radius: 9999px;
   background: linear-gradient(135deg, #FF7043, #FF5722);
@@ -402,21 +398,13 @@ html[data-reduce-motion] .feed-entrance {
   box-shadow: 0 4px 12px rgba(255, 87, 34, 0.2);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ACCESSIBILITY — Font Size
-   Maps data-font-size on <html> to a CSS custom property that
-   scales the root font-size.  All rem-based sizing follows.
-   ══════════════════════════════════════════════════════════════ */
+/* Accessibility — Font Size */
 html[data-font-size="small"]  { font-size: 14px; }
 html[data-font-size="medium"] { font-size: 16px; }
 html[data-font-size="large"]  { font-size: 18px; }
 html[data-font-size="xlarge"] { font-size: 20px; }
 
-/* ══════════════════════════════════════════════════════════════
-   ACCESSIBILITY — High Contrast
-   Increases text contrast, strengthens borders and removes
-   translucent overlays so everything is crisply legible.
-   ══════════════════════════════════════════════════════════════ */
+/* Accessibility — High Contrast */
 html[data-high-contrast] {
   --foreground: #000000;
   --muted-foreground: #333333;
@@ -440,10 +428,7 @@ html[data-high-contrast] .text-muted-foreground {
   opacity: 1 !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ACCESSIBILITY — Reduce Motion
-   Disables transitions and animations app-wide.
-   ══════════════════════════════════════════════════════════════ */
+/* Accessibility — Reduce Motion */
 html[data-reduce-motion] *,
 html[data-reduce-motion] *::before,
 html[data-reduce-motion] *::after {
@@ -453,11 +438,7 @@ html[data-reduce-motion] *::after {
   scroll-behavior: auto !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ACCESSIBILITY — Screen Reader Optimized
-   Adds visible focus indicators and skip-navigation support.
-   Content is already semantic; these reinforce interactive cues.
-   ══════════════════════════════════════════════════════════════ */
+/* Accessibility — Screen Reader Optimized */
 html[data-screen-reader] *:focus-visible {
   outline: 3px solid var(--ring) !important;
   outline-offset: 2px;

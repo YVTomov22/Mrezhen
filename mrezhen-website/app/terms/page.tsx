@@ -2,16 +2,11 @@ import { ScrollText } from "lucide-react"
 
 export const dynamic = "force-static"
 
-/**
- * Terms of Service — /terms
- *
- * Stored as a static page for easy editing. To make this DB-driven
- * later, simply fetch the content from a `SiteContent` table instead.
- */
+/** Terms of Service page — static content. */
 export default function TermsOfServicePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
-      {/* ─── Header ──────────────────────────────────────── */}
+      {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
           <ScrollText className="h-7 w-7 text-muted-foreground" />
@@ -22,7 +17,7 @@ export default function TermsOfServicePage() {
         </p>
       </div>
 
-      {/* ─── Sections ────────────────────────────────────── */}
+      {/* Sections */}
       <article className="prose prose-neutral dark:prose-invert max-w-none space-y-6 text-sm leading-relaxed">
 
         <section>

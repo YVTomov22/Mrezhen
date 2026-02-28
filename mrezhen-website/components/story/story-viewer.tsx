@@ -28,7 +28,7 @@ import {
 import { toast } from 'sonner'
 import Link from 'next/link'
 
-// ── Types ────────────────────────────────────────────
+// Types
 
 type StoryItem = {
   id: string
@@ -68,11 +68,11 @@ type StoryViewerProps = {
   onInsights?: (storyId: string) => void
 }
 
-// ── Constants ────────────────────────────────────────
+// Constants
 
 const STORY_DURATION = 6000 // 6 seconds per story
 
-// ── Component ────────────────────────────────────────
+// Component
 
 export function StoryViewer({
   groups,
@@ -111,13 +111,13 @@ export function StoryViewer({
     setLikedStories(initial)
   }, [groups])
 
-  // ── Mark as viewed ──
+  // Mark as viewed
   useEffect(() => {
     if (!currentStory || currentStory.isOwn || currentStory.viewedByMe) return
     viewStory(currentStory.id)
   }, [currentStory])
 
-  // ── Navigation helpers ──
+  // Navigation helpers
   const goNextStory = useCallback(() => {
     if (!currentGroup) return
 
@@ -145,7 +145,7 @@ export function StoryViewer({
     }
   }, [storyIndex, groupIndex, groups])
 
-  // ── Auto-advance timer ──
+  // Auto-advance timer
   useEffect(() => {
     if (isPaused || showComment) {
       if (timerRef.current) clearInterval(timerRef.current)
@@ -170,7 +170,7 @@ export function StoryViewer({
     }
   }, [isPaused, showComment, goNextStory])
 
-  // ── Keyboard navigation ──
+  // Keyboard navigation
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (showComment) return
@@ -191,7 +191,7 @@ export function StoryViewer({
     return () => window.removeEventListener('keydown', handleKey)
   }, [goNextStory, goPrevStory, onClose, showComment])
 
-  // ── Actions ──
+  // Actions
   async function handleLike() {
     if (!currentStory) return
     const result = await toggleStoryLike(currentStory.id)
@@ -238,7 +238,7 @@ export function StoryViewer({
 
   const isLiked = likedStories.has(currentStory.id)
 
-  // ── Time ago ──
+  // Time ago
   const createdAt = new Date(currentStory.createdAt)
   const hoursAgo = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60))
   const minsAgo = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60))

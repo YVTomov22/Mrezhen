@@ -64,7 +64,7 @@ export default async function CommunityPeoplePage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ── Header Banner ───────────────────────────── */}
+      {/* Header Banner */}
       <div className="relative overflow-hidden border-b border-border bg-card">
         <div className="relative max-w-6xl mx-auto px-6 py-8">
           <Link href="/community" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-2 transition-colors">
@@ -95,7 +95,7 @@ export default async function CommunityPeoplePage({
         </div>
       </div>
 
-      {/* ── User Grid ───────────────────────────── */}
+      {/* User Grid */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         {users.length === 0 ? (
           <div className="text-center py-12">

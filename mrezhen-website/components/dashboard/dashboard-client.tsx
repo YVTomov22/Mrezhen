@@ -19,7 +19,7 @@ export function DashboardClient({ user, activeMilestones, completedMilestones, w
   const [isCustomizing, setIsCustomizing] = useState(false)
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white p-6 md:p-10 font-sans selection:bg-[#FF5722] selection:text-white">
+    <div className="min-h-screen bg-background text-foreground p-6 md:p-10 font-sans selection:bg-[#FF5722] selection:text-white">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
@@ -28,17 +28,17 @@ export function DashboardClient({ user, activeMilestones, completedMilestones, w
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
               Welcome back, {user.name?.split(' ')[0] || 'User'}
             </h1>
-            <p className="text-[#888888] mt-1">Here is your daily overview</p>
+            <p className="text-muted-foreground mt-1">Here is your daily overview</p>
           </div>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsCustomizing(!isCustomizing)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1A1A1A] border border-white/10 hover:bg-[#2A2A2A] transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border hover:bg-accent transition-colors text-sm font-medium"
             >
               <Settings className="w-4 h-4" />
               Customize
             </button>
-            <div className="w-12 h-12 rounded-full bg-[#1A1A1A] border border-white/10 flex items-center justify-center overflow-hidden">
+            <div className="w-12 h-12 rounded-full bg-muted border border-border flex items-center justify-center overflow-hidden">
               {user.image ? (
                 <Image src={user.image} alt="Profile" width={48} height={48} className="object-cover" />
               ) : (
@@ -50,75 +50,75 @@ export function DashboardClient({ user, activeMilestones, completedMilestones, w
 
         {/* Customization Panel */}
         {isCustomizing && (
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/10 animate-in fade-in slide-in-from-top-4">
+          <div className="bg-card rounded-3xl p-6 border border-border animate-in fade-in slide-in-from-top-4">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <LayoutDashboard className="w-5 h-5 text-[#FF5722]" />
-              Choose Dashboard Layout
+              <span className="text-foreground">Choose Dashboard Layout</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <button 
                 onClick={() => setLayout('consistency')}
-                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'consistency' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-white/10 hover:border-white/30 bg-[#1A1A1A]'}`}
+                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'consistency' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-border hover:border-border/80 bg-muted'}`}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className={`p-2 rounded-lg ${layout === 'consistency' ? 'bg-[#FF5722]' : 'bg-white/10'}`}>
-                    <Zap className="w-5 h-5 text-white" />
+                  <div className={`p-2 rounded-lg ${layout === 'consistency' ? 'bg-[#FF5722]' : 'bg-muted'}`}>
+                    <Zap className={`w-5 h-5 ${layout === 'consistency' ? 'text-white' : 'text-foreground'}`} />
                   </div>
-                  <span className="font-semibold text-white">Consistency (Default)</span>
+                  <span className="font-semibold text-foreground">Consistency (Default)</span>
                 </div>
-                <p className="text-sm text-[#888888]">Focus on your site activity, XP, quests, and milestones.</p>
+                <p className="text-sm text-muted-foreground">Focus on your site activity, XP, quests, and milestones.</p>
               </button>
 
               <button 
                 onClick={() => setLayout('fitness')}
-                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'fitness' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-white/10 hover:border-white/30 bg-[#1A1A1A]'}`}
+                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'fitness' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-border hover:border-border/80 bg-muted'}`}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className={`p-2 rounded-lg ${layout === 'fitness' ? 'bg-[#FF5722]' : 'bg-white/10'}`}>
-                    <Activity className="w-5 h-5 text-white" />
+                  <div className={`p-2 rounded-lg ${layout === 'fitness' ? 'bg-[#FF5722]' : 'bg-muted'}`}>
+                    <Activity className={`w-5 h-5 ${layout === 'fitness' ? 'text-white' : 'text-foreground'}`} />
                   </div>
-                  <span className="font-semibold text-white">Fitness Blueprint</span>
+                  <span className="font-semibold text-foreground">Fitness Blueprint</span>
                 </div>
-                <p className="text-sm text-[#888888]">Track your workouts, BPM, distance, and daily physical metrics.</p>
+                <p className="text-sm text-muted-foreground">Track your workouts, BPM, distance, and daily physical metrics.</p>
               </button>
 
               <button 
                 onClick={() => setLayout('learning')}
-                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'learning' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-white/10 hover:border-white/30 bg-[#1A1A1A]'}`}
+                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'learning' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-border hover:border-border/80 bg-muted'}`}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className={`p-2 rounded-lg ${layout === 'learning' ? 'bg-[#FF5722]' : 'bg-white/10'}`}>
-                    <BookOpen className="w-5 h-5 text-white" />
+                  <div className={`p-2 rounded-lg ${layout === 'learning' ? 'bg-[#FF5722]' : 'bg-muted'}`}>
+                    <BookOpen className={`w-5 h-5 ${layout === 'learning' ? 'text-white' : 'text-foreground'}`} />
                   </div>
-                  <span className="font-semibold text-white">Learning Blueprint</span>
+                  <span className="font-semibold text-foreground">Learning Blueprint</span>
                 </div>
-                <p className="text-sm text-[#888888]">Track study hours, books read, and knowledge retention.</p>
+                <p className="text-sm text-muted-foreground">Track study hours, books read, and knowledge retention.</p>
               </button>
 
               <button 
                 onClick={() => setLayout('creative')}
-                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'creative' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-white/10 hover:border-white/30 bg-[#1A1A1A]'}`}
+                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'creative' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-border hover:border-border/80 bg-muted'}`}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className={`p-2 rounded-lg ${layout === 'creative' ? 'bg-[#FF5722]' : 'bg-white/10'}`}>
-                    <Palette className="w-5 h-5 text-white" />
+                  <div className={`p-2 rounded-lg ${layout === 'creative' ? 'bg-[#FF5722]' : 'bg-muted'}`}>
+                    <Palette className={`w-5 h-5 ${layout === 'creative' ? 'text-white' : 'text-foreground'}`} />
                   </div>
-                  <span className="font-semibold text-white">Creative Blueprint</span>
+                  <span className="font-semibold text-foreground">Creative Blueprint</span>
                 </div>
-                <p className="text-sm text-[#888888]">Monitor your art projects, inspiration, and creative flow.</p>
+                <p className="text-sm text-muted-foreground">Monitor your art projects, inspiration, and creative flow.</p>
               </button>
 
               <button 
                 onClick={() => setLayout('coding')}
-                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'coding' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-white/10 hover:border-white/30 bg-[#1A1A1A]'}`}
+                className={`p-4 rounded-2xl border text-left transition-all ${layout === 'coding' ? 'border-[#FF5722] bg-[#FF5722]/10' : 'border-border hover:border-border/80 bg-muted'}`}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className={`p-2 rounded-lg ${layout === 'coding' ? 'bg-[#FF5722]' : 'bg-white/10'}`}>
-                    <Code className="w-5 h-5 text-white" />
+                  <div className={`p-2 rounded-lg ${layout === 'coding' ? 'bg-[#FF5722]' : 'bg-muted'}`}>
+                    <Code className={`w-5 h-5 ${layout === 'coding' ? 'text-white' : 'text-foreground'}`} />
                   </div>
-                  <span className="font-semibold text-white">Coding Blueprint</span>
+                  <span className="font-semibold text-foreground">Coding Blueprint</span>
                 </div>
-                <p className="text-sm text-[#888888]">Track commits, deep work sessions, and project milestones.</p>
+                <p className="text-sm text-muted-foreground">Track commits, deep work sessions, and project milestones.</p>
               </button>
             </div>
           </div>
@@ -183,27 +183,27 @@ function FitnessLayout() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           
           {/* BPM Ring */}
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col items-center justify-center relative overflow-hidden group hover:border-white/10 transition-colors">
-            <div className="absolute top-4 left-4 text-[#888888]">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col items-center justify-center relative overflow-hidden group hover:border-border transition-colors">
+            <div className="absolute top-4 left-4 text-muted-foreground">
               <Activity className="w-5 h-5" />
             </div>
             <div className="relative w-32 h-32 mt-4">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" stroke="#1A1A1A" strokeWidth="8" fill="none" />
+                <circle cx="50" cy="50" r="40" stroke="currentColor" className="text-muted" strokeWidth="8" fill="none" />
                 <circle cx="50" cy="50" r="40" stroke="#FF5722" strokeWidth="8" fill="none" strokeDasharray="251.2" strokeDashoffset="60" className="transition-all duration-1000 ease-out" />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-bold text-white">112</span>
-                <span className="text-xs text-[#888888] uppercase tracking-wider">BPM</span>
+                <span className="text-3xl font-bold text-foreground">112</span>
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">BPM</span>
               </div>
             </div>
             <div className="mt-4 text-center">
-              <p className="text-sm text-[#888888]">Average: <span className="text-white font-medium">84 BPM</span></p>
+              <p className="text-sm text-muted-foreground">Average: <span className="text-foreground font-medium">84 BPM</span></p>
             </div>
           </div>
 
           {/* Active Session */}
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
             <div className="flex justify-between items-start">
               <div className="w-10 h-10 rounded-full bg-[#FF5722]/10 flex items-center justify-center text-[#FF5722]">
                 <Timer className="w-5 h-5" />
@@ -214,21 +214,21 @@ function FitnessLayout() {
               </span>
             </div>
             <div>
-              <p className="text-[#888888] text-sm mb-1">Active Session</p>
-              <p className="text-3xl font-bold text-white tracking-tight">01:24<span className="text-[#FF5722]">:30</span></p>
+              <p className="text-muted-foreground text-sm mb-1">Active Session</p>
+              <p className="text-3xl font-bold text-foreground tracking-tight">01:24<span className="text-[#FF5722]">:30</span></p>
             </div>
           </div>
 
           {/* Distance */}
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground">
               <MapPin className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[#888888] text-sm mb-1">Distance</p>
+              <p className="text-muted-foreground text-sm mb-1">Distance</p>
               <div className="flex items-baseline gap-1">
-                <p className="text-3xl font-bold text-white tracking-tight">3.2</p>
-                <span className="text-[#888888] font-medium">km</span>
+                <p className="text-3xl font-bold text-foreground tracking-tight">3.2</p>
+                <span className="text-muted-foreground font-medium">km</span>
               </div>
             </div>
           </div>
@@ -240,10 +240,10 @@ function FitnessLayout() {
       <div className="md:col-span-4 space-y-6">
         
         {/* Today's Metrics */}
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
+        <div className="bg-card rounded-3xl p-6 border border-border">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-white">Today's Metrics</h3>
-            <button className="text-[#888888] hover:text-white transition-colors">
+            <h3 className="text-lg font-semibold text-foreground">Today's Metrics</h3>
+            <button className="text-muted-foreground hover:text-foreground transition-colors">
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
@@ -253,12 +253,12 @@ function FitnessLayout() {
             <div>
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <p className="text-[#888888] text-sm">Steps</p>
-                  <p className="text-2xl font-bold text-white">4,234 <span className="text-sm font-normal text-[#888888]">/ 10,000</span></p>
+                  <p className="text-muted-foreground text-sm">Steps</p>
+                  <p className="text-2xl font-bold text-foreground">4,234 <span className="text-sm font-normal text-muted-foreground">/ 10,000</span></p>
                 </div>
-                <span className="text-[#FF5722] text-sm font-medium">42%</span>
+                <span className="text-[#FF5722] text-sm font-medium text-foreground">2%</span>
               </div>
-              <div className="h-2 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                 <div className="h-full bg-[#FF5722] rounded-full" style={{ width: '42%' }} />
               </div>
             </div>
@@ -267,13 +267,13 @@ function FitnessLayout() {
             <div>
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <p className="text-[#888888] text-sm">Calories</p>
-                  <p className="text-2xl font-bold text-white">1,250 <span className="text-sm font-normal text-[#888888]">/ 2,500</span></p>
+                  <p className="text-muted-foreground text-sm">Calories</p>
+                  <p className="text-2xl font-bold text-foreground">1,250 <span className="text-sm font-normal text-muted-foreground">/ 2,500</span></p>
                 </div>
-                <span className="text-white text-sm font-medium">50%</span>
+                <span className="text-foreground text-sm font-medium text-foreground">0%</span>
               </div>
-              <div className="h-2 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
-                <div className="h-full bg-white rounded-full" style={{ width: '50%' }} />
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-foreground rounded-full" style={{ width: '50%' }} />
               </div>
             </div>
 
@@ -281,47 +281,47 @@ function FitnessLayout() {
             <div>
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <p className="text-[#888888] text-sm">Sleep</p>
-                  <p className="text-2xl font-bold text-white">6h 20m <span className="text-sm font-normal text-[#888888]">/ 8h</span></p>
+                  <p className="text-muted-foreground text-sm">Sleep</p>
+                  <p className="text-2xl font-bold text-foreground">6h 20m <span className="text-sm font-normal text-muted-foreground">/ 8h</span></p>
                 </div>
-                <span className="text-white text-sm font-medium">79%</span>
+                <span className="text-foreground text-sm font-medium text-foreground">9%</span>
               </div>
-              <div className="h-2 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
-                <div className="h-full bg-white rounded-full" style={{ width: '79%' }} />
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-foreground rounded-full" style={{ width: '79%' }} />
               </div>
             </div>
           </div>
         </div>
 
         {/* Target Chart */}
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
+        <div className="bg-card rounded-3xl p-6 border border-border">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-[#FF5722]" />
-              <h3 className="text-lg font-semibold text-white">Weekly Target</h3>
+              <h3 className="text-lg font-semibold text-foreground">Weekly Target</h3>
             </div>
-            <span className="text-xs font-medium px-2 py-1 rounded-md bg-[#1A1A1A] text-[#888888]">This Week</span>
+            <span className="text-xs font-medium px-2 py-1 rounded-md bg-muted text-muted-foreground">This Week</span>
           </div>
           
           {/* Mock Chart Area */}
           <div className="h-40 relative flex items-end justify-between gap-2 pt-4">
             {/* Grid lines */}
             <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-              <div className="border-b border-white/5 w-full h-0"></div>
-              <div className="border-b border-white/5 w-full h-0"></div>
-              <div className="border-b border-white/5 w-full h-0"></div>
+              <div className="border-b border-border w-full h-0"></div>
+              <div className="border-b border-border w-full h-0"></div>
+              <div className="border-b border-border w-full h-0"></div>
             </div>
             
             {/* Bars */}
             {[40, 70, 45, 90, 60, 85, 50].map((height, i) => (
               <div key={i} className="w-full flex flex-col items-center gap-2 z-10 group">
-                <div className="w-full bg-[#1A1A1A] rounded-t-md relative group-hover:bg-[#2A2A2A] transition-colors" style={{ height: '100%' }}>
+                <div className="w-full bg-muted rounded-t-md relative group-hover:bg-accent transition-colors" style={{ height: '100%' }}>
                   <div 
-                    className={`absolute bottom-0 w-full rounded-t-md transition-all duration-500 ${i === 3 ? 'bg-[#FF5722] shadow-[0_0_15px_rgba(255,87,34,0.3)]' : 'bg-white/20 group-hover:bg-white/30'}`} 
+                    className={`absolute bottom-0 w-full rounded-t-md transition-all duration-500 ${i === 3 ? 'bg-[#FF5722] shadow-[0_0_15px_rgba(255,87,34,0.3)]' : 'bg-muted-foreground/30 group-hover:bg-muted-foreground/40'}`} 
                     style={{ height: `${height}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-[#888888] uppercase">{['M','T','W','T','F','S','S'][i]}</span>
+                <span className="text-[10px] text-muted-foreground uppercase">{['M','T','W','T','F','S','S'][i]}</span>
               </div>
             ))}
           </div>
@@ -359,46 +359,46 @@ function LearningLayout() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col items-center justify-center relative overflow-hidden group hover:border-white/10 transition-colors">
-            <div className="absolute top-4 left-4 text-[#888888]">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col items-center justify-center relative overflow-hidden group hover:border-border transition-colors">
+            <div className="absolute top-4 left-4 text-muted-foreground">
               <Brain className="w-5 h-5" />
             </div>
             <div className="relative w-32 h-32 mt-4">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" stroke="#1A1A1A" strokeWidth="8" fill="none" />
+                <circle cx="50" cy="50" r="40" stroke="currentColor" className="text-muted" strokeWidth="8" fill="none" />
                 <circle cx="50" cy="50" r="40" stroke="#FF5722" strokeWidth="8" fill="none" strokeDasharray="251.2" strokeDashoffset="80" className="transition-all duration-1000 ease-out" />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-bold text-white">68%</span>
-                <span className="text-xs text-[#888888] uppercase tracking-wider">Retention</span>
+                <span className="text-3xl font-bold text-foreground">68%</span>
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Retention</span>
               </div>
             </div>
             <div className="mt-4 text-center">
-              <p className="text-sm text-[#888888]">Flashcards: <span className="text-white font-medium">142 Due</span></p>
+              <p className="text-sm text-muted-foreground">Flashcards: <span className="text-foreground font-medium">142 Due</span></p>
             </div>
           </div>
 
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
             <div className="flex justify-between items-start">
               <div className="w-10 h-10 rounded-full bg-[#FF5722]/10 flex items-center justify-center text-[#FF5722]">
                 <Timer className="w-5 h-5" />
               </div>
             </div>
             <div>
-              <p className="text-[#888888] text-sm mb-1">Study Session</p>
-              <p className="text-3xl font-bold text-white tracking-tight">02:45<span className="text-[#FF5722]">h</span></p>
+              <p className="text-muted-foreground text-sm mb-1">Study Session</p>
+              <p className="text-3xl font-bold text-foreground tracking-tight">02:45<span className="text-[#FF5722]">h</span></p>
             </div>
           </div>
 
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[#888888] text-sm mb-1">Pages Read</p>
+              <p className="text-muted-foreground text-sm mb-1">Pages Read</p>
               <div className="flex items-baseline gap-1">
-                <p className="text-3xl font-bold text-white tracking-tight">124</p>
-                <span className="text-[#888888] font-medium">/ 500</span>
+                <p className="text-3xl font-bold text-foreground tracking-tight">124</p>
+                <span className="text-muted-foreground font-medium">/ 500</span>
               </div>
             </div>
           </div>
@@ -406,31 +406,31 @@ function LearningLayout() {
       </div>
 
       <div className="md:col-span-4 space-y-6">
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
+        <div className="bg-card rounded-3xl p-6 border border-border">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-white">Learning Goals</h3>
+            <h3 className="text-lg font-semibold text-foreground">Learning Goals</h3>
           </div>
           <div className="space-y-6">
             <div>
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <p className="text-[#888888] text-sm">Read "Clean Code"</p>
+                  <p className="text-muted-foreground text-sm">Read "Clean Code"</p>
                 </div>
-                <span className="text-[#FF5722] text-sm font-medium">45%</span>
+                <span className="text-[#FF5722] text-sm font-medium text-foreground">5%</span>
               </div>
-              <div className="h-2 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                 <div className="h-full bg-[#FF5722] rounded-full" style={{ width: '45%' }} />
               </div>
             </div>
             <div>
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <p className="text-[#888888] text-sm">Complete React Course</p>
+                  <p className="text-muted-foreground text-sm">Complete React Course</p>
                 </div>
-                <span className="text-white text-sm font-medium">80%</span>
+                <span className="text-foreground text-sm font-medium text-foreground">0%</span>
               </div>
-              <div className="h-2 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
-                <div className="h-full bg-white rounded-full" style={{ width: '80%' }} />
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-foreground rounded-full" style={{ width: '80%' }} />
               </div>
             </div>
           </div>
@@ -467,46 +467,46 @@ function CreativeLayout() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
             <div className="w-10 h-10 rounded-full bg-[#FF5722]/10 flex items-center justify-center text-[#FF5722]">
               <Palette className="w-5 h-5" />
             </div>
             <div className="mt-4">
-              <p className="text-[#888888] text-sm mb-1">Color Palettes</p>
-              <p className="text-3xl font-bold text-white tracking-tight">12 <span className="text-sm font-normal text-[#888888]">Saved</span></p>
+              <p className="text-muted-foreground text-sm mb-1">Color Palettes</p>
+              <p className="text-3xl font-bold text-foreground tracking-tight">12 <span className="text-sm font-normal text-muted-foreground">Saved</span></p>
             </div>
           </div>
 
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground">
               <Camera className="w-5 h-5" />
             </div>
             <div className="mt-4">
-              <p className="text-[#888888] text-sm mb-1">References</p>
-              <p className="text-3xl font-bold text-white tracking-tight">48 <span className="text-sm font-normal text-[#888888]">Collected</span></p>
+              <p className="text-muted-foreground text-sm mb-1">References</p>
+              <p className="text-3xl font-bold text-foreground tracking-tight">48 <span className="text-sm font-normal text-muted-foreground">Collected</span></p>
             </div>
           </div>
 
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground">
               <Music className="w-5 h-5" />
             </div>
             <div className="mt-4">
-              <p className="text-[#888888] text-sm mb-1">Flow State</p>
-              <p className="text-3xl font-bold text-white tracking-tight">04:20<span className="text-[#FF5722]">h</span></p>
+              <p className="text-muted-foreground text-sm mb-1">Flow State</p>
+              <p className="text-3xl font-bold text-foreground tracking-tight">04:20<span className="text-[#FF5722]">h</span></p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="md:col-span-4 space-y-6">
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
-          <h3 className="text-lg font-semibold text-white mb-6">Inspiration Board</h3>
+        <div className="bg-card rounded-3xl p-6 border border-border">
+          <h3 className="text-lg font-semibold text-foreground mb-6">Inspiration Board</h3>
           <div className="grid grid-cols-2 gap-2">
-            <div className="h-24 bg-[#1A1A1A] rounded-lg"></div>
-            <div className="h-24 bg-[#1A1A1A] rounded-lg"></div>
-            <div className="h-24 bg-[#1A1A1A] rounded-lg"></div>
-            <div className="h-24 bg-[#1A1A1A] rounded-lg"></div>
+            <div className="h-24 bg-muted rounded-lg"></div>
+            <div className="h-24 bg-muted rounded-lg"></div>
+            <div className="h-24 bg-muted rounded-lg"></div>
+            <div className="h-24 bg-muted rounded-lg"></div>
           </div>
         </div>
       </div>
@@ -541,62 +541,62 @@ function CodingLayout() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
             <div className="w-10 h-10 rounded-full bg-[#FF5722]/10 flex items-center justify-center text-[#FF5722]">
               <Target className="w-5 h-5" />
             </div>
             <div className="mt-4">
-              <p className="text-[#888888] text-sm mb-1">Commits Today</p>
-              <p className="text-3xl font-bold text-white tracking-tight">14</p>
+              <p className="text-muted-foreground text-sm mb-1">Commits Today</p>
+              <p className="text-3xl font-bold text-foreground tracking-tight">14</p>
             </div>
           </div>
 
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground">
               <Coffee className="w-5 h-5" />
             </div>
             <div className="mt-4">
-              <p className="text-[#888888] text-sm mb-1">Deep Work</p>
-              <p className="text-3xl font-bold text-white tracking-tight">03:15<span className="text-[#FF5722]">h</span></p>
+              <p className="text-muted-foreground text-sm mb-1">Deep Work</p>
+              <p className="text-3xl font-bold text-foreground tracking-tight">03:15<span className="text-[#FF5722]">h</span></p>
             </div>
           </div>
 
-          <div className="bg-[#121212] rounded-3xl p-6 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white">
+          <div className="bg-card rounded-3xl p-6 border border-border flex flex-col justify-between group hover:border-border transition-colors">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground">
               <Zap className="w-5 h-5" />
             </div>
             <div className="mt-4">
-              <p className="text-[#888888] text-sm mb-1">Bugs Squashed</p>
-              <p className="text-3xl font-bold text-white tracking-tight">7</p>
+              <p className="text-muted-foreground text-sm mb-1">Bugs Squashed</p>
+              <p className="text-3xl font-bold text-foreground tracking-tight">7</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="md:col-span-4 space-y-6">
-        <div className="bg-[#121212] rounded-3xl p-6 border border-white/5">
-          <h3 className="text-lg font-semibold text-white mb-6">Sprint Progress</h3>
+        <div className="bg-card rounded-3xl p-6 border border-border">
+          <h3 className="text-lg font-semibold text-foreground mb-6">Sprint Progress</h3>
           <div className="space-y-6">
             <div>
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <p className="text-[#888888] text-sm">Frontend Tasks</p>
+                  <p className="text-muted-foreground text-sm">Frontend Tasks</p>
                 </div>
-                <span className="text-[#FF5722] text-sm font-medium">90%</span>
+                <span className="text-[#FF5722] text-sm font-medium text-foreground">0%</span>
               </div>
-              <div className="h-2 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                 <div className="h-full bg-[#FF5722] rounded-full" style={{ width: '90%' }} />
               </div>
             </div>
             <div>
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <p className="text-[#888888] text-sm">Backend API</p>
+                  <p className="text-muted-foreground text-sm">Backend API</p>
                 </div>
-                <span className="text-white text-sm font-medium">60%</span>
+                <span className="text-foreground text-sm font-medium text-foreground">0%</span>
               </div>
-              <div className="h-2 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
-                <div className="h-full bg-white rounded-full" style={{ width: '60%' }} />
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-foreground rounded-full" style={{ width: '60%' }} />
               </div>
             </div>
           </div>

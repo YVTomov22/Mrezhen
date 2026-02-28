@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
-// ── Helpers ──────────────────────────────────────────
+// Helpers
 
 async function getCurrentUser() {
   const session = await auth()
@@ -21,7 +21,7 @@ async function getCurrentUser() {
 
 const STORY_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
 
-// ── Create Story ─────────────────────────────────────
+// Create Story
 
 const createStorySchema = z.object({
   mediaUrl: z.string().url().optional(),
@@ -70,8 +70,8 @@ export async function createStory(input: unknown) {
   }
 }
 
-// ── Get Story Feed ───────────────────────────────────
-// Returns active (non-expired) stories grouped by creator, ordered by recency.
+// Get Story Feed
+// Returns active stories grouped by creator, ordered by recency.
 
 export async function getStoryFeed() {
   const user = await getCurrentUser()
@@ -172,7 +172,7 @@ export async function getStoryFeed() {
   return { stories: storyGroups, currentUserId: user.id }
 }
 
-// ── Mark Story as Viewed ─────────────────────────────
+// Mark Story as Viewed
 
 export async function viewStory(storyId: string) {
   const user = await getCurrentUser()
@@ -192,7 +192,7 @@ export async function viewStory(storyId: string) {
   }
 }
 
-// ── Toggle Story Like ────────────────────────────────
+// Toggle Story Like
 
 export async function toggleStoryLike(storyId: string) {
   const user = await getCurrentUser()
@@ -221,7 +221,7 @@ export async function toggleStoryLike(storyId: string) {
   }
 }
 
-// ── Send Story Comment (as DM) ──────────────────────
+// Send Story Comment (as DM)
 
 export async function sendStoryComment(storyId: string, content: string) {
   const user = await getCurrentUser()
@@ -264,7 +264,7 @@ export async function sendStoryComment(storyId: string, content: string) {
   }
 }
 
-// ── Share Story (as DM to another user) ──────────────
+// Share Story (as DM to another user)
 
 export async function shareStory(storyId: string, targetUserId: string) {
   const user = await getCurrentUser()
@@ -306,7 +306,7 @@ export async function shareStory(storyId: string, targetUserId: string) {
   }
 }
 
-// ── Story Insights (creator only) ────────────────────
+// Story Insights (creator only)
 
 export async function getStoryInsights(storyId: string) {
   const user = await getCurrentUser()
@@ -351,7 +351,7 @@ export async function getStoryInsights(storyId: string) {
   }
 }
 
-// ── Delete Story ─────────────────────────────────────
+// Delete Story
 
 export async function deleteStory(storyId: string) {
   const user = await getCurrentUser()
@@ -374,8 +374,7 @@ export async function deleteStory(storyId: string) {
   }
 }
 
-// ── Cleanup Expired Stories ──────────────────────────
-// Called by a cron job or API route.
+// Cleanup Expired Stories (cron/API)
 
 export async function cleanupExpiredStories() {
   try {
@@ -388,7 +387,7 @@ export async function cleanupExpiredStories() {
   }
 }
 
-// ── Get Users With Active Stories (for StoriesBar) ───
+// Get Users With Active Stories (for StoriesBar)
 
 export async function getUsersWithActiveStories() {
   const user = await getCurrentUser()
@@ -454,8 +453,7 @@ export async function getUsersWithActiveStories() {
   return { storyUsers: filtered, hasOwnStory: ownStoryCount > 0 }
 }
 
-// ── Check if a specific user has an active story ─────
-// Used on profile pages to show the story ring indicator.
+// Check if user has active story (profile ring indicator)
 
 export async function checkUserHasActiveStory(userId: string) {
   const now = new Date()
@@ -465,7 +463,7 @@ export async function checkUserHasActiveStory(userId: string) {
   return count > 0
 }
 
-// ── Get a single user's stories (for opening from profile) ──
+// Get a single user's stories (from profile)
 
 export async function getUserStories(targetUserId: string) {
   const user = await getCurrentUser()

@@ -21,7 +21,7 @@ export async function submitOnboarding(data: UserInfoValues) {
     return { error: "Invalid data submitted." }
   }
 
-  // Destructure fields that need manual transformation or specific handling
+  // Destructure fields needing transformation
   const { dateOfBirth, interests, username, name, ...otherData } = validatedFields.data
 
   // Prepare the update object
@@ -33,7 +33,7 @@ export async function submitOnboarding(data: UserInfoValues) {
       : [],
   }
 
-  // Only attempt to update username/name if they are provided (prevent overwriting with empty if optional)
+  // Only update username/name if provided
   if (username) updateData.username = username
   if (name) updateData.name = name
 
@@ -45,7 +45,7 @@ export async function submitOnboarding(data: UserInfoValues) {
   } catch (error: any) {
     console.error("DB Update Error:", error)
     
-    // Check for Unique Constraint Violation (P2002) for username
+    // Unique constraint violation on username
     if (error.code === 'P2002' && error.meta?.target?.includes('username')) {
       return { error: "Username is already taken. Please choose another one." }
     }

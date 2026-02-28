@@ -24,7 +24,7 @@ type PostCardProps = PostData
 
 export function PostCard(props: PostCardProps) {
   const router = useRouter()
-  const { optimisticToggleLike, optimisticToggleBookmark, revertLike, revertBookmark } = useFeed()
+  const { optimisticToggleLike, optimisticToggleBookmark, optimisticAddComment, revertLike, revertBookmark, currentUser } = useFeed()
   const [isPending, startTransition] = useTransition()
   const [comment, setComment] = useState('')
   const [showComments, setShowComments] = useState(false)
@@ -89,14 +89,33 @@ export function PostCard(props: PostCardProps) {
     if (!trimmed) return
 
     const parentId = replyingTo?.id || undefined
+
+    // Optimistic: immediately show the comment in the UI
+    const tempId = `temp-${Date.now()}`
+    const optimisticComment = {
+      id: tempId,
+      content: trimmed,
+      createdAt: new Date().toISOString(),
+      author: currentUser ?? { name: 'You', username: null, image: null },
+      likedByMe: false,
+      likeCount: 0,
+      replies: [],
+    }
+
+    if (!parentId) {
+      optimisticAddComment(props.id, optimisticComment)
+    }
+
+    setComment('')
+    setReplyingTo(null)
+    setShowComments(true)
+
     startTransition(async () => {
       const res = await addPostComment(props.id, trimmed, parentId)
       if ('error' in res && res.error) {
         toast.error(res.error)
         return
       }
-      setComment('')
-      setReplyingTo(null)
       toast.success('Comment posted', { duration: 1500 })
       router.refresh()
     })
@@ -248,7 +267,7 @@ export function PostCard(props: PostCardProps) {
         </Button>
       </div>
 
-      {/* ── Comment Section ── */}
+      {/* Comment Section */}
       <div className="comment-collapse" data-open={showComments}>
         <div>
           <div className="border-t border-border/40 pt-4 pb-2 space-y-3">
@@ -396,7 +415,7 @@ export function PostCard(props: PostCardProps) {
   )
 }
 
-/* ── Dashboard-aware content renderer ─────────────────────── */
+/* Dashboard-aware content renderer */
 
 const DASHBOARD_RE = /\[dashboard:([A-Za-z0-9+/=]+)\]/
 

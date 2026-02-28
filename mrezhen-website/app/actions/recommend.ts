@@ -3,7 +3,7 @@
 import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 
-/* ── Types ─────────────────────────────────────────────────── */
+/* Types */
 
 export type MatchReason =
   | { type: "interests"; shared: string[] }
@@ -27,7 +27,7 @@ export interface RecommendedUser {
   matchReasons: MatchReason[]
 }
 
-/* ── Helpers ───────────────────────────────────────────────── */
+/* Helpers */
 
 /** Jaccard‑like overlap: |A ∩ B| / max(|A|, |B|, 1) → 0..1 */
 function overlapRatio(a: string[], b: string[]): number {
@@ -49,7 +49,7 @@ function proximity(a: number, b: number, maxDiff: number): number {
   return Math.max(0, 1 - Math.abs(a - b) / maxDiff)
 }
 
-/* ── Weights (must add to 1) ───────────────────────────────── */
+/* Weights (must add to 1) */
 const W = {
   interests: 0.35,
   level: 0.15,
@@ -59,7 +59,7 @@ const W = {
   score: 0.10,
 } as const
 
-/* ── Main action ───────────────────────────────────────────── */
+/* Main action */
 
 export async function getRecommendedUsers(): Promise<RecommendedUser[]> {
   const session = await auth()

@@ -11,7 +11,7 @@
  * All arithmetic is done in UTC to avoid DST / timezone surprises.
  */
 
-// ─── Configuration ────────────────────────────────────────────────────────────
+// Configuration
 
 /** Days before milestone.dueDate to place the quest deadline. */
 export const MILESTONE_OFFSET_DAYS = 3
@@ -19,7 +19,7 @@ export const MILESTONE_OFFSET_DAYS = 3
 /** Fallback window (days from creation) when the milestone has no dueDate. */
 export const FALLBACK_DURATION_DAYS = 7
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Types──
 
 export interface DeadlineInput {
   /** Deadline explicitly chosen by the user — always wins if provided. */
@@ -38,7 +38,7 @@ export interface DeadlineInput {
   fallbackDays?: number
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers──
 
 /**
  * Returns a new Date that is `days` calendar days after `base`, using UTC
@@ -50,7 +50,7 @@ function addUTCDays(base: Date, days: number): Date {
   return result
 }
 
-// ─── Core service function ────────────────────────────────────────────────────
+// Core service function
 
 /**
  * Resolves the deadline for a newly created quest.
@@ -74,20 +74,18 @@ export function resolveQuestDeadline({
   offsetDays = MILESTONE_OFFSET_DAYS,
   fallbackDays = FALLBACK_DURATION_DAYS,
 }: DeadlineInput): Date {
-  // ── Rule 1: caller supplied an explicit deadline ──────────────────────────
+  // Rule 1: explicit deadline
   if (explicit != null) {
     return explicit
   }
 
-  // ── Rule 2: parent milestone has a dueDate ────────────────────────────────
+  // Rule 2: milestone dueDate
   if (milestoneDueDate != null) {
     const candidate = addUTCDays(milestoneDueDate, -offsetDays)
-    // Guard: if the offset would land before or at createdAt (e.g. milestone
-    // is due very soon), fall back to the milestone dueDate itself so the
-    // quest deadline is never in the past.
+    // If offset lands before createdAt, use milestone dueDate directly
     return candidate > createdAt ? candidate : milestoneDueDate
   }
 
-  // ── Rule 3: no dueDate at all — use fallback duration ─────────────────────
+  // Rule 3: fallback duration
   return addUTCDays(createdAt, fallbackDays)
 }

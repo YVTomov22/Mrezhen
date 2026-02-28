@@ -84,7 +84,7 @@ export function CreateQuestBtn({ milestoneId }: { milestoneId: string }) {
             <Input name="title" required />
           </div>
           
-          {/* ADDED DESCRIPTION FIELD */}
+          {/* Description */}
           <div className="space-y-2">
             <Label>{tCommon("description")}</Label>
             <Textarea name="description" placeholder={t("missionPlaceholder")} />

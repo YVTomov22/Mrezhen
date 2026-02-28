@@ -1,23 +1,10 @@
 import json
 from typing import List, Dict
 
-# Milestone generation based on AI feedback structure.
-# Feedback schema expected:
-# {
-#   "feedback_summary": str,
-#   "agent_class": str,
-#   "generated_quests": [ {"title": str, ...} ],
-#   "top_matches": [ {"username": str, ...} ]
-# }
+# Milestone generation from AI feedback structure.
 
 def compute_milestones(feedback: Dict) -> List[Dict]:
-    """Derive milestone objects from feedback JSON.
-    Each milestone contains:
-      code: short identifier
-      title: human readable
-      achieved: 1 (true) or 0 (false)
-      description: rationale
-    """
+    """Derive milestone objects from feedback JSON."""
     quests = feedback.get("generated_quests", []) or []
     matches = feedback.get("top_matches", []) or []
     agent_class = (feedback.get("agent_class") or "").lower()

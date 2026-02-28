@@ -30,12 +30,12 @@ export async function Navbar() {
 
   const isLoggedIn = !!user
 
-  // ─── Logged-out: no navbar ────────────────────
+  // Logged-out: no navbar
   if (!isLoggedIn) {
     return null
   }
 
-  // ─── Logged-in: vertical sidebar (Instagram-style) ────────────────────
+  // Logged-in: sidebar
   const navItems: { href: string; label: string; icon: "home" | "dashboard" | "target" | "messages" | "heart" | "sparkles" | "search" | "plus" | "trophy" }[] = [
     { href: "/community", label: t("home"), icon: "home" },
     { href: "/community/people", label: t("search"), icon: "search" },

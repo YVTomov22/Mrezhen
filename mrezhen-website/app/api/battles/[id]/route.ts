@@ -4,11 +4,7 @@ import { prisma } from "@/lib/prisma"
 
 type RouteContext = { params: Promise<{ id: string }> }
 
-/**
- * GET /api/battles/[id]
- *
- * Returns full battle details including daily quests.
- */
+// Returns full battle details including daily quests.
 export async function GET(_request: NextRequest, context: RouteContext) {
   const { id } = await context.params
 

@@ -20,7 +20,7 @@ import { getTranslations } from "next-intl/server"
 
 export const dynamic = "force-dynamic"
 
-/* ── tiny helper to render match‑reason badges ─────────────── */
+// Render match-reason badges
 function ReasonBadge({ reason }: { reason: MatchReason }) {
   switch (reason.type) {
     case "interests":
@@ -70,7 +70,7 @@ export default async function SuggestedPeoplePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ── Header Banner ───────────────────────────── */}
+      {/* Header Banner */}
       <div className="relative overflow-hidden border-b border-border bg-card">
         <div className="relative max-w-6xl mx-auto px-6 py-8">
           <Link href="/community/people" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-2 transition-colors">
@@ -83,7 +83,7 @@ export default async function SuggestedPeoplePage() {
         </div>
       </div>
 
-      {/* ── Grid ────────────────────────────────── */}
+      {/* Grid */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         {recommended.length === 0 ? (
           <div className="bg-card border-2 border-dashed border-border rounded-xl p-12 text-center">

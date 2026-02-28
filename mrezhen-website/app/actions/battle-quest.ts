@@ -4,9 +4,7 @@ import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
-// ─────────────────────────────────────────────────────────
 // Helpers
-// ─────────────────────────────────────────────────────────
 
 async function getCurrentUserId(): Promise<string | null> {
   const session = await auth()
@@ -21,9 +19,7 @@ async function getCurrentUserId(): Promise<string | null> {
 /** XP per difficulty for daily battle quests */
 const DAILY_QUEST_XP = 50
 
-// ─────────────────────────────────────────────────────────
 // 1. Submit a daily quest (proof)
-// ─────────────────────────────────────────────────────────
 
 export async function submitDailyQuest(input: {
   battleId: string
@@ -127,9 +123,7 @@ export async function submitDailyQuest(input: {
   return { success: true, data: quest }
 }
 
-// ─────────────────────────────────────────────────────────
-// 2. Verify (approve/reject) opponent's daily quest
-// ─────────────────────────────────────────────────────────
+// 2. Verify opponent's daily quest
 
 export async function verifyDailyQuest(input: {
   questId: string
@@ -209,9 +203,7 @@ export async function verifyDailyQuest(input: {
   }
 }
 
-// ─────────────────────────────────────────────────────────
 // 3. Get daily quests for a battle
-// ─────────────────────────────────────────────────────────
 
 export async function getBattleDailyQuests(battleId: string) {
   const userId = await getCurrentUserId()
@@ -235,9 +227,7 @@ export async function getBattleDailyQuests(battleId: string) {
   return { data: quests, currentUserId: userId }
 }
 
-// ─────────────────────────────────────────────────────────
 // 4. Get current battle day
-// ─────────────────────────────────────────────────────────
 
 export async function getBattleCurrentDay(battleId: string) {
   const battle = await prisma.battle.findUnique({

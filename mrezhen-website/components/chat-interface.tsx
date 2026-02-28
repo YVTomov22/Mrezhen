@@ -74,7 +74,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
   const isUserSwitch = useRef(false)
   const isAtBottomRef = useRef(true)
 
-  // --- URL Query Param Logic ---
+  // URL query param logic
   useEffect(() => {
     const usernameParam = searchParams.get('username')
     
@@ -146,7 +146,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
     return () => clearInterval(interval)
   }, [selectedUser])
 
-  // --- Handlers ---
+  // Handlers
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {

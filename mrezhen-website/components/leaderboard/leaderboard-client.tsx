@@ -14,7 +14,7 @@ import {
 import type { LeaderboardEntry, LeaderboardResult, Region } from "@/app/actions/leaderboard"
 import { Globe, Users, Crosshair, Loader2, Trophy } from "lucide-react"
 
-// ─── Props from server page ─────────────────────────────────
+// Props
 interface LeaderboardClientProps {
   initialGlobal: LeaderboardResult
   userRanks: {
@@ -33,21 +33,21 @@ export function LeaderboardClient({
   const [tab, setTab] = useState<"global" | "regional" | "local">("global")
   const [isPending, startTransition] = useTransition()
 
-  // ─── Global state ─────────────────────────────────────
+  // Global state
   const [globalData, setGlobalData] = useState<LeaderboardResult>(initialGlobal)
 
-  // ─── Regional state ───────────────────────────────────
+  // Regional state
   const [region, setRegion] = useState<Region>(
     (userRanks?.region as Region) ?? "global"
   )
   const [regionalData, setRegionalData] = useState<LeaderboardResult | null>(null)
 
-  // ─── Local state ──────────────────────────────────────
+  // Local state
   const [localEntries, setLocalEntries] = useState<LeaderboardEntry[]>([])
   const [localCurrentUser, setLocalCurrentUser] = useState<LeaderboardEntry | null>(null)
   const [localLoaded, setLocalLoaded] = useState(false)
 
-  // ─── Fetch global page ────────────────────────────────
+  // Fetch global page
   const fetchGlobalPage = useCallback((page: number) => {
     startTransition(async () => {
       const data = await getGlobalLeaderboard(page)
@@ -55,7 +55,7 @@ export function LeaderboardClient({
     })
   }, [])
 
-  // ─── Fetch regional page ──────────────────────────────
+  // Fetch regional page
   const fetchRegionalPage = useCallback(
     (page: number, r?: Region) => {
       startTransition(async () => {
@@ -66,7 +66,7 @@ export function LeaderboardClient({
     [region]
   )
 
-  // ─── Fetch local ──────────────────────────────────────
+  // Fetch local
   const fetchLocal = useCallback(() => {
     startTransition(async () => {
       const data = await getLocalLeaderboard(10)
@@ -76,7 +76,7 @@ export function LeaderboardClient({
     })
   }, [])
 
-  // ─── Auto-fetch when tab changes ─────────────────────
+  // Auto-fetch on tab change
   useEffect(() => {
     if (tab === "regional" && !regionalData) {
       fetchRegionalPage(1)
@@ -86,7 +86,7 @@ export function LeaderboardClient({
     }
   }, [tab, regionalData, localLoaded, fetchRegionalPage, fetchLocal])
 
-  // ─── Region change handler ────────────────────────────
+  // Region change handler
   const handleRegionChange = (r: Region) => {
     setRegion(r)
     fetchRegionalPage(1, r)
@@ -94,7 +94,7 @@ export function LeaderboardClient({
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-      {/* ─── Header ──────────────────────────────────────── */}
+      {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
           <Trophy className="h-6 w-6 text-amber-500" />
@@ -105,7 +105,7 @@ export function LeaderboardClient({
         </p>
       </div>
 
-      {/* ─── Rank summary cards ──────────────────────────── */}
+      {/* Rank summary cards */}
       {userRanks && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <RankCard label="Global Rank" rank={userRanks.globalRank} icon="trophy" />
@@ -128,7 +128,7 @@ export function LeaderboardClient({
         </div>
       )}
 
-      {/* ─── Tabs ────────────────────────────────────────── */}
+      {/* Tabs */}
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="global" className="flex items-center gap-1.5 text-xs sm:text-sm">
@@ -145,14 +145,14 @@ export function LeaderboardClient({
           </TabsTrigger>
         </TabsList>
 
-        {/* ── Loading overlay ─────────────────────────────── */}
+        {/* Loading overlay */}
         {isPending && (
           <div className="flex justify-center py-6">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         )}
 
-        {/* ── Global ──────────────────────────────────────── */}
+        {/* Global */}
         <TabsContent value="global" className="mt-4">
           {!isPending && (
             <>
@@ -170,7 +170,7 @@ export function LeaderboardClient({
           )}
         </TabsContent>
 
-        {/* ── Regional ────────────────────────────────────── */}
+        {/* Regional */}
         <TabsContent value="regional" className="mt-4 space-y-4">
           <RegionFilter value={region} onChange={handleRegionChange} />
           {!isPending && regionalData && (
@@ -190,7 +190,7 @@ export function LeaderboardClient({
           )}
         </TabsContent>
 
-        {/* ── Local (Nearby) ──────────────────────────────── */}
+        {/* Local (Nearby) */}
         <TabsContent value="local" className="mt-4">
           {!isPending && localLoaded && (
             <div className="space-y-2">

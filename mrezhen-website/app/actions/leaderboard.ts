@@ -4,15 +4,17 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/app/auth"
 import { revalidatePath } from "next/cache"
 
-// ─── Types ──────────────────────────────────────────────────
+// Types
 export interface LeaderboardEntry {
   id: string
   username: string | null
+  name: string | null
   image: string | null
   score: number
   level: number
   region: string
   rank: number
+  isPrivate: boolean
 }
 
 export interface LeaderboardResult {
@@ -23,7 +25,7 @@ export interface LeaderboardResult {
   currentUser?: LeaderboardEntry | null
 }
 
-// ─── Constants ──────────────────────────────────────────────
+// Constants
 const VALID_REGIONS = [
   "global", "na", "eu", "asia", "sa", "africa", "oceania", "mena",
 ] as const
@@ -33,13 +35,9 @@ export type Region = (typeof VALID_REGIONS)[number]
 const DEFAULT_PAGE_SIZE = 25
 const MAX_PAGE_SIZE = 100
 
-// ─── Helpers ────────────────────────────────────────────────
+// Helpers
 
-/**
- * Calculate a user's rank among all active users.
- * Uses a COUNT query (index scan) instead of a window function
- * to keep it efficient even at millions of rows.
- */
+/** Calculate a user's rank among all active users via COUNT query. */
 async function getUserGlobalRank(userId: string): Promise<number> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -77,12 +75,8 @@ async function getUserRegionalRank(
   return above + 1
 }
 
-// ─── Global Leaderboard (paginated) ────────────────────────
-/**
- * Fetches global leaderboard with cursor-free offset pagination.
- * The composite index on (isDeactivated, score DESC) ensures the
- * database can satisfy skip/take without scanning the full table.
- */
+// Global Leaderboard (paginated)
+/** Paginated global leaderboard using offset pagination. */
 export async function getGlobalLeaderboard(
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE
@@ -100,18 +94,24 @@ export async function getGlobalLeaderboard(
       select: {
         id: true,
         username: true,
+        name: true,
         image: true,
         score: true,
         level: true,
         region: true,
+        isPrivate: true,
       },
     }),
     prisma.user.count({ where: { isDeactivated: false } }),
   ])
 
   // Attach computed rank based on page offset
+  // Mask private users' display info
   const ranked: LeaderboardEntry[] = entries.map((u, i) => ({
     ...u,
+    username: u.isPrivate ? null : u.username,
+    name: u.isPrivate ? null : u.name,
+    image: u.isPrivate ? null : u.image,
     rank: skip + i + 1,
   }))
 
@@ -124,10 +124,12 @@ export async function getGlobalLeaderboard(
       select: {
         id: true,
         username: true,
+        name: true,
         image: true,
         score: true,
         level: true,
         region: true,
+        isPrivate: true,
       },
     })
     if (me) {
@@ -139,7 +141,7 @@ export async function getGlobalLeaderboard(
   return { entries: ranked, total, page: p, pageSize: size, currentUser }
 }
 
-// ─── Regional Leaderboard (paginated) ──────────────────────
+// Regional Leaderboard (paginated)
 export async function getRegionalLeaderboard(
   region: Region,
   page = 1,
@@ -162,10 +164,12 @@ export async function getRegionalLeaderboard(
       select: {
         id: true,
         username: true,
+        name: true,
         image: true,
         score: true,
         level: true,
         region: true,
+        isPrivate: true,
       },
     }),
     prisma.user.count({ where: { isDeactivated: false, region } }),
@@ -173,6 +177,9 @@ export async function getRegionalLeaderboard(
 
   const ranked: LeaderboardEntry[] = entries.map((u, i) => ({
     ...u,
+    username: u.isPrivate ? null : u.username,
+    name: u.isPrivate ? null : u.name,
+    image: u.isPrivate ? null : u.image,
     rank: skip + i + 1,
   }))
 
@@ -184,10 +191,12 @@ export async function getRegionalLeaderboard(
       select: {
         id: true,
         username: true,
+        name: true,
         image: true,
         score: true,
         level: true,
         region: true,
+        isPrivate: true,
       },
     })
     if (me) {
@@ -199,14 +208,8 @@ export async function getRegionalLeaderboard(
   return { entries: ranked, total, page: p, pageSize: size, currentUser }
 }
 
-// ─── Local Leaderboard (score neighbors) ───────────────────
-/**
- * Returns X users above and below the current user in the ranking,
- * centering them in the result. Uses two efficient queries:
- * 1. Users with score >= current user's score (above + self)
- * 2. Users with score < current user's score (below)
- * Both use the DESC score index.
- */
+// Local Leaderboard (score neighbors)
+/** Returns score neighbors above and below the current user. */
 export async function getLocalLeaderboard(
   neighbors = 10
 ): Promise<{
@@ -223,10 +226,12 @@ export async function getLocalLeaderboard(
     select: {
       id: true,
       username: true,
+      name: true,
       image: true,
       score: true,
       level: true,
       region: true,
+      isPrivate: true,
     },
   })
   if (!me) return { entries: [], currentUser: null }
@@ -244,10 +249,12 @@ export async function getLocalLeaderboard(
     select: {
       id: true,
       username: true,
+      name: true,
       image: true,
       score: true,
       level: true,
       region: true,
+      isPrivate: true,
     },
   })
 
@@ -262,10 +269,12 @@ export async function getLocalLeaderboard(
     select: {
       id: true,
       username: true,
+      name: true,
       image: true,
       score: true,
       level: true,
       region: true,
+      isPrivate: true,
     },
   })
 
@@ -286,17 +295,23 @@ export async function getLocalLeaderboard(
 
   // Assign ranks relative to the current user
   const myIndex = deduped.findIndex((u) => u.id === me.id)
-  const ranked: LeaderboardEntry[] = deduped.map((u, i) => ({
-    ...u,
-    rank: myRank - (myIndex - i),
-  }))
+  const ranked: LeaderboardEntry[] = deduped.map((u, i) => {
+    const isSelf = u.id === me.id
+    return {
+      ...u,
+      username: (!isSelf && u.isPrivate) ? null : u.username,
+      name: (!isSelf && u.isPrivate) ? null : u.name,
+      image: (!isSelf && u.isPrivate) ? null : u.image,
+      rank: myRank - (myIndex - i),
+    }
+  })
 
   const currentUser: LeaderboardEntry = { ...me, rank: myRank }
 
   return { entries: ranked, currentUser }
 }
 
-// ─── Update user region ────────────────────────────────────
+// Update user region
 export async function updateUserRegion(region: string) {
   if (!VALID_REGIONS.includes(region as Region)) {
     return { error: "Invalid region" }
@@ -318,14 +333,14 @@ export async function updateUserRegion(region: string) {
   }
 }
 
-// ─── Get user ranks (both global and regional) ─────────────
+// Get user ranks (global + regional)
 export async function getUserRanks() {
   const session = await auth()
   if (!session?.user?.email) return null
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { id: true, score: true, region: true, level: true, username: true, image: true },
+    select: { id: true, score: true, region: true, level: true, username: true, name: true, image: true, isPrivate: true },
   })
   if (!user) return null
 

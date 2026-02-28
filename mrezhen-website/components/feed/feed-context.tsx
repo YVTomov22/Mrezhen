@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 
-/* ── Shared types ─────────────────────────────────── */
+/* Shared types */
 
 export type Author = {
   id?: string
@@ -56,27 +56,31 @@ export type PostData = {
   recentComments: Comment[]
 }
 
-/* ── Context value ────────────────────────────────── */
+/* Context value */
 
 type FeedContextValue = {
   posts: PostData[]
+  currentUser: Author | null
   likedPosts: PostData[]
   savedPosts: PostData[]
   optimisticToggleLike: (postId: string) => void
   optimisticToggleBookmark: (postId: string) => void
+  optimisticAddComment: (postId: string, comment: Comment) => void
   revertLike: (postId: string) => void
   revertBookmark: (postId: string) => void
 }
 
 const FeedContext = createContext<FeedContextValue | null>(null)
 
-/* ── Provider ─────────────────────────────────────── */
+/* Provider */
 
 export function FeedProvider({
   initialPosts,
+  currentUser,
   children,
 }: {
   initialPosts: PostData[]
+  currentUser?: Author | null
   children: ReactNode
 }) {
   const [posts, setPosts] = useState<PostData[]>(initialPosts)
@@ -99,6 +103,20 @@ export function FeedProvider({
     setPosts((prev) =>
       prev.map((p) =>
         p.id === postId ? { ...p, bookmarkedByMe: !p.bookmarkedByMe } : p,
+      ),
+    )
+  }, [])
+
+  const optimisticAddComment = useCallback((postId: string, comment: Comment) => {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId
+          ? {
+              ...p,
+              commentCount: p.commentCount + 1,
+              recentComments: [...p.recentComments, comment],
+            }
+          : p,
       ),
     )
   }, [])
@@ -131,20 +149,22 @@ export function FeedProvider({
   const value = useMemo<FeedContextValue>(
     () => ({
       posts,
+      currentUser: currentUser ?? null,
       likedPosts,
       savedPosts,
       optimisticToggleLike,
       optimisticToggleBookmark,
+      optimisticAddComment,
       revertLike,
       revertBookmark,
     }),
-    [posts, likedPosts, savedPosts, optimisticToggleLike, optimisticToggleBookmark, revertLike, revertBookmark],
+    [posts, currentUser, likedPosts, savedPosts, optimisticToggleLike, optimisticToggleBookmark, optimisticAddComment, revertLike, revertBookmark],
   )
 
   return <FeedContext.Provider value={value}>{children}</FeedContext.Provider>
 }
 
-/* ── Hook ─────────────────────────────────────────── */
+/* Hook */
 
 export function useFeed() {
   const ctx = useContext(FeedContext)

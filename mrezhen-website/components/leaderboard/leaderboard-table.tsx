@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Trophy, Crown, Medal, Award } from "lucide-react"
 import type { LeaderboardEntry } from "@/app/actions/leaderboard"
 
-// ─── Medal/rank icon for top 3 ─────────────────────────────
+// Rank icon for top 3
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1)
     return <Crown className="h-5 w-5 text-yellow-500 shrink-0" />
@@ -21,7 +21,7 @@ function RankBadge({ rank }: { rank: number }) {
   )
 }
 
-// ─── Region label map ───────────────────────────────────────
+// Region label map
 export const REGION_LABELS: Record<string, string> = {
   global: "🌍 Global",
   na: "🇺🇸 North America",
@@ -33,15 +33,16 @@ export const REGION_LABELS: Record<string, string> = {
   mena: "🏜️ Middle East & North Africa",
 }
 
-// ─── Single row ─────────────────────────────────────────────
+// Single row
 interface LeaderboardRowProps {
   entry: LeaderboardEntry
   isCurrentUser?: boolean
 }
 
 export function LeaderboardRow({ entry, isCurrentUser }: LeaderboardRowProps) {
+  const displayName = entry.username ?? entry.name ?? "Anonymous"
   const initials =
-    entry.username?.slice(0, 2).toUpperCase() ?? entry.id.slice(0, 2).toUpperCase()
+    entry.username?.slice(0, 2).toUpperCase() ?? entry.name?.slice(0, 2).toUpperCase() ?? "??"
 
   return (
     <div
@@ -73,7 +74,7 @@ export function LeaderboardRow({ entry, isCurrentUser }: LeaderboardRowProps) {
               isCurrentUser && "font-bold text-teal-700 dark:text-teal-400"
             )}
           >
-            {entry.username ?? "Anonymous"}
+            {displayName}
           </span>
           {isCurrentUser && (
             <Badge
@@ -98,7 +99,7 @@ export function LeaderboardRow({ entry, isCurrentUser }: LeaderboardRowProps) {
   )
 }
 
-// ─── Table wrapper ──────────────────────────────────────────
+// Table wrapper
 interface LeaderboardTableProps {
   entries: LeaderboardEntry[]
   currentUserId?: string

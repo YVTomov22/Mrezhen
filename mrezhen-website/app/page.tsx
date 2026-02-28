@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useEffect, useRef } from "react"
 import { useTranslations } from "next-intl"
 
-// --- COMPONENTS ---
+// Components
 
 function Hero({ t }: { t: any }) {
   return (

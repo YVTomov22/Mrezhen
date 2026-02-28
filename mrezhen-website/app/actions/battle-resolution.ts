@@ -2,20 +2,11 @@
 
 import { prisma } from "@/lib/prisma"
 
-// ─────────────────────────────────────────────────────────
 // Battle Resolution Service
 //
-// Called by the cron job (or admin action) to resolve
-// battles that have reached their end date.
-//
-// Rules:
-//   1. Winner = participant with higher battle-scoped XP
-//   2. Winner receives XP × 2 to their global score
-//   3. Loser receives their earned XP × 1 to global score
-//   4. Tie: both receive XP × 1 (no multiplier)
-//   5. All XP is applied atomically via transaction
-//   6. Prevents double-resolution via status check
-// ─────────────────────────────────────────────────────────
+// Resolves battles past their end date (cron/admin).
+// Winner gets XP×2, loser XP×1, tie XP×1.
+// Atomic transaction; idempotent (status check).
 
 const WINNER_MULTIPLIER = 2
 
@@ -168,10 +159,7 @@ export async function resolveBattle(battleId: string): Promise<{
   }
 }
 
-/**
- * Resolve ALL battles that have passed their endDate.
- * Called by the cron job.
- */
+/** Resolve all battles past their endDate (cron job). */
 export async function resolveExpiredBattles(): Promise<{
   resolved: BattleResolutionResult[]
   errors: { battleId: string; error: string }[]

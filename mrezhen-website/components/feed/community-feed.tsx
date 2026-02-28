@@ -1,11 +1,11 @@
 'use client'
 
 import { Flame } from 'lucide-react'
-import { FeedProvider, useFeed, type PostData } from '@/components/feed/feed-context'
+import { FeedProvider, useFeed, type PostData, type Author } from '@/components/feed/feed-context'
 import { PostCard } from '@/components/feed/post-card'
 import { cn } from '@/lib/utils'
 
-/* ── Inner content (uses context) ─────────────────── */
+/* Inner content (uses context) */
 
 function FeedTabs() {
   const { posts } = useFeed()
@@ -38,11 +38,11 @@ function FeedTabs() {
   )
 }
 
-/* ── Exported wrapper (provides context) ──────────── */
+/* Exported wrapper (provides context) */
 
-export function CommunityFeed({ initialPosts }: { initialPosts: PostData[] }) {
+export function CommunityFeed({ initialPosts, currentUser }: { initialPosts: PostData[]; currentUser?: Author | null }) {
   return (
-    <FeedProvider initialPosts={initialPosts}>
+    <FeedProvider initialPosts={initialPosts} currentUser={currentUser}>
       <FeedTabs />
     </FeedProvider>
   )

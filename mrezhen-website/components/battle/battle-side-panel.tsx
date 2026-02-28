@@ -17,9 +17,7 @@ import { cn } from "@/lib/utils"
 import { DailyQuestSubmission } from "./daily-quest-submission"
 import { QuestVerification } from "./quest-verification"
 
-// ─────────────────────────────────────────────────────────
 // Types
-// ─────────────────────────────────────────────────────────
 
 type BattleUser = {
   id: string
@@ -68,9 +66,7 @@ interface BattleSidePanelProps {
   currentUserId: string
 }
 
-// ─────────────────────────────────────────────────────────
 // Component
-// ─────────────────────────────────────────────────────────
 
 export function BattleSidePanel({ otherUserId, currentUserId }: BattleSidePanelProps) {
   const t = useTranslations("battle")

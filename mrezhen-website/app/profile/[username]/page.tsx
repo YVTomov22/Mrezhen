@@ -17,7 +17,7 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
   const { username } = params;
   const session = await auth()
 
-  // Fetch target user public info (supports both username and user ID lookups)
+  // Fetch target user (supports username or ID lookup)
   let user = await prisma.user.findUnique({
     where: { username },
     include: {
@@ -37,7 +37,7 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
     }
   })
 
-  // Fallback: try looking up by user ID (for users without a username)
+  // Fallback: look up by user ID
   if (!user) {
     user = await prisma.user.findUnique({
       where: { id: username },
@@ -74,7 +74,7 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
     isFollowing = currentUser?.following.some(f => f.followingId === user.id) ?? false
   }
 
-  // Check if user has active (non-expired) stories
+  // Check for active stories
   const hasActiveStory = await checkUserHasActiveStory(user.id)
 
   return (

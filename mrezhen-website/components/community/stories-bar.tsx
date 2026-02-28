@@ -93,9 +93,9 @@ export function StoriesBar({
               className="group"
             >
               <div className="bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 rounded-full p-[2.5px] shadow-sm">
-                <Avatar className="h-[48px] w-[48px] border-[2px] border-background">
+                <Avatar className="h-[60px] w-[60px] border-[2.5px] border-background">
                   <AvatarImage src={currentUser.image || ''} />
-                  <AvatarFallback className="text-xs font-bold bg-foreground text-background">
+                  <AvatarFallback className="text-sm font-bold bg-foreground text-background">
                     {currentUser.name?.[0]?.toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
@@ -133,14 +133,14 @@ export function StoriesBar({
                     : 'bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600'
                 }`}
               >
-                <Avatar className="h-[48px] w-[48px] border-[2px] border-background">
+                <Avatar className="h-[60px] w-[60px] border-[2.5px] border-background">
                   <AvatarImage src={user.image || ''} />
-                  <AvatarFallback className="text-xs font-bold bg-foreground text-background">
+                  <AvatarFallback className="text-sm font-bold bg-foreground text-background">
                     {user.name?.[0]?.toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <span className="editorial-caption text-muted-foreground group-hover:text-foreground transition-colors truncate w-14 text-center !text-[9px]">
+              <span className="editorial-caption text-muted-foreground group-hover:text-foreground transition-colors truncate w-16 text-center !text-[9px]">
                 {user.username || user.name?.split(' ')[0] || 'User'}
               </span>
             </button>

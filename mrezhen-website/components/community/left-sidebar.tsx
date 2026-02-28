@@ -11,12 +11,18 @@ type UserProfile = {
   score: number
 }
 
+type TrendingTag = {
+  tag: string
+  count: number
+}
+
 type LeftSidebarProps = {
   user: UserProfile
   hasActiveStory?: boolean
+  trendingHashtags?: TrendingTag[]
 }
 
-/* ── XP Progress Bar ────────────────────────────────── */
+/* XP Progress Bar */
 function XpProgressBar({ level, score }: { level: number; score: number }) {
   const xpPerLevel = 1000
   const xpInCurrentLevel = score % xpPerLevel
@@ -38,7 +44,7 @@ function XpProgressBar({ level, score }: { level: number; score: number }) {
   )
 }
 
-export function CommunityLeftSidebar({ user, hasActiveStory = false }: LeftSidebarProps) {
+export function CommunityLeftSidebar({ user, hasActiveStory = false, trendingHashtags = [] }: LeftSidebarProps) {
   return (
     <div className="space-y-6">
       {/* Mini Profile */}
@@ -81,24 +87,27 @@ export function CommunityLeftSidebar({ user, hasActiveStory = false }: LeftSideb
 
       <div className="h-px bg-border/60" />
 
-      {/* Trending Topics — Interactive Pills */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-medium text-muted-foreground px-1 uppercase tracking-wider">
-          Trending
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {['productivity', 'goals', 'motivation', 'learning', 'growth'].map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              className="trending-pill inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-full border transition-all duration-200 text-muted-foreground bg-muted/40 border-border/60 hover:border-primary hover:text-primary hover:-translate-y-0.5 hover:shadow-sm"
-            >
-              <Hash className="h-3 w-3 shrink-0" />
-              {tag}
-            </button>
-          ))}
+      {/* Trending Topics — Only show when there are real hashtags */}
+      {trendingHashtags.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-xs font-medium text-muted-foreground px-1 uppercase tracking-wider">
+            Trending
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {trendingHashtags.map(({ tag, count }) => (
+              <button
+                key={tag}
+                type="button"
+                title={`${count} post${count !== 1 ? 's' : ''}`}
+                className="trending-pill inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-full border transition-all duration-200 text-muted-foreground bg-muted/40 border-border/60 hover:border-primary hover:text-primary hover:-translate-y-0.5 hover:shadow-sm"
+              >
+                <Hash className="h-3 w-3 shrink-0" />
+                {tag}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -1,17 +1,7 @@
-/**
- * Sliding-window rate limiter — per-user message throttling.
- *
- * Uses a simple token-bucket approach stored in memory.
- * In a multi-node deployment, replace the Map with Redis:
- *   INCR  ratelimit:<userId>:<windowKey>
- *   EXPIRE ratelimit:<userId>:<windowKey>  <windowSec>
- */
+// Sliding-window rate limiter — per-user message throttling.
+// Uses a token-bucket approach in memory. For multi-node, replace with Redis INCR/EXPIRE.
 
 export class RateLimiter {
-  /**
-   * @param {number} maxMessages  Maximum messages allowed per window
-   * @param {number} windowMs     Window duration in milliseconds
-   */
   constructor(maxMessages = 30, windowMs = 60_000) {
     this.maxMessages = maxMessages;
     this.windowMs = windowMs;
@@ -25,13 +15,7 @@ export class RateLimiter {
     if (this._cleanupInterval.unref) this._cleanupInterval.unref();
   }
 
-  /**
-   * Check whether a user is allowed to send a message.
-   * Increments the counter and returns { allowed, remaining, retryAfterMs }.
-   *
-   * @param {string} userId
-   * @returns {{ allowed: boolean, remaining: number, retryAfterMs: number }}
-   */
+  /** Check whether a user is allowed to send a message. Increments counter. */
   consume(userId) {
     const now = Date.now();
     let bucket = this._buckets.get(userId);

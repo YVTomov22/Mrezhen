@@ -11,21 +11,19 @@ export async function verifyTaskWithAI(
   imageUrls: string[], 
   userComment: string
 ) {
-  // 1. Fetch the Task details to send to AI
+  // Fetch task details
   const task = await prisma.task.findUnique({
     where: { id: taskId },
-    select: { id: true, content: true } // We use 'content' as title
+    select: { id: true, content: true }
   })
 
   if (!task) return { error: "Task not found" }
 
-  // 2. Prepare Form Data for FastAPI
-  // The Python backend expects 'task' and 'image_urls' as JSON strings
+  // Prepare form data for AI backend
   const formData = new FormData()
   
-  // Construct the task object expected by Pydantic
   const taskPayload = JSON.stringify({
-    id: 123, // Dummy ID for AI, doesn't matter
+    id: 123, // Dummy ID
     title: task.content, 
     description: "User submitted proof for this task."
   })
@@ -35,7 +33,7 @@ export async function verifyTaskWithAI(
   formData.append("user_text", userComment)
 
   try {
-    // 3. Call the Python AI Backend
+    // Call AI backend
     const response = await fetch(`${AI_JUDGE_URL}/evaluate`, {
       method: "POST",
       body: formData,
@@ -50,7 +48,7 @@ export async function verifyTaskWithAI(
 
     const result = await response.json()
 
-    // 4. Process Result
+    // Process result
     if (result.is_completed) {
 
       await completeTaskAndAwardXP(taskId)
@@ -59,7 +57,6 @@ export async function verifyTaskWithAI(
       revalidatePath("/goals")
       return { success: true, reason: result.reason }
     } else {
-      // AI Rejected
       return { success: false, reason: result.reason }
     }
 

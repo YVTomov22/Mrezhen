@@ -4,7 +4,7 @@ import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
-/* ── Update a single privacy toggle (boolean) ─────────────── */
+/* Update a single privacy toggle */
 export async function updatePrivacyToggle(
   field: string,
   value: boolean
@@ -36,7 +36,7 @@ export async function updatePrivacyToggle(
   }
 }
 
-/* ── Update a "who can …" select ───────────────────────────── */
+/* Update a "who can …" select */
 export async function updatePrivacySelect(
   field: string,
   value: string
@@ -74,7 +74,7 @@ export async function updatePrivacySelect(
   }
 }
 
-/* ── Update story hidden list / close friends ──────────────── */
+/* Update story hidden list / close friends */
 export async function updatePrivacyList(
   field: "hiddenFromStory" | "closeFriends",
   userIds: string[]

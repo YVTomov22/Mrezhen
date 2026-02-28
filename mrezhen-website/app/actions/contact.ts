@@ -3,8 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { sendContactEmail } from "@/lib/mailer"
 
-// ─── Simple in-memory rate limiter ──────────────────────────
-// In production swap for Redis or an edge rate-limiter.
+// Simple in-memory rate limiter (swap for Redis in production)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT_WINDOW = 60_000 * 15 // 15 minutes
 const RATE_LIMIT_MAX = 3 // max 3 submissions per window
@@ -20,20 +19,14 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX
 }
 
-// ─── Validation ─────────────────────────────────────────────
+// Validation
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_NAME_LENGTH = 100
 const MAX_EMAIL_LENGTH = 254
 const MAX_MESSAGE_LENGTH = 5000
 
-// ─── Submit Contact Form ────────────────────────────────────
-/**
- * Server action for the /contact form.
- *  - Validates inputs
- *  - Rate-limits by email address (as a proxy for IP in server actions)
- *  - Stores message in the database
- *  - Sends notification email to the platform
- */
+// Submit Contact Form
+/** Server action: validate, rate-limit, store, and email the contact form. */
 export async function submitContactForm(
   _prevState: unknown,
   formData: FormData
@@ -42,7 +35,7 @@ export async function submitContactForm(
   const email = (formData.get("email") as string)?.trim().toLowerCase()
   const message = (formData.get("message") as string)?.trim()
 
-  // ─── Validate ────────────────────────────────────────
+  // Validate
   if (!name || name.length > MAX_NAME_LENGTH) {
     return { error: "Please provide a valid name (max 100 characters)." }
   }
@@ -53,18 +46,18 @@ export async function submitContactForm(
     return { error: "Message must be between 10 and 5,000 characters." }
   }
 
-  // ─── Rate limit (keyed by sender email) ──────────────
+  // Rate limit (keyed by sender email)
   if (isRateLimited(email)) {
     return { error: "Too many messages. Please try again later." }
   }
 
   try {
-    // ─── Persist to database ─────────────────────────────
+    // Persist to database
     await prisma.contactMessage.create({
       data: { name, email, message },
     })
 
-    // ─── Send notification email (best-effort) ───────────
+    // Send notification email (best-effort)
     try {
       await sendContactEmail(name, email, message)
     } catch {

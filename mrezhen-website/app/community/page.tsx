@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { auth } from '@/app/auth'
 import { prisma } from '@/lib/prisma'
-import { PostComposer } from '@/components/feed/post-composer'
 import { PostComposerModal } from '@/components/feed/post-composer-modal'
 import { CommunityFeed } from '@/components/feed/community-feed'
 import { FollowButton } from '@/components/follow-button'
@@ -14,6 +13,7 @@ import { getRecommendedUsers } from '@/app/actions/recommend'
 import { getUsersWithActiveStories, getStoryFeed } from '@/app/actions/story'
 import { StoryAvatarRing } from '@/components/story/story-avatar-ring'
 import { FindPeopleButton } from '@/components/community/find-people-button'
+import { getTrendingHashtags } from '@/app/actions/hashtags'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,7 +29,7 @@ export default async function CommunityFeedPage() {
 
   if (!currentUser) redirect('/auth/login')
 
-  const [posts, recommendedUsers, storyFeedData, storyBarData] = await Promise.all([
+  const [posts, recommendedUsers, storyFeedData, storyBarData, trendingHashtags] = await Promise.all([
     prisma.post.findMany({
       orderBy: { createdAt: 'desc' },
       take: 50,
@@ -75,9 +75,10 @@ export default async function CommunityFeedPage() {
     getRecommendedUsers(),
     getStoryFeed(),
     getUsersWithActiveStories(),
+    getTrendingHashtags(),
   ])
 
-  // Batch-check which post authors (+ sidebar people + current user) have active stories
+  // Check which users have active stories
   const allAuthorIds = [...new Set(posts.map((p) => p.authorId))]
   const allIdsToCheck = [...allAuthorIds, ...recommendedUsers.slice(0, 5).map((u) => u.id), currentUser.id]
   const usersWithStories = await prisma.story.findMany({
@@ -87,7 +88,7 @@ export default async function CommunityFeedPage() {
   })
   const storyUserSet = new Set(usersWithStories.map((s) => s.creatorId))
 
-  // Users available for sharing stories (followers / people they messaged)
+  // Shareable users (followed)
   const shareableUsers = await prisma.user.findMany({
     where: {
       id: { not: currentUser.id },
@@ -131,7 +132,7 @@ export default async function CommunityFeedPage() {
   return (
     <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background grid grid-cols-1 lg:grid-cols-[240px_1fr_300px_180px]">
       <PostComposerModal />
-      {/* ── LEFT SIDEBAR ─────────────────────────────── */}
+      {/* Left Sidebar */}
       <LeftAsideShell>
         {/* Suggested People */}
         <div>
@@ -175,7 +176,7 @@ export default async function CommunityFeedPage() {
         </div>
       </LeftAsideShell>
 
-      {/* ── FEED (center, scrollable) ─────────────── */}
+      {/* Feed */}
       <section className="overflow-y-auto no-scrollbar px-6 py-8">
         <div className="max-w-[640px] mx-auto space-y-6">
           {/* Horizontal stories strip */}
@@ -195,18 +196,26 @@ export default async function CommunityFeedPage() {
             />
           </div>
 
-          <PostComposer />
-
-          <CommunityFeed initialPosts={serialized} />
+          <CommunityFeed initialPosts={serialized} currentUser={currentUser} />
         </div>
       </section>
 
-      {/* ── RIGHT SIDEBAR ───────────────────────────── */}
-      <aside className="hidden lg:block border-l border-r border-border/60 px-6 py-8 overflow-y-auto no-scrollbar">
-        <CommunityLeftSidebar user={currentUser} hasActiveStory={storyUserSet.has(currentUser.id)} />
+      {/* Right Sidebar */}
+      <aside className="hidden lg:flex lg:flex-col border-l border-r border-border/60 px-6 py-8 overflow-y-auto no-scrollbar">
+        <CommunityLeftSidebar user={currentUser} hasActiveStory={storyUserSet.has(currentUser.id)} trendingHashtags={trendingHashtags} />
+
+        {/* Footer links */}
+        <div className="mt-auto pt-8">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link href="/terms#privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
+          </div>
+          <p className="text-[10px] text-muted-foreground/60 mt-2">&copy; {new Date().getFullYear()} Mrezhen</p>
+        </div>
       </aside>
 
-      {/* ── RIGHT GUTTER (2.5 × 72px = 180px) ─────── */}
+      {/* Right Gutter */}
       <div className="hidden lg:block" aria-hidden="true" />
     </div>
   )

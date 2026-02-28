@@ -1,14 +1,6 @@
-/**
- * Seed script – populates the database with sample leaderboard data.
- *
- * Usage:
- *   npx tsx scripts/seed-leaderboard.ts
- *
- * This creates 200 sample users with randomised scores, levels, and regions
- * so the leaderboard pages have realistic data to display.
- *
- * Safe to run multiple times – uses upsert keyed on email.
- */
+// Seed script: populates DB with sample leaderboard data (200 users).
+// Usage: npx tsx scripts/seed-leaderboard.ts
+// Safe to re-run (upserts by email).
 
 import { PrismaClient } from "../lib/generated/prisma"
 
@@ -82,8 +74,7 @@ async function main() {
         region: u.region,
       },
     })
-    // Prisma upsert doesn't tell us if it created or updated, so we
-    // check if createdAt ≈ updatedAt to approximate "created".
+    // Approximate created vs updated by comparing timestamps
     if (Math.abs(result.createdAt.getTime() - result.updatedAt.getTime()) < 1000) {
       created++
     } else {

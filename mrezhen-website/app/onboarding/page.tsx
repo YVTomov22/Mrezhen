@@ -11,7 +11,7 @@ export default async function OnboardingPage() {
 
     if (!session?.user?.email) redirect("/login")
 
-    // Check if they already have data (e.g. check if 'age' is set)
+    // Redirect if user already completed onboarding
     const user = await prisma.user.findUnique({
         where: { email: session.user.email }
     })

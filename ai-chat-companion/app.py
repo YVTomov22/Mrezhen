@@ -24,7 +24,7 @@ except ImportError:
     genai = None
     print("google-generativeai not installed. AI features disabled.")
 
-# --- 1. SERVICE CONFIGURATION ---
+# Service Configuration
 # Trigger reload
 app = FastAPI(title="AI Microservice - Quest & Match Engine")
 
@@ -42,7 +42,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 2. DATASET LOADING & STATS ---
+# Dataset Loading & Stats
 EASYSHARE_DF = None
 DATASET_STATS = "Dataset not loaded."
 
@@ -65,7 +65,7 @@ def load_dataset():
         if not EASYSHARE_DF.empty:
             EASYSHARE_DF.columns = [c.lower() for c in EASYSHARE_DF.columns]
 
-            # --- Label mappings (basic) ---
+            # Label mappings
             label_map_sphus = {
                 1: 'Excellent', 2: 'Very good', 3: 'Good', 4: 'Fair', 5: 'Poor'
             }
@@ -114,7 +114,7 @@ def load_dataset():
             except Exception:
                 pass
 
-            # --- Core stats ---
+            # Core stats
             total = len(EASYSHARE_DF)
 
             # Age metrics
@@ -199,7 +199,7 @@ def load_dataset():
                 except Exception:
                     pass
 
-            # --- Insights ---
+            # Insights
             insights = []
             # Health & Activity Insight
             if 'sphus_l' in EASYSHARE_DF.columns and 'br015_l' in EASYSHARE_DF.columns:
@@ -257,7 +257,7 @@ def load_dataset():
 async def startup_event():
     load_dataset()
 
-# --- 3. GOOGLE GEMINI CONFIGURATION ---
+# Google Gemini Configuration
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 MODEL = None
@@ -280,7 +280,7 @@ if genai and GEMINI_API_KEY:
 else:
     print("GEMINI_API_KEY not set or library missing. AI feedback will fallback.")
 
-# --- 4. DATA MODELS ---
+# Data Models
 class TaskModel(BaseModel):
     taskId: str
     title: str
@@ -366,11 +366,9 @@ def build_fallback_response(agent: dict, reason: str) -> dict:
         "milestones": []
     }
 
-# --- 5. MATCHING LOGIC REMOVED ---
-# User requested removal of candidate matching functionality.
-# Only global dataset stats and insights are used now.
+# Matching logic removed; only global dataset stats/insights used.
 
-# --- 6. AI FEEDBACK GENERATION ---
+# AI Feedback Generation
 async def generate_feedback_stream(agent: dict, relevant_matches: list):
     if not MODEL:
         fallback = build_fallback_response(agent, "Model not initialized")

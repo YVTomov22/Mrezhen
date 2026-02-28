@@ -22,7 +22,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { uploadImages } from '@/app/actions/upload'
 import { createStory } from '@/app/actions/story'
-import { Plus, Image as ImageIcon, Type, X, Loader2, Users, Globe } from 'lucide-react'
+import { Plus, Image as ImageIcon, Type, Camera, X, Loader2, Users, Globe } from 'lucide-react'
+import { CameraCapture } from '@/components/camera-capture'
 import { toast } from 'sonner'
 
 const BG_COLORS = [
@@ -38,7 +39,7 @@ export function StoryComposer() {
   const [isPending, startTransition] = useTransition()
 
   // Tab state
-  const [tab, setTab] = useState<'image' | 'text'>('image')
+  const [tab, setTab] = useState<'image' | 'text' | 'camera'>('image')
 
   // Image story
   const [file, setFile] = useState<File | null>(null)
@@ -73,7 +74,7 @@ export function StoryComposer() {
 
     startTransition(async () => {
       try {
-        if (tab === 'image') {
+        if (tab === 'image' || tab === 'camera') {
           if (!file) {
             setError('Select an image or video')
             return
@@ -138,7 +139,7 @@ export function StoryComposer() {
       <DialogTrigger asChild>
         <button className="flex flex-col items-center gap-1.5 group shrink-0" type="button">
           <div className="relative">
-            <div className="h-[48px] w-[48px] rounded-full border border-dashed border-muted-foreground/40 flex items-center justify-center bg-muted/50 group-hover:border-foreground/60 transition-colors">
+            <div className="h-[60px] w-[60px] rounded-full border border-dashed border-muted-foreground/40 flex items-center justify-center bg-muted/50 group-hover:border-foreground/60 transition-colors">
               <Plus className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
             </div>
           </div>
@@ -152,11 +153,14 @@ export function StoryComposer() {
           <DialogTitle className="text-lg font-semibold tracking-tight">Create Story</DialogTitle>
         </DialogHeader>
 
-        <Tabs value={tab} onValueChange={(v) => setTab(v as 'image' | 'text')} className="w-full">
+        <Tabs value={tab} onValueChange={(v) => setTab(v as 'image' | 'text' | 'camera')} className="w-full">
           <div className="px-6">
             <TabsList className="w-full">
               <TabsTrigger value="image" className="flex-1 gap-2">
-                <ImageIcon className="h-4 w-4" /> Photo / Video
+                <ImageIcon className="h-4 w-4" /> Upload
+              </TabsTrigger>
+              <TabsTrigger value="camera" className="flex-1 gap-2">
+                <Camera className="h-4 w-4" /> Camera
               </TabsTrigger>
               <TabsTrigger value="text" className="flex-1 gap-2">
                 <Type className="h-4 w-4" /> Text
@@ -164,7 +168,7 @@ export function StoryComposer() {
             </TabsList>
           </div>
 
-          {/* ── Image / Video Story ── */}
+          {/* Image / Video Story */}
           <TabsContent value="image" className="px-6 pb-6 pt-4 space-y-4 mt-0">
             {/* File selector */}
             <div>
@@ -221,7 +225,49 @@ export function StoryComposer() {
             </div>
           </TabsContent>
 
-          {/* ── Text Story ── */}
+          {/* Camera Capture Story */}
+          <TabsContent value="camera" className="px-6 pb-6 pt-4 space-y-4 mt-0">
+            {preview ? (
+              <div className="space-y-4">
+                <div className="relative aspect-[9/16] max-h-[280px] w-auto mx-auto rounded-xl overflow-hidden bg-black">
+                  {file?.type.startsWith('video/') ? (
+                    <video src={preview} className="w-full h-full object-contain" controls />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={preview} alt="Preview" className="w-full h-full object-contain" />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setFile(null)}
+                    className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black/80"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                {/* Caption */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="cam-caption" className="text-xs text-muted-foreground">Caption (optional)</Label>
+                  <Textarea
+                    id="cam-caption"
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    maxLength={500}
+                    rows={2}
+                    placeholder="Write a caption..."
+                    className="resize-none text-sm"
+                  />
+                </div>
+              </div>
+            ) : (
+              <CameraCapture
+                modes={['photo', 'video']}
+                onCapture={(captured) => setFile(captured)}
+                onClose={() => setTab('image')}
+              />
+            )}
+          </TabsContent>
+
+          {/* Text Story */}
           <TabsContent value="text" className="px-6 pb-6 pt-4 space-y-4 mt-0">
             {/* Preview */}
             <div
@@ -288,7 +334,7 @@ export function StoryComposer() {
           </TabsContent>
         </Tabs>
 
-        {/* ── Audience + Submit ── */}
+        {/* Audience + Submit */}
         <div className="px-6 pb-6 space-y-4 border-t pt-4">
           {/* Audience selector */}
           <div className="flex items-center gap-3">

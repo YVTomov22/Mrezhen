@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { resolveExpiredBattles } from "@/app/actions/battle-resolution"
 
-/**
- * GET /api/cron/resolve-battles
- *
- * Cron endpoint to resolve all battles that have passed their 7-day end date.
- *
- * Security: Protected by CRON_SECRET env variable.
- * Set up as a Vercel Cron Job or external scheduler to call this every hour.
- *
- * Example Vercel cron config in vercel.json:
- * {
- *   "crons": [{
- *     "path": "/api/cron/resolve-battles",
- *     "schedule": "0 * * * *"
- *   }]
- * }
- */
+// Cron endpoint to resolve expired battles. Protected by CRON_SECRET.
 export async function GET(request: NextRequest) {
   // Verify cron secret for security
   const authHeader = request.headers.get("authorization")

@@ -5,7 +5,7 @@ export const dynamic = "force-static"
 export default function AboutPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-10">
-      {/* ─── Hero ────────────────────────────────────────── */}
+      {/* Hero */}
       <div className="space-y-3 text-center">
         <div className="inline-flex items-center justify-center h-14 w-14 rounded-xl bg-foreground text-background mx-auto">
           <span className="font-editorial text-2xl font-black leading-none">M</span>
@@ -17,7 +17,7 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* ─── Mission ─────────────────────────────────────── */}
+      {/* Mission */}
       <section className="rounded-xl border border-border bg-card p-6 space-y-3">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Target className="h-5 w-5 text-teal-600 dark:text-teal-400" />
@@ -32,7 +32,7 @@ export default function AboutPage() {
         </p>
       </section>
 
-      {/* ─── What We Do (features grid) ──────────────────── */}
+      {/* Features grid */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-center">What Makes Us Different</h2>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -92,7 +92,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ─── Company Overview ────────────────────────────── */}
+      {/* Company Overview */}
       <section className="rounded-xl border border-border bg-card p-6 space-y-3">
         <h2 className="text-lg font-semibold">About the Platform</h2>
         <div className="text-sm text-muted-foreground leading-relaxed space-y-2">
@@ -110,7 +110,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ─── CTA ─────────────────────────────────────────── */}
+      {/* CTA */}
       <div className="text-center space-y-3 pb-6">
         <p className="text-sm text-muted-foreground">
           Questions or want to collaborate?

@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { isRedirectError } from "next/dist/client/components/redirect-error"
 
-/* ── Update Phone ──────────────────────────────────────────── */
+/* Update Phone */
 export async function updatePhone(prevState: any, formData: FormData) {
   const phone = (formData.get('phone') as string)?.trim() || null
   const session = await auth()
@@ -25,7 +25,7 @@ export async function updatePhone(prevState: any, formData: FormData) {
   }
 }
 
-/* ── Switch Account Type ───────────────────────────────────── */
+/* Switch Account Type */
 export async function updateAccountType(prevState: any, formData: FormData) {
   const accountType = (formData.get('accountType') as string)?.trim()
   if (!accountType || !["personal", "creator", "business"].includes(accountType)) {
@@ -47,7 +47,7 @@ export async function updateAccountType(prevState: any, formData: FormData) {
   }
 }
 
-/* ── Deactivate Account ────────────────────────────────────── */
+/* Deactivate Account */
 export async function deactivateAccount() {
   const session = await auth()
   if (!session?.user?.email) return
@@ -64,7 +64,7 @@ export async function deactivateAccount() {
   }
 }
 
-/* ── Delete Account ────────────────────────────────────────── */
+/* Delete Account */
 export async function deleteAccount(prevState: any, formData: FormData) {
   const confirmation = (formData.get('confirmation') as string)?.trim()
   if (confirmation !== "DELETE") return { error: 'Type DELETE to confirm' }

@@ -74,10 +74,10 @@ import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { signOut } from "next-auth/react"
 
-/* ── Sidebar menu items ────────────────────────────────────── */
+/* Sidebar menu items */
 type SectionId = "username" | "displayname" | "bio" | "photo" | "email" | "phone" | "password" | "deactivate" | "delete" | "logout" | "verification" | "accounttype" | "region" | "demographics" | "household" | "health" | "education" | "interests" | "profileprivacy" | "interactions" | "contentcontrols" | "discovery" | "theme" | "language" | "datasaver" | "accessibility" | "myposts" | "likedposts" | "savedposts"
 
-/* ── Root component ────────────────────────────────────────── */
+/* Root component */
 
 export function SettingsView({ user }: { user: any }) {
   const [active, setActive] = useState<SectionId>("username")
@@ -171,7 +171,7 @@ export function SettingsView({ user }: { user: any }) {
 
   return (
     <div className="flex gap-2 flex-1 min-h-0">
-      {/* ── Left: 5 compact category nav buttons ── */}
+      {/* Category nav */}
       <aside className="flex flex-col gap-1 w-52 shrink-0">
         {sections.map((section, idx) => {
           const CatIcon = categoryIcons[idx]
@@ -210,7 +210,7 @@ export function SettingsView({ user }: { user: any }) {
         })}
       </aside>
 
-      {/* ── Middle: sub-nav for selected category ── */}
+      {/* Sub-nav */}
       <aside className="flex flex-col gap-0.5 w-44 shrink-0 border-l border-border pl-2">
         {sections[activeCategory].items.map((item) => {
           const Icon = item.icon
@@ -251,7 +251,7 @@ export function SettingsView({ user }: { user: any }) {
         })}
       </aside>
 
-      {/* ── Right: all panels for active category, stacked ── */}
+      {/* Panels */}
       <main ref={scrollPaneRef} className="flex-1 min-w-0 border-l border-border pl-6 overflow-y-auto pr-1 no-scrollbar divide-y divide-border/40">
         {sections[activeCategory].items.map((item) => (
           <div key={item.id} id={`section-${item.id}`} className="scroll-mt-4 py-8 first:pt-0 last:pb-0">
@@ -263,7 +263,7 @@ export function SettingsView({ user }: { user: any }) {
   )
 }
 
-/* ── Panel Router ──────────────────────────────────────────── */
+/* Panel Router */
 
 function SectionPanel({ id, user }: { id: SectionId; user: any }) {
   switch (id) {
@@ -330,11 +330,9 @@ function SectionPanel({ id, user }: { id: SectionId; user: any }) {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ACCOUNT SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* ACCOUNT SECTIONS */
 
-/* ── Username ──────────────────────────────────────────────── */
+/* Username */
 function UsernameSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -359,7 +357,7 @@ function UsernameSection({ user }: { user: any }) {
   )
 }
 
-/* ── Display Name ──────────────────────────────────────────── */
+/* Display Name */
 function DisplayNameSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -384,7 +382,7 @@ function DisplayNameSection({ user }: { user: any }) {
   )
 }
 
-/* ── Bio ───────────────────────────────────────────────────── */
+/* Bio */
 function BioSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -409,7 +407,7 @@ function BioSection({ user }: { user: any }) {
   )
 }
 
-/* ── Profile Photo ─────────────────────────────────────────── */
+/* Profile Photo */
 function PhotoSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
@@ -425,7 +423,7 @@ function PhotoSection({ user }: { user: any }) {
   )
 }
 
-/* ── Email ─────────────────────────────────────────────────── */
+/* Email */
 function EmailSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -449,7 +447,7 @@ function EmailSection({ user }: { user: any }) {
   )
 }
 
-/* ── Phone Number ──────────────────────────────────────────── */
+/* Phone Number */
 function PhoneSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -473,7 +471,7 @@ function PhoneSection({ user }: { user: any }) {
   )
 }
 
-/* ── Change Password ───────────────────────────────────────── */
+/* Change Password */
 function PasswordSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -520,7 +518,7 @@ function PasswordSection({ user }: { user: any }) {
   )
 }
 
-/* ── Deactivate Account ────────────────────────────────────── */
+/* Deactivate Account */
 function DeactivateSection() {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -550,7 +548,7 @@ function DeactivateSection() {
   )
 }
 
-/* ── Delete Account ────────────────────────────────────────── */
+/* Delete Account */
 function DeleteSection() {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -583,7 +581,7 @@ function DeleteSection() {
   )
 }
 
-/* ── Log Out ───────────────────────────────────────────────── */
+/* Log Out */
 function LogoutSection() {
   return (
     <SettingsCard title="Log Out" description="Sign out of your account on this device.">
@@ -604,7 +602,7 @@ function LogoutSection() {
   )
 }
 
-/* ── Verification Status ───────────────────────────────────── */
+/* Verification Status */
 function VerificationSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const isVerified = !!user.emailVerified
@@ -632,7 +630,7 @@ function VerificationSection({ user }: { user: any }) {
   )
 }
 
-/* ── Account Type ──────────────────────────────────────────── */
+/* Account Type */
 function AccountTypeSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -677,11 +675,9 @@ function AccountTypeSection({ user }: { user: any }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PROFILE DETAIL SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* Profile Detail Sections */
 
-/* ── Region (Leaderboard) ──────────────────────────────────── */
+/* Region */
 function RegionSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -769,7 +765,7 @@ function HiddenDetailsFields({ user }: { user: any }) {
   )
 }
 
-/* ── Demographics ──────────────────────────────────────────── */
+/* Demographics */
 function DemographicsSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -838,7 +834,7 @@ function DemographicsSection({ user }: { user: any }) {
   )
 }
 
-/* ── Household ─────────────────────────────────────────────── */
+/* Household */
 function HouseholdSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -894,7 +890,7 @@ function HouseholdSection({ user }: { user: any }) {
   )
 }
 
-/* ── Health & Stats ────────────────────────────────────────── */
+/* Health & Stats */
 function HealthSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -960,7 +956,7 @@ function HealthSection({ user }: { user: any }) {
   )
 }
 
-/* ── Work & Background ─────────────────────────────────────── */
+/* Work & Background */
 function EducationSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -1040,7 +1036,7 @@ function EducationSection({ user }: { user: any }) {
   )
 }
 
-/* ── Interests ─────────────────────────────────────────────── */
+/* Interests */
 function InterestsSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [msg, setMsg] = useState("")
@@ -1074,11 +1070,9 @@ function InterestsSection({ user }: { user: any }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PRIVACY SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* Privacy Sections */
 
-/* ── Reusable toggle row ───────────────────────────────────── */
+/* Reusable toggle row */
 function PrivacyToggleRow({
   label,
   description,
@@ -1115,7 +1109,7 @@ function PrivacyToggleRow({
   )
 }
 
-/* ── Reusable "who can" select row ─────────────────────────── */
+/* Reusable "who can" select row */
 function PrivacySelectRow({
   label,
   description,
@@ -1160,12 +1154,12 @@ function PrivacySelectRow({
   )
 }
 
-/* ── Profile Privacy ───────────────────────────────────────── */
+/* Profile Privacy */
 function ProfilePrivacySection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
     <SettingsCard title={t("profilePrivacyTitle")} description={t("profilePrivacyDescription")}>
-      <div className="divide-y divide-zinc-100">
+      <div className="divide-y divide-border">
         <PrivacyToggleRow
           label={t("privateAccount")}
           description={t("privateAccountDesc")}
@@ -1189,12 +1183,12 @@ function ProfilePrivacySection({ user }: { user: any }) {
   )
 }
 
-/* ── Interactions ───────────────────────────────────────────── */
+/* Interactions */
 function InteractionsPrivacySection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
     <SettingsCard title={t("interactionsTitle")} description={t("interactionsDescription")}>
-      <div className="divide-y divide-zinc-100">
+      <div className="divide-y divide-border">
         <PrivacySelectRow
           label={t("whoCanComment")}
           description={t("whoCanCommentDesc")}
@@ -1224,7 +1218,7 @@ function InteractionsPrivacySection({ user }: { user: any }) {
   )
 }
 
-/* ── Story / Content Controls ──────────────────────────────── */
+/* Story / Content Controls */
 function ContentControlsSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -1306,12 +1300,12 @@ function ContentControlsSection({ user }: { user: any }) {
   )
 }
 
-/* ── Discovery ─────────────────────────────────────────────── */
+/* Discovery */
 function DiscoverySection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
     <SettingsCard title={t("discoveryTitle")} description={t("discoveryDescription")}>
-      <div className="divide-y divide-zinc-100">
+      <div className="divide-y divide-border">
         <PrivacyToggleRow
           label={t("findByEmail")}
           description={t("findByEmailDesc")}
@@ -1335,11 +1329,9 @@ function DiscoverySection({ user }: { user: any }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   APPEARANCE SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* Appearance Sections */
 
-/* ── Reusable appearance toggle row ─────────────────── */
+/* Reusable appearance toggle row */
 
 /** Map toggle field names to their HTML data-attribute on <html> */
 const TOGGLE_ATTR_MAP: Record<string, string> = {
@@ -1390,7 +1382,7 @@ function AppearanceToggleRow({
   )
 }
 
-/* ── Dark / Light Mode ───────────────────────────────── */
+/* Theme */
 function ThemeSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const tCommon = useTranslations("common")
@@ -1444,7 +1436,7 @@ function ThemeSection({ user }: { user: any }) {
   )
 }
 
-/* ── Language ────────────────────────────────────────── */
+/* Language */
 function LanguageSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [isPending, startTransition] = useTransition()
@@ -1504,7 +1496,7 @@ function LanguageSection({ user }: { user: any }) {
   )
 }
 
-/* ── Data Saver & Autoplay ───────────────────────────── */
+/* Data Saver & Autoplay */
 function DataSaverSection({ user }: { user: any }) {
   const t = useTranslations("settings")
   return (
@@ -1527,7 +1519,7 @@ function DataSaverSection({ user }: { user: any }) {
   )
 }
 
-/* ── Accessibility ───────────────────────────────────── */
+/* Accessibility */
 function AccessibilitySection({ user }: { user: any }) {
   const t = useTranslations("settings")
   const [isPending, startTransition] = useTransition()
@@ -1603,9 +1595,7 @@ function AccessibilitySection({ user }: { user: any }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SHARED PRIMITIVES
-   ══════════════════════════════════════════════════════════════ */
+/* Shared Primitives */
 
 function SettingsCard({
   title,
@@ -1681,9 +1671,7 @@ function SubmitBtn({ label }: { label?: string }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   POSTS SECTIONS
-   ══════════════════════════════════════════════════════════════ */
+/* Posts Sections */
 
 function PostMiniCard({ post }: { post: { id: string; content: string | null; createdAt: string; images: { url: string }[]; _count: { likes: number; comments: number } } }) {
   const t = useTranslations("settings")

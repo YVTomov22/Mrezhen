@@ -147,7 +147,6 @@ export default function ChatUI({ userId }: { userId: string }) {
                                 msg.sender === 'system' ? "bg-red-50 text-red-800 border border-red-100" :
                                 "bg-card border border-border text-foreground rounded-tl-none"
                             )}>
-                                {/* --- CHANGED SECTION START --- */}
                                 <div className="leading-relaxed">
                                     <ReactMarkdown
                                         components={{
@@ -162,7 +161,6 @@ export default function ChatUI({ userId }: { userId: string }) {
                                         {msg.text}
                                     </ReactMarkdown>
                                 </div>
-                                {/* --- CHANGED SECTION END --- */}
 
                                 {msg.isStreaming && (
                                     <div className="mt-2 flex items-center gap-1 text-muted-foreground">

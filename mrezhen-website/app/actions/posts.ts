@@ -94,7 +94,7 @@ export async function addPostComment(postId: string, content: string, parentId?:
   })
   if (!user) return { error: 'User not found' }
 
-  // If replying to a comment, verify the parent comment exists and belongs to the same post
+  // Verify parent comment exists and belongs to this post
   if (parentId) {
     const parent = await prisma.postComment.findUnique({
       where: { id: parentId },
