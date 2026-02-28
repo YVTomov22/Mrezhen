@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 450" width="1000" height="450">
+  <defs>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4dd9e8"/>
+      <stop offset="40%" stop-color="#22b8cf"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="cardShadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="14" flood-color="#0a0a2a" flood-opacity="0.10"/>
+    </filter>
+    <filter id="decoBlur">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+
+  <!-- Background decorative blobs -->
+  <circle cx="70" cy="60" r="55" fill="#e8edf5" opacity="0.5" filter="url(#decoBlur)"/>
+  <circle cx="930" cy="50" r="45" fill="#e8edf5" opacity="0.4" filter="url(#decoBlur)"/>
+  <circle cx="880" cy="390" r="35" fill="#e8edf5" opacity="0.3" filter="url(#decoBlur)"/>
+
+  <!-- Pill border -->
+  <rect x="80" y="45" width="840" height="360" rx="180" ry="180" fill="url(#borderGrad)" filter="url(#cardShadow)"/>
+  <!-- Pill white fill -->
+  <rect x="90" y="55" width="820" height="340" rx="170" ry="170" fill="white"/>
+
+  <!-- ====== RED SQUARE WITH LATTICE/WOVEN PATTERN ====== -->
+  <g transform="translate(195, 105)">
+    <!-- Red square background -->
+    <rect width="190" height="190" rx="8" fill="#e53e3e"/>
+
+    <!-- Woven lattice pattern -->
+    <!-- Outer border frame -->
+    <rect x="8" y="8" width="174" height="174" rx="2" fill="none" stroke="white" stroke-width="5" opacity="0.25"/>
+
+    <!-- Main X pattern (large diagonal cross) -->
+    <line x1="30" y1="30" x2="160" y2="160" stroke="white" stroke-width="10" stroke-linecap="round" opacity="0.85"/>
+    <line x1="160" y1="30" x2="30" y2="160" stroke="white" stroke-width="10" stroke-linecap="round" opacity="0.85"/>
+
+    <!-- Diamond shape in center -->
+    <polygon points="95,28 162,95 95,162 28,95" fill="none" stroke="white" stroke-width="8" stroke-linejoin="round" opacity="0.8"/>
+
+    <!-- Inner square rotated 45deg (smaller diamond) -->
+    <polygon points="95,52 138,95 95,138 52,95" fill="none" stroke="white" stroke-width="6" stroke-linejoin="round" opacity="0.7"/>
+
+    <!-- Horizontal and vertical cross -->
+    <line x1="95" y1="20" x2="95" y2="170" stroke="white" stroke-width="7" opacity="0.5"/>
+    <line x1="20" y1="95" x2="170" y2="95" stroke="white" stroke-width="7" opacity="0.5"/>
+
+    <!-- Corner accents (small squares/brackets) -->
+    <!-- Top-left -->
+    <polyline points="20,45 20,20 45,20" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+    <!-- Top-right -->
+    <polyline points="145,20 170,20 170,45" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+    <!-- Bottom-left -->
+    <polyline points="20,145 20,170 45,170" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+    <!-- Bottom-right -->
+    <polyline points="145,170 170,170 170,145" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+
+    <!-- Additional weave lines for density -->
+    <line x1="50" y1="20" x2="20" y2="50" stroke="white" stroke-width="4" opacity="0.4"/>
+    <line x1="140" y1="20" x2="170" y2="50" stroke="white" stroke-width="4" opacity="0.4"/>
+    <line x1="20" y1="140" x2="50" y2="170" stroke="white" stroke-width="4" opacity="0.4"/>
+    <line x1="170" y1="140" x2="140" y2="170" stroke="white" stroke-width="4" opacity="0.4"/>
+
+    <!-- Inner cross-weave accents -->
+    <line x1="60" y1="60" x2="130" y2="60" stroke="white" stroke-width="3.5" opacity="0.35"/>
+    <line x1="60" y1="130" x2="130" y2="130" stroke="white" stroke-width="3.5" opacity="0.35"/>
+    <line x1="60" y1="60" x2="60" y2="130" stroke="white" stroke-width="3.5" opacity="0.35"/>
+    <line x1="130" y1="60" x2="130" y2="130" stroke="white" stroke-width="3.5" opacity="0.35"/>
+  </g>
+
+  <!-- ====== TEXT ====== -->
+  <!-- "MREZHEN" -->
+  <text x="435" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="82" letter-spacing="12" fill="#e53e3e">
+    MREZHEN
+  </text>
+
+  <!-- "A SUPPORTIVE SOCIAL NETWORK" -->
+  <text x="437" y="255" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="23" letter-spacing="3" fill="#1a202c">
+    A SUPPORTIVE SOCIAL NETWORK
+  </text>
+
+  <!-- "CONNECT, RESOLVE &amp; THRIVE" + Bulgarian flag -->
+  <text x="437" y="290" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="19" letter-spacing="3" fill="#718096">
+    CONNECT, RESOLVE &amp; THRIVE
+  </text>
+
+  <!-- Bulgarian flag (small rectangle) -->
+  <g transform="translate(758, 274)">
+    <rect width="24" height="5.5" fill="white" rx="1"/>
+    <rect y="5.5" width="24" height="5.5" fill="#00966E" rx="0"/>
+    <rect y="11" width="24" height="5.5" fill="#D62612" rx="1"/>
+    <rect width="24" height="16.5" fill="none" stroke="#ccc" stroke-width="0.5" rx="1"/>
+  </g>
+
+  <!-- "МРЕЖЕН" (Cyrillic) -->
+  <text x="500" y="340" text-anchor="middle" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="400" font-size="18" letter-spacing="4" fill="#a0aec0">
+    МРЕЖЕН
+  </text>
+</svg>

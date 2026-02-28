@@ -86,8 +86,15 @@ export async function Navbar() {
       <header className="md:hidden sticky top-0 z-50 w-full border-b border-border bg-background">
         <div className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="bg-foreground text-background p-1.5 flex items-center justify-center">
-              <span className="font-editorial text-sm font-black leading-none">M</span>
+            <div className="bg-[#e53e3e] text-white p-1.5 flex items-center justify-center rounded-sm">
+              <svg width="16" height="16" viewBox="0 0 190 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="30" y1="30" x2="160" y2="160" stroke="white" strokeWidth="12" strokeLinecap="round" opacity="0.85"/>
+                <line x1="160" y1="30" x2="30" y2="160" stroke="white" strokeWidth="12" strokeLinecap="round" opacity="0.85"/>
+                <polygon points="95,28 162,95 95,162 28,95" fill="none" stroke="white" strokeWidth="9" strokeLinejoin="round" opacity="0.8"/>
+                <polygon points="95,52 138,95 95,138 52,95" fill="none" stroke="white" strokeWidth="7" strokeLinejoin="round" opacity="0.7"/>
+                <line x1="95" y1="20" x2="95" y2="170" stroke="white" strokeWidth="8" opacity="0.5"/>
+                <line x1="20" y1="95" x2="170" y2="95" stroke="white" strokeWidth="8" opacity="0.5"/>
+              </svg>
             </div>
             <Link href="/dashboard" className="editorial-subhead text-base">
               Mrezhen
