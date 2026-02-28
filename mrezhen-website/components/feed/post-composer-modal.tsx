@@ -14,7 +14,7 @@ function PostComposerModalInner() {
 
   // Build initial content when sharing a dashboard layout
   const initialContent = dashboardParam
-    ? `🎨 Check out my custom dashboard layout! Click to use it.\n\n[dashboard:${dashboardParam}]`
+    ? `Check out my custom dashboard layout! Click to use it.\n\n[dashboard:${dashboardParam}]`
     : undefined
 
   function handleClose() {

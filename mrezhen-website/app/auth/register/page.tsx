@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail, Lock, User } from "lucide-react"
+import { Mail, Lock, User, AlertTriangle, CheckCircle } from "lucide-react"
 import { FaGithub } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
 import { useTranslations } from "next-intl"
@@ -77,13 +77,13 @@ export default function RegisterPage() {
             
             {state?.error && (
               <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-100 rounded-md flex items-center gap-2">
-                 ⚠️ {state.error}
+                 <AlertTriangle className="h-4 w-4 shrink-0" /> {state.error}
               </div>
             )}
 
             {state?.success && (
               <div className="p-3 text-sm text-green-600 bg-green-50 border border-green-100 rounded-md flex items-center gap-2">
-                 ✅ {state.success}
+                 <CheckCircle className="h-4 w-4 shrink-0" /> {state.success}
               </div>
             )}
 

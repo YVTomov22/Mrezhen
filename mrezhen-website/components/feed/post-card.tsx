@@ -383,7 +383,7 @@ export function PostCard(props: PostCardProps) {
                   onClick={() => setReplyingTo(null)}
                   className="ml-auto text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  ✕
+                  <span aria-label="close">&times;</span>
                 </button>
               </div>
             )}

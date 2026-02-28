@@ -437,9 +437,9 @@ function renderStepContent(step: number, form: any, t: any, tCommon: any) {
             <FormItem className="pt-4 border-t">
               <FormLabel className="text-lg">{t("recentMood")}</FormLabel>
               <div className="flex items-center gap-4">
-                <span className="text-2xl">😊</span>
+                <span className="text-2xl" role="img" aria-label="happy">&#x1F60A;</span>
                 <Slider min={0} max={10} step={1} defaultValue={[field.value]} onValueChange={(val) => field.onChange(val[0])} className="flex-1" />
-                <span className="text-2xl">😔</span>
+                <span className="text-2xl" role="img" aria-label="sad">&#x1F614;</span>
               </div>
               <p className="text-center font-bold text-xl mt-2">{field.value}</p>
               <FormMessage />
