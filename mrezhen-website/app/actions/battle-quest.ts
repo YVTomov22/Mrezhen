@@ -230,6 +230,9 @@ export async function getBattleDailyQuests(battleId: string) {
 // 4. Get current battle day
 
 export async function getBattleCurrentDay(battleId: string) {
+  const userId = await getCurrentUserId()
+  if (!userId) return { day: 0, isActive: false }
+
   const battle = await prisma.battle.findUnique({
     where: { id: battleId },
     select: { startDate: true, endDate: true, status: true },

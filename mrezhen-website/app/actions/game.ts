@@ -217,7 +217,8 @@ export async function completeTaskAndAwardXP(taskId: string) {
 
       // Update user score
       const user = await tx.user.findUnique({
-        where: { email: session.user!.email! }
+        where: { email: session.user!.email! },
+        select: { id: true, score: true }
       })
 
       if (user) {
@@ -275,7 +276,8 @@ export async function completeQuest(questId: string) {
       })
 
       const user = await tx.user.findUnique({
-        where: { email: session.user!.email! }
+        where: { email: session.user!.email! },
+        select: { id: true, score: true }
       })
 
       if (!user) throw new Error("User not found")

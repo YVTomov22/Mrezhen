@@ -28,13 +28,22 @@ export async function verifyTaskWithAI(
       return { error: "Invalid image URL format." }
     }
   }
-  // Fetch task details
+  // Fetch task details with ownership check
   const task = await prisma.task.findUnique({
     where: { id: taskId },
-    select: { id: true, content: true }
+    select: { id: true, content: true, quest: { select: { userId: true } } }
   })
 
   if (!task) return { error: "Task not found" }
+
+  // Verify the caller owns this task
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  })
+  if (!currentUser || task.quest.userId !== currentUser.id) {
+    return { error: "Not authorized to verify this task" }
+  }
 
   // Prepare form data for AI backend
   const formData = new FormData()

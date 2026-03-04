@@ -24,14 +24,27 @@ export interface BattleResolutionResult {
 /**
  * Resolve a single battle by ID.
  * Idempotent — will not resolve if already completed.
+ * @param options.skipAuth - bypass session check (for cron jobs with CRON_SECRET)
  */
-export async function resolveBattle(battleId: string): Promise<{
+export async function resolveBattle(
+  battleId: string,
+  options?: { skipAuth?: boolean }
+): Promise<{
   error?: string
   data?: BattleResolutionResult
 }> {
-  // Auth check: only participants or cron can resolve
-  const session = await auth()
-  if (!session?.user?.email) return { error: "Unauthorized" }
+  // Auth check: participants only (unless called from cron)
+  let callerId: string | null = null
+  if (!options?.skipAuth) {
+    const session = await auth()
+    if (!session?.user?.email) return { error: "Unauthorized" }
+    const caller = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    })
+    if (!caller) return { error: "Unauthorized" }
+    callerId = caller.id
+  }
 
   const battle = await prisma.battle.findUnique({
     where: { id: battleId },
@@ -43,6 +56,11 @@ export async function resolveBattle(battleId: string): Promise<{
   if (!battle) return { error: "Battle not found" }
   if (battle.status === "COMPLETED") return { error: "Battle already resolved" }
   if (battle.status !== "ACTIVE") return { error: "Battle is not active" }
+
+  // Verify caller is a participant (skip for cron)
+  if (callerId && callerId !== battle.challengerId && callerId !== battle.challengedId) {
+    return { error: "Only battle participants can resolve" }
+  }
 
   // Calculate total approved XP per participant from daily quests (source of truth)
   const challengerApprovedXP = battle.dailyQuests
@@ -164,7 +182,10 @@ export async function resolveBattle(battleId: string): Promise<{
   }
 }
 
-/** Resolve all battles past their endDate (cron job). */
+/**
+ * Resolve all battles past their endDate.
+ * NOT exported as a server action — only callable from the cron API route.
+ */
 export async function resolveExpiredBattles(): Promise<{
   resolved: BattleResolutionResult[]
   errors: { battleId: string; error: string }[]
@@ -183,7 +204,7 @@ export async function resolveExpiredBattles(): Promise<{
   const errors: { battleId: string; error: string }[] = []
 
   for (const battle of expiredBattles) {
-    const result = await resolveBattle(battle.id)
+    const result = await resolveBattle(battle.id, { skipAuth: true })
     if (result.error) {
       errors.push({ battleId: battle.id, error: result.error })
     } else if (result.data) {

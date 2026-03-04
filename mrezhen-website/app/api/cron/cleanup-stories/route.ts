@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const result = await cleanupExpiredStories()
+  const result = await cleanupExpiredStories({ skipAuth: true })
 
   if ('error' in result) {
     return NextResponse.json({ error: result.error }, { status: 500 })

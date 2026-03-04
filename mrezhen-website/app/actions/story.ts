@@ -376,7 +376,15 @@ export async function deleteStory(storyId: string) {
 
 // Cleanup Expired Stories (cron/API)
 
-export async function cleanupExpiredStories() {
+/**
+ * Cleanup expired stories. Only callable from the cron API route.
+ * NOT intended for direct client invocation.
+ */
+export async function cleanupExpiredStories(options?: { skipAuth?: boolean }) {
+  if (!options?.skipAuth) {
+    const session = await auth()
+    if (!session?.user?.email) return { error: 'Unauthorized' }
+  }
   try {
     const result = await prisma.story.deleteMany({
       where: { expiresAt: { lt: new Date() } },
@@ -456,6 +464,9 @@ export async function getUsersWithActiveStories() {
 // Check if user has active story (profile ring indicator)
 
 export async function checkUserHasActiveStory(userId: string) {
+  const session = await auth()
+  if (!session?.user?.email) return false
+
   const now = new Date()
   const count = await prisma.story.count({
     where: { creatorId: userId, expiresAt: { gt: now } },

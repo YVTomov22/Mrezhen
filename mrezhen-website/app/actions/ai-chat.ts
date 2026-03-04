@@ -25,7 +25,13 @@ export async function analyzeAgentAction(userId: string, userInput: string) {
     // Fetch user data
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        dateOfBirth: true,
+        interests: true,
+        bio: true,
         milestones: {
           include: {
             quests: {

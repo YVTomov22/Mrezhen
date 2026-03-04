@@ -27,7 +27,6 @@ type ChatUser = {
   id: string
   name: string | null
   username: string | null
-  email: string | null
   image: string | null
 }
 
@@ -279,7 +278,7 @@ export function ChatInterface({ users }: ChatInterfaceProps) {
                   </Avatar>
                   <div className="flex-1 overflow-hidden">
                     <p className="font-semibold text-sm truncate">{user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    <p className="text-xs text-muted-foreground truncate">@{user.username}</p>
                   </div>
                 </button>
               ))}

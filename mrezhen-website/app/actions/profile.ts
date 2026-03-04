@@ -126,7 +126,10 @@ export async function updatePassword(prevState: any, formData: FormData) {
   if (!session?.user?.email) return { error: "Not authenticated" }
 
   try {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email } })
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, password: true }
+    })
     if (!user || !user.password) return { error: "No password set for this account" }
 
     const matches = await bcrypt.compare(currentPassword, user.password)

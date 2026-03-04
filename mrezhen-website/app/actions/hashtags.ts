@@ -1,11 +1,15 @@
 'use server'
 
+import { auth } from '@/app/auth'
 import { prisma } from '@/lib/prisma'
 
 /**
  * Extract hashtags from recent posts and return the most-used ones.
  */
 export async function getTrendingHashtags(limit = 10): Promise<{ tag: string; count: number }[]> {
+  const session = await auth()
+  if (!session?.user?.email) return []
+
   // Fetch recent posts (last 30 days)
   const since = new Date()
   since.setDate(since.getDate() - 30)

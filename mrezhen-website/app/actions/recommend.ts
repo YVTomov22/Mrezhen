@@ -68,8 +68,14 @@ export async function getRecommendedUsers(): Promise<RecommendedUser[]> {
   /* 1. Fetch current user with everything we need for matching */
   const me = await prisma.user.findUnique({
     where: { email: session.user.email },
-    include: {
-      following: true,
+    select: {
+      id: true,
+      interests: true,
+      level: true,
+      score: true,
+      education: true,
+      childhoodMathSkill: true,
+      following: { select: { followingId: true } },
       quests: { select: { category: true } },
     },
   })
@@ -83,7 +89,17 @@ export async function getRecommendedUsers(): Promise<RecommendedUser[]> {
       id: { notIn: [me.id, ...Array.from(followingIds)] },
     },
     take: 200,
-    include: {
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      image: true,
+      interests: true,
+      level: true,
+      score: true,
+      education: true,
+      childhoodMathSkill: true,
+      bio: true,
       _count: { select: { followedBy: true, milestones: true } },
       milestones: { select: { _count: { select: { quests: true } } } },
       quests: { select: { category: true } },
