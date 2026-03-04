@@ -165,7 +165,7 @@ export async function getUsersToChatWith(specificUsername?: string) {
     const chattedUsers = orderedIds.length > 0
         ? await prisma.user.findMany({
             where: { id: { in: orderedIds } },
-            select: { id: true, name: true, username: true, image: true },
+            select: { id: true, name: true, username: true, image: true, email: true },
         })
         : []
 
@@ -182,7 +182,7 @@ export async function getUsersToChatWith(specificUsername?: string) {
             where: {
                 id: { notIn: [currentUser.id, ...orderedIds] },
             },
-            select: { id: true, name: true, username: true, image: true },
+            select: { id: true, name: true, username: true, image: true, email: true },
             take: remaining,
         })
         : []
@@ -198,6 +198,7 @@ export async function getUsersToChatWith(specificUsername?: string) {
                 name: true,
                 username: true,
                 image: true,
+                email: true,
             }
         })
 
