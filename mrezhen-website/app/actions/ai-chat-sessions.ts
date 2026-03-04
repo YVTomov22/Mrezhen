@@ -99,13 +99,14 @@ export async function getAiChatMessages(sessionId: string) {
 }
 
 const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000'
+const API_SECRET = process.env.API_SECRET || ''
 
 /** Ask the AI backend to generate a concise chat title from the user's message. */
 async function generateChatTitle(message: string): Promise<string> {
   try {
     const res = await fetch(`${PYTHON_BACKEND_URL}/api/generate-title`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_SECRET },
       body: JSON.stringify({ message }),
     })
     if (res.ok) {

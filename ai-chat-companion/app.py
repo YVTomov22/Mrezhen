@@ -8,7 +8,7 @@ from typing import List, Optional
 from datetime import datetime
 
 import pandas as pd
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, field_validator # Changed: Added field_validator
@@ -35,6 +35,7 @@ else:
 
 
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+API_SECRET = os.environ.get("API_SECRET", "")
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,6 +44,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+async def verify_api_key(x_api_key: str = Header(default="")):
+    """Reject requests that don't carry the correct API secret."""
+    if API_SECRET and x_api_key != API_SECRET:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
 
 # Dataset Loading & Stats
 EASYSHARE_DF = None
@@ -497,7 +505,7 @@ class BattleQuestRequest(BaseModel):
     totalDays: int = 7
     previousQuests: List[str] = []
 
-@app.post("/api/generate-battle-quest")
+@app.post("/api/generate-battle-quest", dependencies=[Depends(verify_api_key)])
 async def generate_battle_quest(payload: BattleQuestRequest):
     """Generate an AI-powered daily quest for a battle participant."""
     if not MODEL:
@@ -549,7 +557,7 @@ async def generate_battle_quest(payload: BattleQuestRequest):
 class TitleRequest(BaseModel):
     message: str
 
-@app.post("/api/generate-title")
+@app.post("/api/generate-title", dependencies=[Depends(verify_api_key)])
 async def generate_title(payload: TitleRequest):
     """Generate a short chat title from the user's first message."""
     if not MODEL:
@@ -567,7 +575,7 @@ async def generate_title(payload: TitleRequest):
         print(f"Title generation error: {e}")
         return {"title": payload.message.strip()[:50] or "New Chat"}
 
-@app.post("/api/analyze-agent")
+@app.post("/api/analyze-agent", dependencies=[Depends(verify_api_key)])
 async def analyze_agent(payload: AgentProfile):
     agent_data = payload.dict()
     # Candidate matching removed per user request
@@ -578,7 +586,7 @@ async def analyze_agent(payload: AgentProfile):
         media_type="text/event-stream"
     )
 
-@app.post("/api/milestones/stream")
+@app.post("/api/milestones/stream", dependencies=[Depends(verify_api_key)])
 async def milestones_stream(payload: MilestoneRequest):
     """Stream milestone generation as SSE events.
     Each chunk is a JSON object with a single milestone or final vector.
@@ -605,7 +613,7 @@ async def milestones_stream(payload: MilestoneRequest):
 async def health():
     return {"status": "ok", "model_ready": bool(MODEL)}
 
-@app.post("/api/upload-dataset")
+@app.post("/api/upload-dataset", dependencies=[Depends(verify_api_key)])
 async def upload_dataset(file: UploadFile = File(...)):
     try:
         base_dir = os.path.dirname(__file__)

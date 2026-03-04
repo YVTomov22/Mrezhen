@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache"
 import { completeTaskAndAwardXP } from "./game"
 
 const AI_JUDGE_URL = process.env.AI_JUDGE_URL || "http://127.0.0.1:1234"
+const API_SECRET = process.env.API_SECRET || ''
 
 export async function verifyTaskWithAI(
   taskId: string, 
@@ -52,6 +53,7 @@ export async function verifyTaskWithAI(
     // Call AI backend
     const response = await fetch(`${AI_JUDGE_URL}/evaluate`, {
       method: "POST",
+      headers: { 'x-api-key': API_SECRET },
       body: formData,
       cache: "no-store"
     })

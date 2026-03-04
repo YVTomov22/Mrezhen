@@ -6,7 +6,8 @@ import time
 from typing import Optional, List, Tuple, Dict
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Form, HTTPException
+from fastapi import FastAPI, Form, HTTPException, Depends, Header
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ValidationError
 import PIL.Image
 from groq import Groq
@@ -20,6 +21,23 @@ if not GROQ_API_KEY:
 groq_client = Groq(api_key=GROQ_API_KEY)
 
 app = FastAPI()
+
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+API_SECRET = os.getenv("API_SECRET", "")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+async def verify_api_key(x_api_key: str = Header(default="")):
+    """Reject requests that don't carry the correct API secret."""
+    if API_SECRET and x_api_key != API_SECRET:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 
 # Configuration
@@ -141,7 +159,7 @@ async def evaluate_task_completion(task: Task, image_urls: List[str], user_text:
         )
 
 # API Endpoints
-@app.post("/evaluate", response_model=AIResponse)
+@app.post("/evaluate", response_model=AIResponse, dependencies=[Depends(verify_api_key)])
 async def evaluate(
     task: str = Form(..., description="Task object as JSON string"),
     image_urls: str = Form(..., description="JSON array of public URLs of the proof images"),

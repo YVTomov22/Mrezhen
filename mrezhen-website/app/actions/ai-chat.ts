@@ -4,6 +4,7 @@ import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 
 const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
+const API_SECRET = process.env.API_SECRET || '';
 
 export async function analyzeAgentAction(userId: string, userInput: string) {
   // Verify the caller is authenticated and requesting their own data
@@ -70,7 +71,7 @@ export async function analyzeAgentAction(userId: string, userInput: string) {
     // Send to Python backend
     const response = await fetch(`${PYTHON_BACKEND_URL}/api/analyze-agent`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_SECRET },
       body: JSON.stringify(payload),
       cache: 'no-store'
     });

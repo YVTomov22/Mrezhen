@@ -303,7 +303,7 @@ export async function generateAiBattleQuest(input: {
   try {
     const response = await fetch(`${PYTHON_BACKEND_URL}/api/generate-battle-quest`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.API_SECRET || '' },
       body: JSON.stringify({
         goalDescription: battle.goalDescription,
         currentDay: input.day,
