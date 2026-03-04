@@ -3,7 +3,7 @@
 import { auth } from "@/app/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { Difficulty } from "@/lib/generated/prisma/enums"
+import { Difficulty } from "@prisma/client"
 import { resolveQuestDeadline } from "@/lib/deadline"
 
 // Milestones

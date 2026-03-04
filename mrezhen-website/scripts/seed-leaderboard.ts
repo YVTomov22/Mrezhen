@@ -2,7 +2,7 @@
 // Usage: npx tsx scripts/seed-leaderboard.ts
 // Safe to re-run (upserts by email).
 
-import { PrismaClient } from '../lib/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
