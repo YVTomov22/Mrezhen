@@ -420,7 +420,7 @@ function TaskListView({ tasks, questTitle, onEdit, onCreate, onBack }: TaskListP
                     variant="ghost" 
                     className="h-8 w-8 hover:text-red-600" 
                     disabled={isPending} 
-                    onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => deleteTask(task.id)) }}
+                    onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => { deleteTask(task.id) }) }}
                 >
                     <Trash2 className="w-3 h-3" />
                 </Button>
