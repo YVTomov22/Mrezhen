@@ -197,7 +197,7 @@ function MilestoneListView({ milestones, onEdit, onSelect, onCreate, onBack }: M
                     variant="ghost" 
                     className="h-8 w-8 shrink-0 hover:text-red-600 hover:bg-red-50" 
                     disabled={isPending} 
-                    onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => deleteMilestone(m.id)) }}
+                    onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => { deleteMilestone(m.id) }) }}
                 >
                     <Trash2 className="w-3 h-3" />
                 </Button>
@@ -294,7 +294,7 @@ function QuestListView({ quests, milestoneTitle, onEdit, onSelect, onCreate, onB
                 <p className="text-xs text-muted-foreground">{q.tasks.length} {t("tasks")} • {q.difficulty}</p>
               </div>
               <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onEdit(q)}><Pencil className="w-3 h-3 text-muted-foreground" /></Button>
-              <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-600" disabled={isPending} onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => deleteQuest(q.id)) }}><Trash2 className="w-3 h-3" /></Button>
+              <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-red-600" disabled={isPending} onClick={() => { if(confirm(t('confirmDelete'))) startTransition(() => { deleteQuest(q.id) }) }}><Trash2 className="w-3 h-3" /></Button>
               <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onSelect(q.id)}><ChevronRight className="w-4 h-4 text-muted-foreground" /></Button>
             </div>
           ))}
