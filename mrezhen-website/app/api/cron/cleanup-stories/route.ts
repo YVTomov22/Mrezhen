@@ -1,22 +1,21 @@
-import { NextResponse } from 'next/server'
-import { cleanupExpiredStories } from '@/app/actions/story'
+import { NextResponse, NextRequest } from 'next/server'
+import { cleanupExpiredStoriesInternal } from '@/lib/cron-helpers'
 
 // Intended to be called by a cron job (e.g., Vercel Cron or external service).
-// Add CRON_SECRET to your env to protect this endpoint.
+// Protected by CRON_SECRET via Authorization header.
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const secret = searchParams.get('secret')
+export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get('authorization')
+  const cronSecret = process.env.CRON_SECRET
 
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const result = await cleanupExpiredStories({ skipAuth: true })
-
-  if ('error' in result) {
-    return NextResponse.json({ error: result.error }, { status: 500 })
+  try {
+    const result = await cleanupExpiredStoriesInternal()
+    return NextResponse.json({ success: true, deleted: result.deleted })
+  } catch {
+    return NextResponse.json({ error: 'Cleanup failed' }, { status: 500 })
   }
-
-  return NextResponse.json({ success: true, deleted: result.deleted })
 }

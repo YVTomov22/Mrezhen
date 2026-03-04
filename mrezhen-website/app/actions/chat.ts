@@ -40,6 +40,19 @@ export async function createDMMessage(input: {
         return { error: "Message cannot be empty" }
     }
 
+    // Validate attachment URLs — only allow HTTPS from trusted domains
+    const allowedHosts = ["res.cloudinary.com", "cloudinary.com"]
+    for (const url of urls) {
+        try {
+            const parsed = new URL(url)
+            if (parsed.protocol !== "https:" || !allowedHosts.some(h => parsed.hostname.endsWith(h))) {
+                return { error: "Invalid attachment URL. Only Cloudinary HTTPS URLs are accepted." }
+            }
+        } catch {
+            return { error: "Invalid attachment URL format." }
+        }
+    }
+
     if (cleanedContent.length > 5000) {
         return { error: "Message is too long" }
     }

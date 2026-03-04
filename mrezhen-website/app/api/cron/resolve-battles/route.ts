@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { resolveExpiredBattles } from "@/app/actions/battle-resolution"
+import { resolveExpiredBattlesInternal } from "@/lib/cron-helpers"
 
 // Cron endpoint to resolve expired battles. Protected by CRON_SECRET.
 export async function GET(request: NextRequest) {
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await resolveExpiredBattles()
+    const result = await resolveExpiredBattlesInternal()
 
     return NextResponse.json({
       message: "Battle resolution complete",

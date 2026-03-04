@@ -157,7 +157,10 @@ export async function resetPassword(prevState: any, formData: FormData) {
     const confirmPassword = ((formData.get("confirmPassword") as string | null) || "").trim()
 
     if (!token) return { error: "Reset token is missing" }
-    if (!password || password.length < 8) return { error: "Password must be at least 8 characters" }
+    if (!password || password.length < 8 || password.length > 128) return { error: "Password must be 8-128 characters" }
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+        return { error: "Password must contain uppercase, lowercase, and a number" }
+    }
     if (password !== confirmPassword) return { error: "Passwords do not match" }
 
     try {

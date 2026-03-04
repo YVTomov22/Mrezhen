@@ -95,11 +95,15 @@ export async function createQuest(
   if (difficulty === 'HARD') completionPoints = 100
   if (difficulty === 'EPIC') completionPoints = 500
 
-  // Fetch milestone dueDate for deadline resolution
+  // Fetch milestone and verify ownership
   const milestone = await prisma.milestone.findUnique({
     where: { id: milestoneId },
-    select: { dueDate: true },
+    select: { dueDate: true, user: { select: { email: true } } },
   })
+
+  if (!milestone || milestone.user.email !== session.user.email) {
+    return { error: "Milestone not found or does not belong to you" }
+  }
 
   const createdAt = new Date()
   const resolvedDeadline = resolveQuestDeadline({

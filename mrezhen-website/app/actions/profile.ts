@@ -120,7 +120,10 @@ export async function updatePassword(prevState: any, formData: FormData) {
   const newPassword = formData.get('password') as string
 
   if (!currentPassword) return { error: "Current password is required" }
-  if (!newPassword || newPassword.length < 6) return { error: "Password must be at least 6 characters" }
+  if (!newPassword || newPassword.length < 8 || newPassword.length > 128) return { error: "Password must be 8-128 characters" }
+  if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+    return { error: "Password must contain uppercase, lowercase, and a number" }
+  }
 
   const session = await auth()
   if (!session?.user?.email) return { error: "Not authenticated" }
@@ -150,6 +153,16 @@ export async function updatePassword(prevState: any, formData: FormData) {
 
 export async function updateAvatar(imageData: string) {
   if (!imageData) return { error: 'No image provided' }
+
+  // Validate: must be an HTTPS URL from Cloudinary or a data:image/ URI (max 5MB)
+  const isHttpsUrl = /^https:\/\/(res\.)?cloudinary\.com\//i.test(imageData)
+  const isDataUri = /^data:image\/(jpeg|png|gif|webp);base64,/i.test(imageData)
+  if (!isHttpsUrl && !isDataUri) {
+    return { error: 'Invalid image. Only Cloudinary URLs or base64 image data are accepted.' }
+  }
+  if (imageData.length > 5 * 1024 * 1024) {
+    return { error: 'Image data is too large (max 5MB).' }
+  }
 
   const session = await auth()
   if (!session?.user?.email) return { error: 'Not authenticated' }

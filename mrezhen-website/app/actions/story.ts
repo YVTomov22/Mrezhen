@@ -374,17 +374,15 @@ export async function deleteStory(storyId: string) {
   }
 }
 
-// Cleanup Expired Stories (cron/API)
+// Cleanup Expired Stories (admin action — cron uses lib/cron-helpers.ts directly)
 
 /**
- * Cleanup expired stories. Only callable from the cron API route.
- * NOT intended for direct client invocation.
+ * Cleanup expired stories. Auth-gated server action.
+ * The cron route uses lib/cron-helpers.ts instead.
  */
-export async function cleanupExpiredStories(options?: { skipAuth?: boolean }) {
-  if (!options?.skipAuth) {
-    const session = await auth()
-    if (!session?.user?.email) return { error: 'Unauthorized' }
-  }
+export async function cleanupExpiredStories() {
+  const session = await auth()
+  if (!session?.user?.email) return { error: 'Unauthorized' }
   try {
     const result = await prisma.story.deleteMany({
       where: { expiresAt: { lt: new Date() } },
