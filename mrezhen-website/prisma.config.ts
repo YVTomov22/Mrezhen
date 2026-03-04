@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -7,9 +7,10 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    // Use a dummy URL when DATABASE_URL is not set (e.g. during prisma generate)
+    url: process.env.DATABASE_URL ?? "postgresql://placeholder:placeholder@localhost:5432/placeholder",
     ...(process.env.SHADOW_DATABASE_URL
-      ? { shadowDatabaseUrl: env("SHADOW_DATABASE_URL") }
+      ? { shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL }
       : {}),
   },
 });

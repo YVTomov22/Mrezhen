@@ -2,9 +2,14 @@
 // Usage: npx tsx scripts/seed-leaderboard.ts
 // Safe to re-run (upserts by email).
 
-import { PrismaClient } from "../lib/generated/prisma"
+import { PrismaClient } from '../lib/generated/prisma';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({ adapter })
 
 const REGIONS = ["global", "na", "eu", "asia", "sa", "africa", "oceania", "mena"] as const
 
